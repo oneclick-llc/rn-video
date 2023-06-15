@@ -1,12 +1,81 @@
 import * as React from 'react';
 
-import { StyleSheet, View } from 'react-native';
-import { VideoView } from 'react-native-video';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  getIdForVideo,
+  getIdForVideoWithoutChannel,
+  pauseCurrentPlaying,
+  playVideo,
+  toggleVideosMuted,
+  VideoView,
+} from 'react-native-video';
+import { useState } from 'react';
 
+const one =
+  'https://cdn-test.looky.com/post-instagram/3093573415336326421/344572606_907419743843224_427802127932990228_n.mp4';
+const two =
+  'https://cdn-test.looky.com/post/d7bd7109-1e0b-4bcd-83b7-db82be9f519d/0fc47b6aaffa29267b1cf3f3a57664e7.mp4';
+let key = 0;
 export default function App() {
+  // const [video, setVideo] = useState()
+  const [video, setVideo] = useState(one);
+  const [isPresented, setPresented] = useState(true);
   return (
     <View style={styles.container}>
-      <VideoView color="#32a852" style={styles.box} />
+      {isPresented && (
+        <VideoView
+          nativeID={getIdForVideo('cha', 'yuu')}
+          key={key}
+          videoUri={video}
+          style={styles.box}
+        />
+      )}
+
+      <TouchableOpacity
+        onPress={() => {
+          setVideo((v) => (v === one ? two : one));
+        }}
+      >
+        <Text>toggle video</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={{ marginTop: 20 }}
+        onPress={() => {
+          key += 1;
+
+          setPresented(!isPresented);
+        }}
+      >
+        <Text>toggle presence</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={{ marginTop: 20 }}
+        onPress={() => {
+          playVideo('cha', getIdForVideoWithoutChannel('yuu'));
+        }}
+      >
+        <Text>Play</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={{ marginTop: 20 }}
+        onPress={() => {
+          pauseCurrentPlaying();
+        }}
+      >
+        <Text>Pause</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={{ marginTop: 20 }}
+        onPress={() => {
+          toggleVideosMuted(true);
+        }}
+      >
+        <Text>Mute</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -18,8 +87,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   box: {
-    width: 60,
-    height: 60,
+    width: 200,
+    height: 300,
     marginVertical: 20,
   },
 });

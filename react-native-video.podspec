@@ -15,6 +15,7 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/sergeymild/react-native-video.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/**/*.{h,m,mm}"
+  s.resource_bundle = { 'VideoAsset' => 'ios/VideoAsset.xcassets'}
 
   s.dependency "React-Core"
 

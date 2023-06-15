@@ -6,6 +6,7 @@
 #import <react/renderer/components/RNVideoViewSpec/RCTComponentViewHelpers.h>
 
 #import "RCTFabricComponentsPlugins.h"
+#import "VideosController.h"
 
 using namespace facebook::react;
 
@@ -14,7 +15,7 @@ using namespace facebook::react;
 @end
 
 @implementation VideoView {
-    UIView * _view;
+    AppVideoView * _view;
 }
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
@@ -28,7 +29,7 @@ using namespace facebook::react;
     static const auto defaultProps = std::make_shared<const VideoViewProps>();
     _props = defaultProps;
 
-    _view = [[UIView alloc] init];
+    _view = [[AppVideoView alloc] init];
 
     self.contentView = _view;
   }
@@ -36,36 +37,27 @@ using namespace facebook::react;
   return self;
 }
 
+- (void)prepareForRecycle {
+    [super prepareForRecycle];
+    [_view cleanUp];
+    [AppVideosManager.sharedManager removeVideo:self.nativeId];
+}
+
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
     const auto &oldViewProps = *std::static_pointer_cast<VideoViewProps const>(_props);
     const auto &newViewProps = *std::static_pointer_cast<VideoViewProps const>(props);
 
-    if (oldViewProps.color != newViewProps.color) {
-        NSString * colorToConvert = [[NSString alloc] initWithUTF8String: newViewProps.color.c_str()];
-        [_view setBackgroundColor:[self hexStringToColor:colorToConvert]];
-    }
-
     [super updateProps:props oldProps:oldProps];
+    
+    if (_view.uri == NULL || oldViewProps.videoUri != newViewProps.videoUri) {
+        NSString * uriToConvert = [[NSString alloc] initWithUTF8String: newViewProps.videoUri.c_str()];
+        [_view setVideoUri:uriToConvert];
+    }
+    [AppVideosManager.sharedManager addVideo:_view nativeID:self.nativeId];
 }
 
-Class<RCTComponentViewProtocol> VideoViewCls(void)
-{
+Class<RCTComponentViewProtocol> VideoViewCls(void) {
     return VideoView.class;
 }
-
-- hexStringToColor:(NSString *)stringToConvert
-{
-    NSString *noHashString = [stringToConvert stringByReplacingOccurrencesOfString:@"#" withString:@""];
-    NSScanner *stringScanner = [NSScanner scannerWithString:noHashString];
-    
-    unsigned hex;
-    if (![stringScanner scanHexInt:&hex]) return nil;
-    int r = (hex >> 16) & 0xFF;
-    int g = (hex >> 8) & 0xFF;
-    int b = (hex) & 0xFF;
-    
-    return [UIColor colorWithRed:r / 255.0f green:g / 255.0f blue:b / 255.0f alpha:1.0f];
-}
-
 @end

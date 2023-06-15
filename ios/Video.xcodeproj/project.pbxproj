@@ -7,7 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5E555C0D2413F4C50049A1A2 /* Video.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* Video.m */; };
+		8DA6A9BD2A39D07F00D1FA7E /* VideoViewManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8DA6A9BB2A39D07F00D1FA7E /* VideoViewManager.mm */; };
+		8DA6A9BE2A39D07F00D1FA7E /* VideoView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8DA6A9BC2A39D07F00D1FA7E /* VideoView.mm */; };
+		8DA6A9C12A39D0B300D1FA7E /* AppVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DA6A9C02A39D0B300D1FA7E /* AppVideoView.m */; };
+		8DA6A9C42A39E25B00D1FA7E /* VideoDurationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DA6A9C32A39E25B00D1FA7E /* VideoDurationView.m */; };
+		8DA6A9C72A39E26800D1FA7E /* ToggleMuteButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DA6A9C62A39E26800D1FA7E /* ToggleMuteButton.m */; };
+		8DA6A9CA2A39E27800D1FA7E /* VideoStatusView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DA6A9C92A39E27800D1FA7E /* VideoStatusView.m */; };
+		8DEC2F4E2A3B080000D9D69A /* VideosController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DEC2F4D2A3B080000D9D69A /* VideosController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,8 +30,20 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libVideo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libVideo.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		B3E7B5881CC2AC0600A0062D /* Video.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Video.h; sourceTree = "<group>"; };
-		B3E7B5891CC2AC0600A0062D /* Video.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Video.m; sourceTree = "<group>"; };
+		8DA6A9BA2A39D07F00D1FA7E /* VideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoView.h; sourceTree = "<group>"; };
+		8DA6A9BB2A39D07F00D1FA7E /* VideoViewManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VideoViewManager.mm; sourceTree = "<group>"; };
+		8DA6A9BC2A39D07F00D1FA7E /* VideoView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VideoView.mm; sourceTree = "<group>"; };
+		8DA6A9BF2A39D0B300D1FA7E /* AppVideoView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppVideoView.h; sourceTree = "<group>"; };
+		8DA6A9C02A39D0B300D1FA7E /* AppVideoView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppVideoView.m; sourceTree = "<group>"; };
+		8DA6A9C22A39E25B00D1FA7E /* VideoDurationView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoDurationView.h; sourceTree = "<group>"; };
+		8DA6A9C32A39E25B00D1FA7E /* VideoDurationView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoDurationView.m; sourceTree = "<group>"; };
+		8DA6A9C52A39E26800D1FA7E /* ToggleMuteButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ToggleMuteButton.h; sourceTree = "<group>"; };
+		8DA6A9C62A39E26800D1FA7E /* ToggleMuteButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ToggleMuteButton.m; sourceTree = "<group>"; };
+		8DA6A9C82A39E27800D1FA7E /* VideoStatusView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoStatusView.h; sourceTree = "<group>"; };
+		8DA6A9C92A39E27800D1FA7E /* VideoStatusView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoStatusView.m; sourceTree = "<group>"; };
+		8DA6A9CB2A39E5EA00D1FA7E /* VideoAsset.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = VideoAsset.xcassets; sourceTree = "<group>"; };
+		8DEC2F4C2A3B080000D9D69A /* VideosController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideosController.h; sourceTree = "<group>"; };
+		8DEC2F4D2A3B080000D9D69A /* VideosController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideosController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,8 +68,20 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				B3E7B5881CC2AC0600A0062D /* Video.h */,
-				B3E7B5891CC2AC0600A0062D /* Video.m */,
+				8DEC2F4C2A3B080000D9D69A /* VideosController.h */,
+				8DEC2F4D2A3B080000D9D69A /* VideosController.m */,
+				8DA6A9CB2A39E5EA00D1FA7E /* VideoAsset.xcassets */,
+				8DA6A9C82A39E27800D1FA7E /* VideoStatusView.h */,
+				8DA6A9C92A39E27800D1FA7E /* VideoStatusView.m */,
+				8DA6A9C52A39E26800D1FA7E /* ToggleMuteButton.h */,
+				8DA6A9C62A39E26800D1FA7E /* ToggleMuteButton.m */,
+				8DA6A9C22A39E25B00D1FA7E /* VideoDurationView.h */,
+				8DA6A9C32A39E25B00D1FA7E /* VideoDurationView.m */,
+				8DA6A9BF2A39D0B300D1FA7E /* AppVideoView.h */,
+				8DA6A9C02A39D0B300D1FA7E /* AppVideoView.m */,
+				8DA6A9BA2A39D07F00D1FA7E /* VideoView.h */,
+				8DA6A9BC2A39D07F00D1FA7E /* VideoView.mm */,
+				8DA6A9BB2A39D07F00D1FA7E /* VideoViewManager.mm */,
 				134814211AA4EA7D00B7C361 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -113,7 +143,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B3E7B58A1CC2AC0600A0062D /* Video.m in Sources */,
+				8DA6A9C12A39D0B300D1FA7E /* AppVideoView.m in Sources */,
+				8DA6A9C72A39E26800D1FA7E /* ToggleMuteButton.m in Sources */,
+				8DEC2F4E2A3B080000D9D69A /* VideosController.m in Sources */,
+				8DA6A9CA2A39E27800D1FA7E /* VideoStatusView.m in Sources */,
+				8DA6A9BE2A39D07F00D1FA7E /* VideoView.mm in Sources */,
+				8DA6A9C42A39E25B00D1FA7E /* VideoDurationView.m in Sources */,
+				8DA6A9BD2A39D07F00D1FA7E /* VideoViewManager.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
