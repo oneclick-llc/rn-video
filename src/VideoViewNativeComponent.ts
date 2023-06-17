@@ -7,6 +7,7 @@ interface NativeProps extends ViewProps {
   loop: boolean;
   nativeID: string;
   onMuteToggle?: (e: any) => void;
+  onVideoTap?: (e: any) => void;
   onEndPlay?: (e: any) => void;
 }
 

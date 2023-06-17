@@ -6,6 +6,7 @@ import {
   getIdForVideoWithoutChannel,
   pauseCurrentPlaying,
   playVideo,
+  togglePlayVideo,
   toggleVideosMuted,
   toggleVideosMutedEvent,
   VideoView,
@@ -27,6 +28,9 @@ export default function App() {
       {isPresented && (
         <VideoView
           onMuteToggle={toggleVideosMutedEvent}
+          onVideoTap={() =>
+            togglePlayVideo('cha', getIdForVideoWithoutChannel('yuu'))
+          }
           onEndPlay={(e) => console.log('[App.=====]')}
           nativeID={getIdForVideo('cha', 'yuu')}
           key={key}

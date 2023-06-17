@@ -51,7 +51,7 @@
         [_player replaceCurrentItemWithPlayerItem:_playerItem];
     }
     [self setPaused:_paused];
-    [self setMuted:_muted];
+//    [self setMuted:_muted];
 }
 
 - (void)setNativeID:(NSString *)nativeID {
@@ -64,8 +64,8 @@
 
 // MARK: applyGestures
 - (void) applyGestures {
-//    UITapGestureRecognizer* tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onVideoTap)];
-//    [self addGestureRecognizer:tap];
+    UITapGestureRecognizer* tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onVideoTapped)];
+    [self addGestureRecognizer:tap];
 
     [_toggleMuteButton addTarget:self action:@selector(toggleMuted) forControlEvents:UIControlEventTouchUpInside];
 }
@@ -84,21 +84,20 @@
 
 // MARK: setPaused
 - (void)setPaused:(BOOL)paused {
-    if (_paused == paused) return;
     _paused = paused;
     if (!_player) return;
     if (paused) {
+        NSLog(@"🤖 setPaused: %@", self.nativeID);
         [_player pause];
         [_player setRate:0.0];
     } else {
-        
+        NSLog(@"🤖 setPlaying: %@", self.nativeID);
         [_player playImmediatelyAtRate:1.0];
     }
 }
 
 // MARK: setMuted
 - (void)setMuted:(BOOL)muted {
-    if (_muted == muted) return;
     _muted = muted;
     if (!_player) return;
     [_player setVolume:muted ? 0 : 1.0];
@@ -112,7 +111,8 @@
     _loop = loop;
 }
 
-- (void) onVideoTap {
+- (void) onVideoTapped {
+    self.onVideoTap(NULL);
 //    [self setPaused:!_paused];
 }
 
@@ -151,7 +151,6 @@
         _toggleMuteButton = [[ToggleMuteButton alloc] init];
         [self addSubview:_toggleMuteButton];
         [_toggleMuteButton toggleMuted:_muted];
-        [self setMuted:_muted];
     }
     
     if (!_videoDurationView) {
@@ -167,20 +166,21 @@
     
     self->_timeObserverToken = [_player addPeriodicTimeObserverForInterval:interval queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
         AppVideoView *strongSelf = weakSelf;
-        //AVPlayer *strongPlayer = weakSelf->_player;
+        if (!strongSelf) return;
         CMTime duration = strongSelf->_player.currentItem.duration;
         CMTime timeLeft = CMTimeSubtract(duration, time);
         [strongSelf->_videoDurationView setTime:timeLeft];
         
         if (CMTimeGetSeconds(timeLeft) == 0) {
             [strongSelf->_player seekToTime:kCMTimeZero];
-            [strongSelf setPaused:true];
             if (strongSelf.onEndPlay) {
                 strongSelf.onEndPlay(NULL);
             }
-        }
-        if (strongSelf->_loop) {
-            [strongSelf->_player playImmediatelyAtRate:1.0];
+            if (strongSelf->_loop) {
+                [strongSelf->_player playImmediatelyAtRate:1.0];
+            } else {
+                [strongSelf setPaused:true];
+            }
         }
     }];
     
