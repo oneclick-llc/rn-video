@@ -58,3 +58,10 @@ export function toggleVideosMuted(muted: boolean) {
   console.log('🤖 [VideoManager.toggleVideosMuted]', muted);
   LookyVideosManager.toggleVideosMuted(muted);
 }
+
+export function toggleVideosMutedEvent(event: {
+  nativeEvent: { muted: boolean };
+}) {
+  console.log('🤖 [VideoManager.toggleVideosMuted]', event.nativeEvent.muted);
+  LookyVideosManager.toggleVideosMuted(event.nativeEvent.muted);
+}

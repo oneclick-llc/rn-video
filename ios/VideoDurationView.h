@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#include <AVFoundation/AVFoundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -14,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (class, readonly) CGFloat height;
 
+-(void) setTime:(CMTime) time;
 @end
 
 NS_ASSUME_NONNULL_END

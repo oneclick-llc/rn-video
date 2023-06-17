@@ -27,6 +27,15 @@
     return nil;
 }
 
+- (NSString *)currentPlayingKey {
+    for (NSString* key in _videos) {
+        if (![[_videos objectForKey:key] isVideoPaused]) {
+            return key;
+        }
+    }
+    return nil;
+}
+
 @end
 
 
@@ -119,7 +128,10 @@ RCT_EXPORT_MODULE();
           videoId:(NSString *)videoId
       seekToStart:(BOOL)seekToStart {
     VideoChannel *videoChannel = [AppVideosManager.sharedManager getChannel:channel];
-    [AppVideosManager.sharedManager pauseVideo:videoChannel];
+    
+    if (![[videoChannel currentPlayingKey] isEqualToString:videoId]) {
+        [AppVideosManager.sharedManager pauseVideo:videoChannel];
+    }
 
     AppVideoView *video = [videoChannel.videos objectForKey:videoId];
     if (video) {

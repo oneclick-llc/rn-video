@@ -7,13 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <React/RCTComponent.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface AppVideoView : UIView
 
 @property (nonatomic) NSString* uri;
-
+@property (nonatomic, copy) RCTDirectEventBlock onMuteToggle;
+@property (nonatomic, copy) RCTDirectEventBlock onEndPlay;
 
 -(void) setVideoUri:(NSString*)uri;
 -(void) cleanUp;

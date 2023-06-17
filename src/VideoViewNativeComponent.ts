@@ -3,7 +3,11 @@ import type { ViewProps } from 'react-native';
 
 interface NativeProps extends ViewProps {
   videoUri: string;
+  muted: boolean;
+  loop: boolean;
   nativeID: string;
+  onMuteToggle?: (e: any) => void;
+  onEndPlay?: (e: any) => void;
 }
 
 export default codegenNativeComponent<NativeProps>('VideoView');

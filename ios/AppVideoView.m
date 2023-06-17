@@ -22,8 +22,9 @@
     VideoDurationView* _videoDurationView;
     BOOL _paused;
     BOOL _muted;
+    BOOL _loop;
     
-    NSObject *_timeObserverToken;
+    NSObject* _timeObserverToken;
     
 }
 
@@ -61,9 +62,10 @@
 #endif
 }
 
+// MARK: applyGestures
 - (void) applyGestures {
-    UITapGestureRecognizer* tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onVideoTap)];
-    [self addGestureRecognizer:tap];
+//    UITapGestureRecognizer* tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onVideoTap)];
+//    [self addGestureRecognizer:tap];
 
     [_toggleMuteButton addTarget:self action:@selector(toggleMuted) forControlEvents:UIControlEventTouchUpInside];
 }
@@ -71,17 +73,18 @@
 - (void)layoutSubviews{
     [super layoutSubviews];
     _videoPlayerParent.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
-    _playerLayer.frame = _videoPlayerParent.frame;
-//    if (_playerLayer) {
-//
-//    }
+    if (_playerLayer) {
+        _playerLayer.frame = _videoPlayerParent.frame;
+    }
     
     if (_toggleMuteButton) {
         _toggleMuteButton.frame = CGRectMake(self.bounds.size.width - ToggleMuteButton.size - 12, self.bounds.size.height - ToggleMuteButton.size - 12, ToggleMuteButton.size, ToggleMuteButton.size);
     }
 }
 
+// MARK: setPaused
 - (void)setPaused:(BOOL)paused {
+    if (_paused == paused) return;
     _paused = paused;
     if (!_player) return;
     if (paused) {
@@ -93,7 +96,9 @@
     }
 }
 
+// MARK: setMuted
 - (void)setMuted:(BOOL)muted {
+    if (_muted == muted) return;
     _muted = muted;
     if (!_player) return;
     [_player setVolume:muted ? 0 : 1.0];
@@ -102,17 +107,31 @@
     [_toggleMuteButton toggleMuted:muted];
 }
 
+// MARK: setLoop
+- (void)setLoop:(BOOL)loop {
+    _loop = loop;
+}
+
 - (void) onVideoTap {
-    [self setPaused:!_paused];
+//    [self setPaused:!_paused];
 }
 
 - (void) toggleMuted {
-    [self setMuted:!_muted];
+    if (self.onMuteToggle) {
+        self.onMuteToggle(@{@"muted": !_muted ? @true : @false});
+    }
 }
 
 - (void) cleanUp {
     if (_player == NULL) return;
     [self setPaused:true];
+    
+    if (self->_timeObserverToken) {
+        [_player removeTimeObserver:self->_timeObserverToken];
+        self->_timeObserverToken = NULL;
+    }
+    [_player removeObserver:self forKeyPath:@"status" context:nil];
+    
     _player = nil;
     _playerItem = NULL;
     [_playerLayer removeFromSuperlayer];
@@ -131,6 +150,7 @@
     if (!_toggleMuteButton) {
         _toggleMuteButton = [[ToggleMuteButton alloc] init];
         [self addSubview:_toggleMuteButton];
+        [_toggleMuteButton toggleMuted:_muted];
         [self setMuted:_muted];
     }
     
@@ -140,6 +160,35 @@
     }
     
     [self applyGestures];
+    
+    // MARK: video observe duration
+    __weak AppVideoView *weakSelf = self;
+    CMTime interval = CMTimeMakeWithSeconds(1.0, 60000);
+    
+    self->_timeObserverToken = [_player addPeriodicTimeObserverForInterval:interval queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
+        AppVideoView *strongSelf = weakSelf;
+        //AVPlayer *strongPlayer = weakSelf->_player;
+        CMTime duration = strongSelf->_player.currentItem.duration;
+        CMTime timeLeft = CMTimeSubtract(duration, time);
+        [strongSelf->_videoDurationView setTime:timeLeft];
+        
+        if (CMTimeGetSeconds(timeLeft) == 0) {
+            [strongSelf->_player seekToTime:kCMTimeZero];
+            [strongSelf setPaused:true];
+            if (strongSelf.onEndPlay) {
+                strongSelf.onEndPlay(NULL);
+            }
+        }
+        if (strongSelf->_loop) {
+            [strongSelf->_player playImmediatelyAtRate:1.0];
+        }
+    }];
+    
+    // MARK: video observe status
+    [_player addObserver:self
+              forKeyPath:@"status"
+                 options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionInitial)
+                 context:nil];
 }
 
 - (void)removeFromSuperview {
@@ -159,7 +208,17 @@
 -(void)seekToStart {
     AVPlayerItem *item = _player.currentItem;
     if (item && item.status == AVPlayerItemStatusReadyToPlay) {
-        [item seekToTime:kCMTimeZero];
+        [item seekToTime:kCMTimeZero completionHandler:NULL];
+        //[item seekToTime:kCMTimeZero];
+    }
+}
+
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+    if (object == _player && [keyPath isEqualToString:@"status"]) {
+        if (_player.status == AVPlayerStatusReadyToPlay) {
+            [_videoDurationView setTime:_player.currentItem.asset.duration];
+        }
     }
 }
 

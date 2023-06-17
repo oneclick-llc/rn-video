@@ -7,6 +7,7 @@ import {
   pauseCurrentPlaying,
   playVideo,
   toggleVideosMuted,
+  toggleVideosMutedEvent,
   VideoView,
 } from 'react-native-video';
 import { useState } from 'react';
@@ -20,13 +21,18 @@ export default function App() {
   // const [video, setVideo] = useState()
   const [video, setVideo] = useState(one);
   const [isPresented, setPresented] = useState(true);
+
   return (
     <View style={styles.container}>
       {isPresented && (
         <VideoView
+          onMuteToggle={toggleVideosMutedEvent}
+          onEndPlay={(e) => console.log('[App.=====]')}
           nativeID={getIdForVideo('cha', 'yuu')}
           key={key}
           videoUri={video}
+          muted={false}
+          loop={false}
           style={styles.box}
         />
       )}

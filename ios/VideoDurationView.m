@@ -27,7 +27,7 @@
         label = [[UILabel alloc] init];
         label.font = [UIFont systemFontOfSize:10 weight:UIFontWeightSemibold];
         [self addSubview:label];
-        label.text = @"100:00";
+        label.text = @"00:00";
         label.textColor = UIColor.whiteColor;
     }
     
@@ -48,8 +48,22 @@
                             VideoDurationView.height);
 }
 
-- (void) updateTime:(NSNumber*)time {
+- (void)setTime:(CMTime)time {
+    NSUInteger dTotalSeconds = CMTimeGetSeconds(time);
+
+    NSUInteger dHours = floor(dTotalSeconds / 3600);
+    NSUInteger dMinutes = floor(dTotalSeconds % 3600 / 60);
+    NSUInteger dSeconds = floor(dTotalSeconds % 3600 % 60);
     
+    NSString *videoDurationText;
+    if (dHours > 0) {
+        videoDurationText = [NSString stringWithFormat:@"%lu:%02lu:%02lu",(unsigned long)dHours, (unsigned long)dMinutes, (unsigned long)dSeconds];
+    } else {
+        videoDurationText = [NSString stringWithFormat:@"%02lu:%02lu", (unsigned long)dMinutes, (unsigned long)dSeconds];
+    }
+    
+    label.text = videoDurationText;
+    [self layoutSubviews];
 }
 
 @end
