@@ -1,3 +1,4 @@
+#ifdef RCT_NEW_ARCH_ENABLED
 #import "VideoView.h"
 
 #import <react/renderer/components/RNVideoViewSpec/ComponentDescriptors.h>
@@ -61,3 +62,4 @@ Class<RCTComponentViewProtocol> VideoViewCls(void) {
     return VideoView.class;
 }
 @end
+#endif

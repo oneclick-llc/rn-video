@@ -71,7 +71,9 @@
     NSArray<NSString*> *parts = [nativeID componentsSeparatedByString:@":"];
     NSString *channel = [parts objectAtIndex:0];
     NSString *vID = [parts objectAtIndex:1];
+#ifdef RCT_NEW_ARCH_ENABLED
     video.nativeID = nativeID;
+#endif
 
     VideoChannel *videoChannel = [self getChannel:channel];
     [videoChannel.videos setObject:video forKey:vID];

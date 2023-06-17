@@ -43,9 +43,7 @@
         _playerItem = [[AVPlayerItem alloc] initWithURL:url];
         _player = [[AVPlayer alloc] initWithPlayerItem:_playerItem];
         _playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
-        _playerLayer.frame = self.bounds;
-        [_videoPlayerParent.layer addSublayer:_playerLayer];
-        [_playerLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
+        //_playerLayer.frame = self.bounds;
     } else {
         NSURL *url = [[NSURL alloc] initWithString:self.uri];
         _playerItem = [[AVPlayerItem alloc] initWithURL:url];
@@ -53,6 +51,14 @@
     }
     [self setPaused:_paused];
     [self setMuted:_muted];
+}
+
+- (void)setNativeID:(NSString *)nativeID {
+    [super setNativeID:nativeID];
+    
+#ifndef RCT_NEW_ARCH_ENABLED
+    [AppVideosManager.sharedManager addVideo:self nativeID:nativeID];
+#endif
 }
 
 - (void) applyGestures {
@@ -64,10 +70,11 @@
 
 - (void)layoutSubviews{
     [super layoutSubviews];
-    _videoPlayerParent.frame = self.bounds;
-    if (_playerLayer) {
-        _playerLayer.frame = self.bounds;
-    }
+    _videoPlayerParent.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
+    _playerLayer.frame = _videoPlayerParent.frame;
+//    if (_playerLayer) {
+//
+//    }
     
     if (_toggleMuteButton) {
         _toggleMuteButton.frame = CGRectMake(self.bounds.size.width - ToggleMuteButton.size - 12, self.bounds.size.height - ToggleMuteButton.size - 12, ToggleMuteButton.size, ToggleMuteButton.size);
@@ -112,16 +119,19 @@
     _playerLayer.player = NULL;
     _uri = NULL;
     
-    [AppVideosManager.sharedManager removeVideo:self];
+    [AppVideosManager.sharedManager removeVideo:self.nativeID];
 }
 
 - (void)willMoveToSuperview:(UIView *)newSuperview {
     _videoPlayerParent = [[UIView alloc] init];
     [self addSubview:_videoPlayerParent];
+    [_videoPlayerParent.layer addSublayer:_playerLayer];
+    [_playerLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
     
     if (!_toggleMuteButton) {
         _toggleMuteButton = [[ToggleMuteButton alloc] init];
         [self addSubview:_toggleMuteButton];
+        [self setMuted:_muted];
     }
     
     if (!_videoDurationView) {
