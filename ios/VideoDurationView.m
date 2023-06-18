@@ -42,10 +42,10 @@
     
     CGSize parent = self.superview.frame.size;
     self.frame = CGRectMake(
-                            parent.width - 12 - label.frame.size.width - 12,
-                            parent.height - 12 - ToggleMuteButton.size - 4 - VideoDurationView.height,
-                            size.width + 12,
-                            VideoDurationView.height);
+        parent.width - label.frame.size.width - self.x - 12,
+        parent.height - self.y - ToggleMuteButton.size - 4 - VideoDurationView.height,
+        size.width + 12,
+        VideoDurationView.height);
 }
 
 - (void)setTime:(CMTime)time {

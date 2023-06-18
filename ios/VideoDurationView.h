@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface VideoDurationView : UIView
 
 @property (class, readonly) CGFloat height;
+@property (nonatomic) CGFloat x;
+@property (nonatomic) CGFloat y;
 
 -(void) setTime:(CMTime) time;
 @end

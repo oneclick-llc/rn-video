@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) RCTDirectEventBlock onMuteToggle;
 @property (nonatomic, copy) RCTDirectEventBlock onEndPlay;
 @property (nonatomic, copy) RCTDirectEventBlock onVideoTap;
+@property (nonatomic, copy) NSDictionary* hudPosition;
 
 -(void) setVideoUri:(NSString*)uri;
 -(void) cleanUp;

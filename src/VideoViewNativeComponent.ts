@@ -9,6 +9,7 @@ interface NativeProps extends ViewProps {
   onMuteToggle?: (e: any) => void;
   onVideoTap?: (e: any) => void;
   onEndPlay?: (e: any) => void;
+  hudPosition?: { x: number; y: number };
 }
 
 export default codegenNativeComponent<NativeProps>('VideoView');

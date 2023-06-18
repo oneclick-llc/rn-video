@@ -78,8 +78,26 @@
     }
     
     if (_toggleMuteButton) {
-        _toggleMuteButton.frame = CGRectMake(self.bounds.size.width - ToggleMuteButton.size - 12, self.bounds.size.height - ToggleMuteButton.size - 12, ToggleMuteButton.size, ToggleMuteButton.size);
+        _toggleMuteButton.frame = CGRectMake(
+            self.bounds.size.width - ToggleMuteButton.size - [self getHudX],
+            self.bounds.size.height - ToggleMuteButton.size - [self getHudY],
+            ToggleMuteButton.size,
+            ToggleMuteButton.size);
     }
+}
+
+-(CGFloat)getHudX {
+    if (_hudPosition) {
+        return [RCTConvert CGFloat:[_hudPosition objectForKey:@"x"]];
+    }
+    return 12;
+}
+
+-(CGFloat)getHudY {
+    if (_hudPosition) {
+        return [RCTConvert CGFloat:[_hudPosition objectForKey:@"y"]];
+    }
+    return 12;
 }
 
 // MARK: setPaused
@@ -141,6 +159,7 @@
     [AppVideosManager.sharedManager removeVideo:self.nativeID];
 }
 
+// MARK: willMoveToSuperview
 - (void)willMoveToSuperview:(UIView *)newSuperview {
     _videoPlayerParent = [[UIView alloc] init];
     [self addSubview:_videoPlayerParent];
@@ -155,6 +174,8 @@
     
     if (!_videoDurationView) {
         _videoDurationView = [[VideoDurationView alloc] init];
+        _videoDurationView.x = [self getHudX];
+        _videoDurationView.y = [self getHudY];
         [self addSubview:_videoDurationView];
     }
     

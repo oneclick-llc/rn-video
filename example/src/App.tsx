@@ -27,6 +27,7 @@ export default function App() {
     <View style={styles.container}>
       {isPresented && (
         <VideoView
+          hudPosition={{ x: 12, y: 12 }}
           onMuteToggle={toggleVideosMutedEvent}
           onVideoTap={() =>
             togglePlayVideo('cha', getIdForVideoWithoutChannel('yuu'))
