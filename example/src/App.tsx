@@ -27,7 +27,8 @@ export default function App() {
     <View style={styles.container}>
       {isPresented && (
         <VideoView
-          hudPosition={{ x: 12, y: 12 }}
+          hudOffset={{ x: 12, y: 12 }}
+          resizeMode={'cover'}
           onMuteToggle={toggleVideosMutedEvent}
           onVideoTap={() =>
             togglePlayVideo('cha', getIdForVideoWithoutChannel('yuu'))

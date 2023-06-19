@@ -14,12 +14,14 @@ NS_ASSUME_NONNULL_BEGIN
 @interface AppVideoView : UIView
 
 @property (nonatomic) NSString* uri;
+@property (nonatomic) NSString* resizeMode;
 @property (nonatomic, copy) RCTDirectEventBlock onMuteToggle;
 @property (nonatomic, copy) RCTDirectEventBlock onEndPlay;
 @property (nonatomic, copy) RCTDirectEventBlock onVideoTap;
-@property (nonatomic, copy) NSDictionary* hudPosition;
+@property (nonatomic, copy) NSDictionary* hudOffset;
 
 -(void) setVideoUri:(NSString*)uri;
+-(void) setResizeMode:(NSString*)mode;
 -(void) cleanUp;
 - (void)setPaused:(BOOL)paused;
 - (void)setMuted:(BOOL)muted;

@@ -54,6 +54,33 @@
 //    [self setMuted:_muted];
 }
 
+- (void)setResizeMode:(NSString *)mode {
+    _resizeMode = mode;
+}
+
+- (void)didSetProps:(NSArray<NSString *> *)changedProps {
+    if ([changedProps containsObject:@"resizeMode"]) {
+        if ([_resizeMode isEqualToString:@"cover"]) {
+            [_playerLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
+        }
+        
+        if ([_resizeMode isEqualToString:@"contain"]) {
+            [_playerLayer setVideoGravity:AVLayerVideoGravityResizeAspect];
+        }
+        
+        if ([_resizeMode isEqualToString:@"stretch"]) {
+            [_playerLayer setVideoGravity:AVLayerVideoGravityResize];
+        }
+    }
+    
+    if ([changedProps containsObject:@"hudOffset"]) {
+        [self layoutSubviews];
+        _videoDurationView.x = [self getHudX];
+        _videoDurationView.y = [self getHudY];
+        [_videoDurationView layoutSubviews];
+    }
+}
+
 - (void)setNativeID:(NSString *)nativeID {
     [super setNativeID:nativeID];
     
@@ -87,15 +114,15 @@
 }
 
 -(CGFloat)getHudX {
-    if (_hudPosition) {
-        return [RCTConvert CGFloat:[_hudPosition objectForKey:@"x"]];
+    if (_hudOffset) {
+        return [RCTConvert CGFloat:[_hudOffset objectForKey:@"x"]];
     }
     return 12;
 }
 
 -(CGFloat)getHudY {
-    if (_hudPosition) {
-        return [RCTConvert CGFloat:[_hudPosition objectForKey:@"y"]];
+    if (_hudOffset) {
+        return [RCTConvert CGFloat:[_hudOffset objectForKey:@"y"]];
     }
     return 12;
 }

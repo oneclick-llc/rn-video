@@ -1,3 +1,2 @@
-export { default as VideoView } from './VideoViewNativeComponent';
-export * from './VideoViewNativeComponent';
+export { VideoView } from './VideoView';
 export * from './VideosController';
