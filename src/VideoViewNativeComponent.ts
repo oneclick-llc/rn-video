@@ -9,6 +9,7 @@ export interface NativeProps extends ViewProps {
   onMuteToggle?: (e: any) => void;
   onVideoTap?: (e: any) => void;
   onEndPlay?: (e: any) => void;
+  onLoad?: () => void;
   hudOffset?: { x: number; y: number };
   resizeMode?: 'stretch' | 'contain' | 'cover';
 }

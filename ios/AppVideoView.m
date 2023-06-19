@@ -11,6 +11,7 @@
 
 #include "ToggleMuteButton.h"
 #include "VideoDurationView.h"
+#include "LoadingVideoIconView.h"
 #include "VideosController.h"
 
 @implementation AppVideoView {
@@ -23,6 +24,7 @@
     BOOL _paused;
     BOOL _muted;
     BOOL _loop;
+    BOOL _loaded;
     
     NSObject* _timeObserverToken;
     
@@ -32,6 +34,7 @@
     if ((self = [super init])) {
         _muted = YES;
         _paused = YES;
+        _loaded = false;
     }
     
     return self;
@@ -266,6 +269,7 @@
     if (object == _player && [keyPath isEqualToString:@"status"]) {
         if (_player.status == AVPlayerStatusReadyToPlay) {
             [_videoDurationView setTime:_player.currentItem.asset.duration];
+            if (self.onLoad) self.onLoad(NULL);
         }
     }
 }
