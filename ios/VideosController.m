@@ -27,6 +27,11 @@
     return nil;
 }
 
+- (AppVideoView *)forRestore {
+    if (!self.backgroundRestore) return NULL;
+    return [_videos objectForKey:self.backgroundRestore];
+}
+
 - (NSString *)currentPlayingKey {
     for (NSString* key in _videos) {
         if (![[_videos objectForKey:key] isVideoPaused]) {
@@ -220,6 +225,25 @@ RCT_EXPORT_METHOD(toggleVideosMuted:(BOOL)muted) {
             }
         }
     });
+}
+
+RCT_EXPORT_METHOD(togglePlayInBackground:(NSString*)channelName
+                  playInBackground:(BOOL) playInBackground) {
+    NSLog(@"🌶️ togglePlayInBackground %@ %id", channelName, playInBackground);
+    VideoChannel *channel = [AppVideosManager.sharedManager.channels objectForKey:channelName];
+    if (!channel) return;
+    
+    if (playInBackground) {
+        AppVideoView *video = [channel currentPlaying];
+        if (!video) return;
+        [video applicationDidEnterBackground];
+        channel.backgroundRestore = [AppVideosManager.sharedManager videoId:video];
+    } else {
+        AppVideoView *video = [channel forRestore];
+        if (!video) return;
+        [video applicationWillEnterForeground];
+        channel.backgroundRestore = NULL;
+    }
 }
 
 

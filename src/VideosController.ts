@@ -1,4 +1,5 @@
 import { NativeModules } from 'react-native';
+import * as RNVideo from 'rn-video';
 
 const LookyVideosManager = NativeModules.VideosController;
 
@@ -29,6 +30,13 @@ export function playVideo(channel: string, videoId: string) {
 
 export function pauseCurrentPlaying() {
   LookyVideosManager.pauseCurrentPlaying();
+}
+
+export function togglePlayInBackground(
+  channelName: string | undefined,
+  playInBackground: boolean
+) {
+  LookyVideosManager.togglePlayInBackground(channelName, playInBackground);
 }
 
 export function pauseCurrentPlayingWithLaterRestore(

@@ -49,6 +49,7 @@
         _playerItem = [[AVPlayerItem alloc] initWithURL:url];
         [_player replaceCurrentItemWithPlayerItem:_playerItem];
     }
+    self->_player.preventsDisplaySleepDuringVideoPlayback = true;
     [self setPaused:_paused];
 //    [self setMuted:_muted];
 }
@@ -258,6 +259,15 @@
         [item seekToTime:kCMTimeZero completionHandler:NULL];
         //[item seekToTime:kCMTimeZero];
     }
+}
+
+
+- (void)applicationDidEnterBackground {
+    [_playerLayer setPlayer:nil];
+}
+
+- (void)applicationWillEnterForeground {
+    [_playerLayer setPlayer:_player];
 }
 
 

@@ -28,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setMuted:(BOOL)muted;
 -(BOOL) isVideoPaused;
 -(void)seekToStart;
+- (void)applicationDidEnterBackground;
+- (void)applicationWillEnterForeground;
 @end
 
 NS_ASSUME_NONNULL_END
