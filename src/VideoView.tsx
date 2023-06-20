@@ -1,9 +1,27 @@
-import React from 'react';
+import React, { memo, useState } from 'react';
 import type { NativeProps } from './VideoViewNativeComponent';
 import V from './VideoViewNativeComponent';
+import { Image, StyleSheet, View } from 'react-native';
 
-interface Props extends NativeProps {}
+interface Props extends NativeProps {
+  poster?: string;
+}
 
-export const VideoView: React.FC<Props> = (props) => {
-  return <V {...props} />;
-};
+export const VideoView: React.FC<Props> = memo((props) => {
+  const [isLoaded, setLoaded] = useState(false);
+  return (
+    <View style={props.style}>
+      <V
+        {...props}
+        style={StyleSheet.absoluteFillObject}
+        onLoad={() => setLoaded(true)}
+      />
+      {!isLoaded && props.poster && (
+        <Image
+          style={StyleSheet.absoluteFillObject}
+          source={{ uri: props.poster }}
+        />
+      )}
+    </View>
+  );
+});
