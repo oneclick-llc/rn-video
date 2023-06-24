@@ -14,7 +14,8 @@ Pod::Spec.new do |s|
   s.platforms    = { :ios => "11.0" }
   s.source       = { :git => "https://github.com/sergeymild/rn-video.git", :tag => "#{s.version}" }
 
-  s.source_files = "ios/**/*.{h,m,mm}"
+  s.source_files = "ios/**/*.{h,m,mm,swift}"
+  s.public_header_files = 'ios/**/*.h'
   s.resource_bundle = { 'VideoAsset' => 'ios/VideoAsset.xcassets'}
 
   s.dependency "React-Core"

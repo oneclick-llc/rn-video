@@ -14,6 +14,7 @@
 		8DA6A9C72A39E26800D1FA7E /* ToggleMuteButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DA6A9C62A39E26800D1FA7E /* ToggleMuteButton.m */; };
 		8DA6A9CA2A39E27800D1FA7E /* VideoStatusView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DA6A9C92A39E27800D1FA7E /* VideoStatusView.m */; };
 		8DEC2F4E2A3B080000D9D69A /* VideosController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DEC2F4D2A3B080000D9D69A /* VideosController.m */; };
+		92AE7DBC2A4742EF00E7ED77 /* CachingItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92AE7DBB2A4742EF00E7ED77 /* CachingItem.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -44,6 +45,8 @@
 		8DA6A9CB2A39E5EA00D1FA7E /* VideoAsset.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = VideoAsset.xcassets; sourceTree = "<group>"; };
 		8DEC2F4C2A3B080000D9D69A /* VideosController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideosController.h; sourceTree = "<group>"; };
 		8DEC2F4D2A3B080000D9D69A /* VideosController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideosController.m; sourceTree = "<group>"; };
+		92AE7DBA2A4742EF00E7ED77 /* Video-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Video-Bridging-Header.h"; sourceTree = "<group>"; };
+		92AE7DBB2A4742EF00E7ED77 /* CachingItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachingItem.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +71,7 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				92AE7DBB2A4742EF00E7ED77 /* CachingItem.swift */,
 				8DEC2F4C2A3B080000D9D69A /* VideosController.h */,
 				8DEC2F4D2A3B080000D9D69A /* VideosController.m */,
 				8DA6A9CB2A39E5EA00D1FA7E /* VideoAsset.xcassets */,
@@ -83,6 +87,7 @@
 				8DA6A9BC2A39D07F00D1FA7E /* VideoView.mm */,
 				8DA6A9BB2A39D07F00D1FA7E /* VideoViewManager.mm */,
 				134814211AA4EA7D00B7C361 /* Products */,
+				92AE7DBA2A4742EF00E7ED77 /* Video-Bridging-Header.h */,
 			);
 			sourceTree = "<group>";
 		};
@@ -117,6 +122,7 @@
 				TargetAttributes = {
 					58B511DA1A9E6C8500147676 = {
 						CreatedOnToolsVersion = 6.1.1;
+						LastSwiftMigration = 1430;
 					};
 				};
 			};
@@ -145,6 +151,7 @@
 			files = (
 				8DA6A9C12A39D0B300D1FA7E /* AppVideoView.m in Sources */,
 				8DA6A9C72A39E26800D1FA7E /* ToggleMuteButton.m in Sources */,
+				92AE7DBC2A4742EF00E7ED77 /* CachingItem.swift in Sources */,
 				8DEC2F4E2A3B080000D9D69A /* VideosController.m in Sources */,
 				8DA6A9CA2A39E27800D1FA7E /* VideoStatusView.m in Sources */,
 				8DA6A9BE2A39D07F00D1FA7E /* VideoView.mm in Sources */,
@@ -254,6 +261,7 @@
 		58B511F01A9E6C8500147676 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -264,12 +272,16 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Video;
 				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Video-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
 		58B511F11A9E6C8500147676 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -280,6 +292,8 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Video;
 				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Video-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};

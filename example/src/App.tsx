@@ -30,7 +30,7 @@ export default function App() {
           hudOffset={{ x: 12, y: 12 }}
           resizeMode={'cover'}
           onMuteToggle={toggleVideosMutedEvent}
-          poster={'https://picsum.photos/200/300'}
+          //poster={'https://picsum.photos/200/300'}
           onVideoTap={() =>
             togglePlayVideo('cha', getIdForVideoWithoutChannel('yuu'))
           }

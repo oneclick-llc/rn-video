@@ -12,6 +12,7 @@
 #include "ToggleMuteButton.h"
 #include "VideoDurationView.h"
 #include "VideosController.h"
+#import "rn_video-Swift.h"
 
 @implementation AppVideoView {
     AVPlayer* _player;
@@ -40,8 +41,10 @@
     self.uri = uri;
     if (_playerItem == NULL) {
         NSURL *url = [[NSURL alloc] initWithString:self.uri];
-        _playerItem = [[AVPlayerItem alloc] initWithURL:url];
+//        _playerItem = [[AVPlayerItem alloc] initWithURL:url];
+        _playerItem = [CachingPlayerItem playerItemWithURL:url];
         _player = [[AVPlayer alloc] initWithPlayerItem:_playerItem];
+        _player.automaticallyWaitsToMinimizeStalling = false;
         _playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
         //_playerLayer.frame = self.bounds;
     } else {
