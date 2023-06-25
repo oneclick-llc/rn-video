@@ -143,19 +143,20 @@ open class CachingPlayerItem: AVPlayerItem {
         }
         
         deinit {
+            debugPrint("⚽️ ResourceLoaderDelegate.deinit")
             session?.invalidateAndCancel()
         }
         
     }
     
-    fileprivate let resourceLoaderDelegate = ResourceLoaderDelegate()
+    fileprivate var resourceLoaderDelegate: ResourceLoaderDelegate?
     fileprivate let url: URL
     
     weak var delegate: CachingPlayerItemDelegate?
     
     open func download() {
-        if resourceLoaderDelegate.session == nil {
-            resourceLoaderDelegate.startDataRequest(with: url)
+        if resourceLoaderDelegate?.session == nil {
+            resourceLoaderDelegate?.startDataRequest(with: url)
         }
     }
     
@@ -178,7 +179,7 @@ open class CachingPlayerItem: AVPlayerItem {
             guard let urlWithCustomScheme = url.withScheme(cachingPlayerItemScheme) else {
                 fatalError("Urls without a scheme are not supported")
             }
-            
+            resourceLoaderDelegate = ResourceLoaderDelegate()
             asset = AVURLAsset(url: urlWithCustomScheme)
             asset.resourceLoader.setDelegate(resourceLoaderDelegate, queue: DispatchQueue.main)
         }
@@ -186,7 +187,7 @@ open class CachingPlayerItem: AVPlayerItem {
         super.init(asset: asset, automaticallyLoadedAssetKeys: nil)
         
         if !exists {
-            resourceLoaderDelegate.owner = self
+            resourceLoaderDelegate?.owner = self
             delegate = self
         }
         
@@ -205,7 +206,8 @@ open class CachingPlayerItem: AVPlayerItem {
     }
     
     deinit {
-        resourceLoaderDelegate.session?.invalidateAndCancel()
+        debugPrint("⚽️ CachingPlayerItem.deinit")
+        resourceLoaderDelegate?.session?.invalidateAndCancel()
     }
     
 }
@@ -218,13 +220,17 @@ extension CachingPlayerItem: CachingPlayerItemDelegate {
     }
     
     func playerItem(_ playerItem: CachingPlayerItem, didFinishDownloadingData data: Data) {
-        DispatchQueue.global().async {
+        DispatchQueue.global().async { [weak self] in
             let url = URL(string: "\(Self.getCacheDirectoryPath())\(playerItem.url.lastPathComponent)")!
             let path = url.absoluteString.replacingOccurrences(of: "file://", with: "")
             if FileManager.default.fileExists(atPath: path) {
                 try? FileManager.default.removeItem(at: url)
             }
             try! data.write(to: url)
+            guard let self = self else { return }
+            //self.resourceLoaderDelegate?.session?.invalidateAndCancel()
+            //self.resourceLoaderDelegate = nil
+            //self.delegate = nil
             debugPrint("⚽️ did save \(playerItem.url) -> \(path)")
         }
     }
