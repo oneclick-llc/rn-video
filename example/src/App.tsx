@@ -22,6 +22,7 @@ export default function App() {
   // const [video, setVideo] = useState()
   const [video, setVideo] = useState(one);
   const [isPresented, setPresented] = useState(true);
+  let vId = video === one ? 'one' : 'two';
 
   return (
     <View style={styles.container}>
@@ -32,10 +33,10 @@ export default function App() {
           onMuteToggle={toggleVideosMutedEvent}
           //poster={'https://picsum.photos/200/300'}
           onVideoTap={() =>
-            togglePlayVideo('cha', getIdForVideoWithoutChannel('yuu'))
+            togglePlayVideo('cha', getIdForVideoWithoutChannel(vId))
           }
           onEndPlay={(e) => console.log('[App.=====]')}
-          nativeID={getIdForVideo('cha', 'yuu')}
+          nativeID={getIdForVideo('cha', vId)}
           key={key}
           videoUri={video}
           muted={false}
@@ -66,7 +67,7 @@ export default function App() {
       <TouchableOpacity
         style={{ marginTop: 20 }}
         onPress={() => {
-          playVideo('cha', getIdForVideoWithoutChannel('yuu'));
+          playVideo('cha', getIdForVideoWithoutChannel(vId));
         }}
       >
         <Text>Play</Text>

@@ -27,7 +27,6 @@ fileprivate extension URL {
 
 @objc
 open class CachingPlayerItem: AVPlayerItem {
-    @objc
     class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URLSessionDelegate, URLSessionDataDelegate, URLSessionTaskDelegate {
         
         var mimeType: String? // is required when playing from Data
@@ -151,6 +150,9 @@ open class CachingPlayerItem: AVPlayerItem {
     
     fileprivate var resourceLoaderDelegate: ResourceLoaderDelegate?
     fileprivate let url: URL
+    fileprivate let filename: String
+    @objc
+    public var existsLocal: Bool = false
     
     weak var delegate: CachingPlayerItemDelegate?
     
@@ -163,19 +165,27 @@ open class CachingPlayerItem: AVPlayerItem {
     private let cachingPlayerItemScheme = "cachingPlayerItemScheme"
     
     @objc
-    init(url: URL) {
+    public static func createItem(url: URL, filename: String) -> CachingPlayerItem {
+        return CachingPlayerItem(url: url, filename: filename)
+    }
+    
+    init(url: URL, filename: String) {
         self.url = url
+        self.filename = filename
+        
+        let localPath = PINDiskCache.shared.fileURL(forKey: filename)?.absoluteString.replacingOccurrences(of: "file://", with: "")
         
         var asset: AVURLAsset
-        let localUrl = URL(string: "\(Self.getCacheDirectoryPath())\(url.lastPathComponent)")!
-        let path = localUrl.absoluteString.replacingOccurrences(of: "file://", with: "")
-        let exists = FileManager.default.fileExists(atPath: path)
+        if let p = localPath {
+            existsLocal = FileManager.default.fileExists(atPath: p)
+        }
         
-        if exists {
-            debugPrint("⚽️ play from cache \(path)")
-            asset = AVURLAsset(url: localUrl)
+        if existsLocal, let p = localPath {
+            let u = URL(fileURLWithPath: p)
+            print("⚽️ play from cache \(u.absoluteString)\n")
+            asset = AVURLAsset(url: u)
         } else {
-            debugPrint("⚽️ play remote \(path)")
+            debugPrint("⚽️ play remote \(url.absoluteString)")
             guard let urlWithCustomScheme = url.withScheme(cachingPlayerItemScheme) else {
                 fatalError("Urls without a scheme are not supported")
             }
@@ -186,7 +196,7 @@ open class CachingPlayerItem: AVPlayerItem {
         
         super.init(asset: asset, automaticallyLoadedAssetKeys: nil)
         
-        if !exists {
+        if !existsLocal {
             resourceLoaderDelegate?.owner = self
             delegate = self
         }
@@ -210,29 +220,48 @@ open class CachingPlayerItem: AVPlayerItem {
         resourceLoaderDelegate?.session?.invalidateAndCancel()
     }
     
-}
-
-extension CachingPlayerItem: CachingPlayerItemDelegate {
     static func getCacheDirectoryPath() -> URL {
         let arrayPaths = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)
         let cacheDirectoryPath = arrayPaths[0]
         return cacheDirectoryPath
     }
     
-    func playerItem(_ playerItem: CachingPlayerItem, didFinishDownloadingData data: Data) {
-        DispatchQueue.global().async { [weak self] in
-            let url = URL(string: "\(Self.getCacheDirectoryPath())\(playerItem.url.lastPathComponent)")!
-            let path = url.absoluteString.replacingOccurrences(of: "file://", with: "")
-            if FileManager.default.fileExists(atPath: path) {
-                try? FileManager.default.removeItem(at: url)
-            }
-            try! data.write(to: url)
-            guard let self = self else { return }
-            //self.resourceLoaderDelegate?.session?.invalidateAndCancel()
-            //self.resourceLoaderDelegate = nil
-            //self.delegate = nil
-            debugPrint("⚽️ did save \(playerItem.url) -> \(path)")
+    static func getFilePath(url: URL, filename: String) -> URL {
+        let cacheDirPath = "\(Self.getCacheDirectoryPath())cache-videos".replacingOccurrences(
+            of: "file://", with: ""
+        )
+        if (!FileManager.default.fileExists(atPath: cacheDirPath)) {
+            try! FileManager.default.createDirectory(
+                atPath: cacheDirPath,
+                withIntermediateDirectories: true
+            )
         }
+        return URL(string: "\(cacheDirPath)/\(filename)")!
+    }
+    
+}
+
+extension CachingPlayerItem: CachingPlayerItemDelegate {
+    
+    func playerItem(_ playerItem: CachingPlayerItem, didFinishDownloadingData data: Data) {
+        PINDiskCache.shared.setObjectAsync(data as NSData, forKey: playerItem.filename) { [playerItem] _,_,_ in
+            print("⚽️ did save \(playerItem.url)\n")
+        }
+        
+//        DispatchQueue.global().async { [weak self] in
+//            PINDiskCache.shared.setObject(data as NSData, forKey: playerItem.filename)
+//
+//            let url = Self.getFilePath(url: playerItem.url, filename: playerItem.filename)
+//            if FileManager.default.fileExists(atPath: url.absoluteString) {
+//                try? FileManager.default.removeItem(at: url)
+//            }
+//            try! data.write(to: URL(fileURLWithPath: url.absoluteString))
+//            guard let self = self else { return }
+//            //self.resourceLoaderDelegate?.session?.invalidateAndCancel()
+//            //self.resourceLoaderDelegate = nil
+//            //self.delegate = nil
+//            print("⚽️ did save \(playerItem.url) -> \(url.absoluteString)\n")
+//        }
     }
     
     func playerItem(_ playerItem: CachingPlayerItem, downloadingFailedWith error: Error) {

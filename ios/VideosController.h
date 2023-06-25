@@ -28,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSMutableDictionary<NSString*, VideoChannel*> *channels;
 
 + (AppVideosManager*)sharedManager;
+-(NSString*) videoId:(AppVideoView*)video;
 - (void)addVideo:(AppVideoView *)video nativeID:(NSString*)nativeID;
 - (void)removeVideo:(NSString *)nativeID;
 -(nonnull VideoChannel*)getChannel:(nonnull NSString*)name;

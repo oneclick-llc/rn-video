@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8D1494732A482DD9001891BB /* PINCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D14946F2A482DD9001891BB /* PINCache.m */; };
+		8D1494742A482DD9001891BB /* PINDiskCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D1494702A482DD9001891BB /* PINDiskCache.m */; };
+		8D1494752A482DD9001891BB /* PINMemoryCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D1494712A482DD9001891BB /* PINMemoryCache.m */; };
+		8D14947E2A482E86001891BB /* PINOperationGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D14947A2A482E86001891BB /* PINOperationGroup.m */; };
+		8D14947F2A482E86001891BB /* PINOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D14947B2A482E86001891BB /* PINOperationQueue.m */; };
 		8DA6A9BD2A39D07F00D1FA7E /* VideoViewManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8DA6A9BB2A39D07F00D1FA7E /* VideoViewManager.mm */; };
 		8DA6A9BE2A39D07F00D1FA7E /* VideoView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8DA6A9BC2A39D07F00D1FA7E /* VideoView.mm */; };
 		8DA6A9C12A39D0B300D1FA7E /* AppVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DA6A9C02A39D0B300D1FA7E /* AppVideoView.m */; };
@@ -31,6 +36,22 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libVideo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libVideo.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D14946A2A482DD9001891BB /* PINDiskCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PINDiskCache.h; sourceTree = "<group>"; };
+		8D14946B2A482DD9001891BB /* PINCacheObjectSubscripting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PINCacheObjectSubscripting.h; sourceTree = "<group>"; };
+		8D14946C2A482DD9001891BB /* PINCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PINCache.h; sourceTree = "<group>"; };
+		8D14946D2A482DD9001891BB /* PINCacheMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PINCacheMacros.h; sourceTree = "<group>"; };
+		8D14946E2A482DD9001891BB /* PINMemoryCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PINMemoryCache.h; sourceTree = "<group>"; };
+		8D14946F2A482DD9001891BB /* PINCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PINCache.m; sourceTree = "<group>"; };
+		8D1494702A482DD9001891BB /* PINDiskCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PINDiskCache.m; sourceTree = "<group>"; };
+		8D1494712A482DD9001891BB /* PINMemoryCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PINMemoryCache.m; sourceTree = "<group>"; };
+		8D1494722A482DD9001891BB /* PINCaching.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PINCaching.h; sourceTree = "<group>"; };
+		8D1494772A482E86001891BB /* PINOperationGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PINOperationGroup.h; sourceTree = "<group>"; };
+		8D1494782A482E86001891BB /* PINOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PINOperation.h; sourceTree = "<group>"; };
+		8D1494792A482E86001891BB /* PINOperationMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PINOperationMacros.h; sourceTree = "<group>"; };
+		8D14947A2A482E86001891BB /* PINOperationGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PINOperationGroup.m; sourceTree = "<group>"; };
+		8D14947B2A482E86001891BB /* PINOperationQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PINOperationQueue.m; sourceTree = "<group>"; };
+		8D14947C2A482E86001891BB /* PINOperationTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PINOperationTypes.h; sourceTree = "<group>"; };
+		8D14947D2A482E86001891BB /* PINOperationQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PINOperationQueue.h; sourceTree = "<group>"; };
 		8DA6A9BA2A39D07F00D1FA7E /* VideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoView.h; sourceTree = "<group>"; };
 		8DA6A9BB2A39D07F00D1FA7E /* VideoViewManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VideoViewManager.mm; sourceTree = "<group>"; };
 		8DA6A9BC2A39D07F00D1FA7E /* VideoView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VideoView.mm; sourceTree = "<group>"; };
@@ -71,6 +92,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				8D1494762A482E67001891BB /* PinOperation */,
+				8D1494692A482DBC001891BB /* Cache */,
 				92AE7DBB2A4742EF00E7ED77 /* CachingItem.swift */,
 				8DEC2F4C2A3B080000D9D69A /* VideosController.h */,
 				8DEC2F4D2A3B080000D9D69A /* VideosController.m */,
@@ -89,6 +112,36 @@
 				134814211AA4EA7D00B7C361 /* Products */,
 				92AE7DBA2A4742EF00E7ED77 /* Video-Bridging-Header.h */,
 			);
+			sourceTree = "<group>";
+		};
+		8D1494692A482DBC001891BB /* Cache */ = {
+			isa = PBXGroup;
+			children = (
+				8D14946C2A482DD9001891BB /* PINCache.h */,
+				8D14946F2A482DD9001891BB /* PINCache.m */,
+				8D14946D2A482DD9001891BB /* PINCacheMacros.h */,
+				8D14946B2A482DD9001891BB /* PINCacheObjectSubscripting.h */,
+				8D1494722A482DD9001891BB /* PINCaching.h */,
+				8D14946A2A482DD9001891BB /* PINDiskCache.h */,
+				8D1494702A482DD9001891BB /* PINDiskCache.m */,
+				8D14946E2A482DD9001891BB /* PINMemoryCache.h */,
+				8D1494712A482DD9001891BB /* PINMemoryCache.m */,
+			);
+			path = Cache;
+			sourceTree = "<group>";
+		};
+		8D1494762A482E67001891BB /* PinOperation */ = {
+			isa = PBXGroup;
+			children = (
+				8D1494782A482E86001891BB /* PINOperation.h */,
+				8D1494772A482E86001891BB /* PINOperationGroup.h */,
+				8D14947A2A482E86001891BB /* PINOperationGroup.m */,
+				8D1494792A482E86001891BB /* PINOperationMacros.h */,
+				8D14947D2A482E86001891BB /* PINOperationQueue.h */,
+				8D14947B2A482E86001891BB /* PINOperationQueue.m */,
+				8D14947C2A482E86001891BB /* PINOperationTypes.h */,
+			);
+			path = PinOperation;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -150,13 +203,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				8DA6A9C12A39D0B300D1FA7E /* AppVideoView.m in Sources */,
+				8D1494732A482DD9001891BB /* PINCache.m in Sources */,
 				8DA6A9C72A39E26800D1FA7E /* ToggleMuteButton.m in Sources */,
 				92AE7DBC2A4742EF00E7ED77 /* CachingItem.swift in Sources */,
 				8DEC2F4E2A3B080000D9D69A /* VideosController.m in Sources */,
 				8DA6A9CA2A39E27800D1FA7E /* VideoStatusView.m in Sources */,
 				8DA6A9BE2A39D07F00D1FA7E /* VideoView.mm in Sources */,
+				8D1494752A482DD9001891BB /* PINMemoryCache.m in Sources */,
+				8D1494742A482DD9001891BB /* PINDiskCache.m in Sources */,
 				8DA6A9C42A39E25B00D1FA7E /* VideoDurationView.m in Sources */,
+				8D14947F2A482E86001891BB /* PINOperationQueue.m in Sources */,
 				8DA6A9BD2A39D07F00D1FA7E /* VideoViewManager.mm in Sources */,
+				8D14947E2A482E86001891BB /* PINOperationGroup.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

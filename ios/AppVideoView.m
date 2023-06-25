@@ -37,26 +37,6 @@
     return self;
 }
 
--(void) setVideoUri:(NSString*)uri {
-    self.uri = uri;
-    if (_playerItem == NULL) {
-        NSURL *url = [[NSURL alloc] initWithString:self.uri];
-//        _playerItem = [[AVPlayerItem alloc] initWithURL:url];
-        _playerItem = [CachingPlayerItem playerItemWithURL:url];
-        _player = [[AVPlayer alloc] initWithPlayerItem:_playerItem];
-        _player.automaticallyWaitsToMinimizeStalling = false;
-        _playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
-        //_playerLayer.frame = self.bounds;
-    } else {
-        NSURL *url = [[NSURL alloc] initWithString:self.uri];
-        _playerItem = [[AVPlayerItem alloc] initWithURL:url];
-        [_player replaceCurrentItemWithPlayerItem:_playerItem];
-    }
-    self->_player.preventsDisplaySleepDuringVideoPlayback = true;
-    [self setPaused:_paused];
-//    [self setMuted:_muted];
-}
-
 - (void)setResizeMode:(NSString *)mode {
     _resizeMode = mode;
 }
@@ -82,6 +62,35 @@
         _videoDurationView.y = [self getHudY];
         [_videoDurationView layoutSubviews];
     }
+}
+
+- (void)initializePlayer {
+    if (_playerItem == NULL) {
+        __weak AppVideoView *weakSelf = self;
+        //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            AppVideoView *strongSelf = weakSelf;
+            if (!strongSelf) return;
+            NSURL *url = [[NSURL alloc] initWithString:strongSelf->_uri];
+    //        _playerItem = [[AVPlayerItem alloc] initWithURL:url];
+            NSString* videoId = [AppVideosManager.sharedManager videoId:strongSelf];
+            CachingPlayerItem* item = [CachingPlayerItem createItemWithUrl:url filename:[NSString stringWithFormat:@"%@.%@", videoId, url.pathExtension]];
+            strongSelf->_playerItem = item;
+            strongSelf->_player = [[AVPlayer alloc] initWithPlayerItem:strongSelf->_playerItem];
+            strongSelf->_player.automaticallyWaitsToMinimizeStalling = false;
+            strongSelf->_playerLayer = [AVPlayerLayer playerLayerWithPlayer:strongSelf->_player];
+        //});
+    } else {
+        __weak AppVideoView *weakSelf = self;
+        AppVideoView *strongSelf = weakSelf;
+        NSURL *url = [[NSURL alloc] initWithString:self.uri];
+//        _playerItem = [[AVPlayerItem alloc] initWithURL:url];
+        NSString* videoId = [AppVideosManager.sharedManager videoId:strongSelf];
+        CachingPlayerItem* item = [CachingPlayerItem createItemWithUrl:url filename:[NSString stringWithFormat:@"%@.%@", videoId, url.pathExtension]];
+        strongSelf->_playerItem = item;
+        [_player replaceCurrentItemWithPlayerItem:_playerItem];
+    }
+    self->_player.preventsDisplaySleepDuringVideoPlayback = true;
+    [self setPaused:_paused];
 }
 
 - (void)setNativeID:(NSString *)nativeID {
@@ -235,6 +244,7 @@
         }
     }];
     
+    NSLog(@"⚽️ willMoveToSuperview %@", [[AppVideosManager sharedManager] videoId:self]);
     // MARK: video observe status
     [_player addObserver:self
               forKeyPath:@"status"
@@ -248,7 +258,8 @@
 }
 
 - (void)dealloc {
-    NSLog(@"---=====++");
+    [self cleanUp];
+    NSLog(@"⚽️ ---=====++");
 }
 
 
@@ -278,11 +289,17 @@
     if (object == _player && [keyPath isEqualToString:@"status"]) {
         if (_player.status == AVPlayerStatusReadyToPlay) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                [self->_videoDurationView setTime:_player.currentItem.asset.duration];
+                [self->_videoDurationView setTime:self->_player.currentItem.asset.duration];
+                NSLog(@"⚽️ videoOnload %@", [[AppVideosManager sharedManager] videoId:self]);
                 if (self.onLoad) self.onLoad(NULL);
             });
         }
     }
+}
+
+- (void)setVideoUri:(nonnull NSString *)uri {
+    self.uri = uri;
+    [self initializePlayer];
 }
 
 @end
