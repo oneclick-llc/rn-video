@@ -105,6 +105,12 @@
 - (void) applyGestures {
     UITapGestureRecognizer* tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onVideoTapped)];
     [self addGestureRecognizer:tap];
+    
+    UITapGestureRecognizer* doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onVideoDoubleTapped)];
+    [doubleTap setNumberOfTapsRequired:2];
+    [tap requireGestureRecognizerToFail:doubleTap];
+    [self addGestureRecognizer:tap];
+    [self addGestureRecognizer:doubleTap];
 
     [_toggleMuteButton addTarget:self action:@selector(toggleMuted) forControlEvents:UIControlEventTouchUpInside];
 }
@@ -170,7 +176,10 @@
 
 - (void) onVideoTapped {
     self.onVideoTap(NULL);
-//    [self setPaused:!_paused];
+}
+
+- (void) onVideoDoubleTapped {
+    self.onVideoDoubleTap(NULL);
 }
 
 - (void) toggleMuted {

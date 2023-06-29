@@ -25,6 +25,7 @@ RCT_EXPORT_VIEW_PROPERTY(hudOffset, NSDictionary)
 RCT_EXPORT_VIEW_PROPERTY(onMuteToggle, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onEndPlay, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onVideoTap, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onVideoDoubleTap, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onLoad, RCTDirectEventBlock)
 
 @end

@@ -32,6 +32,9 @@ export default function App() {
           resizeMode={'cover'}
           onMuteToggle={toggleVideosMutedEvent}
           //poster={'https://picsum.photos/200/300'}
+          onVideoDoubleTap={() => {
+            console.log('[App.=-=-=-=-==-=]');
+          }}
           onVideoTap={() =>
             togglePlayVideo('cha', getIdForVideoWithoutChannel(vId))
           }

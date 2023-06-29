@@ -8,6 +8,7 @@ export interface NativeProps extends ViewProps {
   nativeID: string;
   onMuteToggle?: (e: any) => void;
   onVideoTap?: (e: any) => void;
+  onVideoDoubleTap?: (e: any) => void;
   onEndPlay?: (e: any) => void;
   onLoad?: () => void;
   hudOffset?: { x: number; y: number };

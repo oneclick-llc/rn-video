@@ -1,5 +1,4 @@
 import { NativeModules } from 'react-native';
-import * as RNVideo from 'rn-video';
 
 const LookyVideosManager = NativeModules.VideosController;
 
