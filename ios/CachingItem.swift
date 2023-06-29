@@ -31,26 +31,36 @@ open class CachingPlayerItem: AVPlayerItem {
         
         var mimeType: String? // is required when playing from Data
         var session: URLSession?
-        var mediaData: Data?
+        var _mediaData: Data?
         var response: URLResponse?
-        var pendingRequests = Set<AVAssetResourceLoadingRequest>()
+        var _pendingRequests = Set<AVAssetResourceLoadingRequest>()
+        var pendingRequests: Set<AVAssetResourceLoadingRequest> {
+            get { queue.sync { _pendingRequests } }
+        }
+        var mediaData: Data? {
+            get { queue.sync { _mediaData } }
+        }
+        let queue = DispatchQueue(label: "CachingPlayerItem", qos: .userInitiated)
         weak var owner: CachingPlayerItem?
         
         func resourceLoader(_ resourceLoader: AVAssetResourceLoader, shouldWaitForLoadingOfRequestedResource loadingRequest: AVAssetResourceLoadingRequest) -> Bool {
-            
-            if session == nil {
+            queue.async {
                 
-                // If we're playing from a url, we need to download the file.
-                // We start loading the file on first request only.
-                guard let initialUrl = owner?.url else {
-                    fatalError("internal inconsistency")
+                if self.session == nil {
+                    
+                    // If we're playing from a url, we need to download the file.
+                    // We start loading the file on first request only.
+                    guard let initialUrl = self.owner?.url else {
+                        fatalError("internal inconsistency")
+                    }
+                    
+                    self.startDataRequest(with: initialUrl)
                 }
                 
-                startDataRequest(with: initialUrl)
+                
+                self._pendingRequests.insert(loadingRequest)
             }
-            
-            pendingRequests.insert(loadingRequest)
-            processPendingRequests()
+            self.processPendingRequests()
             return true
             
         }
@@ -63,21 +73,27 @@ open class CachingPlayerItem: AVPlayerItem {
         }
         
         func resourceLoader(_ resourceLoader: AVAssetResourceLoader, didCancel loadingRequest: AVAssetResourceLoadingRequest) {
-            pendingRequests.remove(loadingRequest)
+            queue.async {
+                self._pendingRequests.remove(loadingRequest)
+            }
         }
         
         // MARK: URLSession delegate
         
         func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-            mediaData?.append(data)
-            processPendingRequests()
+            queue.sync {
+                self._mediaData?.append(data)
+            }
+            self.processPendingRequests()
         }
         
         func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
             completionHandler(Foundation.URLSession.ResponseDisposition.allow)
-            mediaData = Data()
-            self.response = response
-            processPendingRequests()
+            queue.sync {
+                self._mediaData = Data()
+                self.response = response
+            }
+            self.processPendingRequests()
         }
         
         func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
@@ -86,13 +102,14 @@ open class CachingPlayerItem: AVPlayerItem {
                 return
             }
             processPendingRequests()
-            owner?.delegate?.playerItem?(owner!, didFinishDownloadingData: mediaData!)
+            queue.sync {
+                owner?.delegate?.playerItem?(owner!, didFinishDownloadingData: _mediaData!)
+            }
         }
         
         // MARK: -
         
         func processPendingRequests() {
-            
             // get all fullfilled requests
             let requestsFulfilled = Set<AVAssetResourceLoadingRequest>(pendingRequests.compactMap {
                 self.fillInContentInformationRequest($0.contentInformationRequest)
@@ -102,10 +119,10 @@ open class CachingPlayerItem: AVPlayerItem {
                 }
                 return nil
             })
-            
-            // remove fulfilled requests from pending requests
-            _ = requestsFulfilled.map { self.pendingRequests.remove($0) }
-            
+            queue.async {
+                // remove fulfilled requests from pending requests
+                _ = requestsFulfilled.map { self._pendingRequests.remove($0) }
+            }
         }
         
         func fillInContentInformationRequest(_ contentInformationRequest: AVAssetResourceLoadingContentInformationRequest?) {
@@ -126,7 +143,6 @@ open class CachingPlayerItem: AVPlayerItem {
             let requestedOffset = Int(dataRequest.requestedOffset)
             let requestedLength = dataRequest.requestedLength
             let currentOffset = Int(dataRequest.currentOffset)
-            
             guard let songDataUnwrapped = mediaData,
                   songDataUnwrapped.count > currentOffset else {
                 // Don't have any data at all for this request.
