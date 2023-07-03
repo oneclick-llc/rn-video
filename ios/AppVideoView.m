@@ -25,7 +25,7 @@
     BOOL _muted;
     BOOL _loop;
     NSObject* _timeObserverToken;
-    
+
 }
 
 - (instancetype)init {
@@ -33,7 +33,7 @@
         _muted = YES;
         _paused = YES;
     }
-    
+
     return self;
 }
 
@@ -46,16 +46,16 @@
         if ([_resizeMode isEqualToString:@"cover"]) {
             [_playerLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
         }
-        
+
         if ([_resizeMode isEqualToString:@"contain"]) {
             [_playerLayer setVideoGravity:AVLayerVideoGravityResizeAspect];
         }
-        
+
         if ([_resizeMode isEqualToString:@"stretch"]) {
             [_playerLayer setVideoGravity:AVLayerVideoGravityResize];
         }
     }
-    
+
     if ([changedProps containsObject:@"hudOffset"]) {
         [self layoutSubviews];
         _videoDurationView.x = [self getHudX];
@@ -95,7 +95,7 @@
 
 - (void)setNativeID:(NSString *)nativeID {
     [super setNativeID:nativeID];
-    
+
 #ifndef RCT_NEW_ARCH_ENABLED
     [AppVideosManager.sharedManager addVideo:self nativeID:nativeID];
 #endif
@@ -105,7 +105,7 @@
 - (void) applyGestures {
     UITapGestureRecognizer* tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onVideoTapped)];
     [self addGestureRecognizer:tap];
-    
+
     UITapGestureRecognizer* doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onVideoDoubleTapped)];
     [doubleTap setNumberOfTapsRequired:2];
     [tap requireGestureRecognizerToFail:doubleTap];
@@ -121,7 +121,7 @@
     if (_playerLayer) {
         _playerLayer.frame = _videoPlayerParent.frame;
     }
-    
+
     if (_toggleMuteButton) {
         _toggleMuteButton.frame = CGRectMake(
             self.bounds.size.width - ToggleMuteButton.size - [self getHudX],
@@ -165,7 +165,7 @@
     if (!_player) return;
     [_player setVolume:muted ? 0 : 1.0];
     [_player setMuted:muted];
-    
+
     [_toggleMuteButton toggleMuted:muted];
 }
 
@@ -191,20 +191,38 @@
 - (void) cleanUp {
     if (_player == NULL) return;
     [self setPaused:true];
-    
+
     if (self->_timeObserverToken) {
         [_player removeTimeObserver:self->_timeObserverToken];
         self->_timeObserverToken = NULL;
     }
     [_player removeObserver:self forKeyPath:@"status" context:nil];
-    
+
     _player = nil;
     _playerItem = NULL;
     [_playerLayer removeFromSuperlayer];
     _playerLayer.player = NULL;
     _uri = NULL;
-    
+
     [AppVideosManager.sharedManager removeVideo:self.nativeID];
+}
+
+- (void)sendProgressUpdate:(CMTime) time {
+    CMTime duration = _player.currentItem.duration;
+    CMTime timeLeft = CMTimeSubtract(duration, time);
+    [_videoDurationView setTime:timeLeft];
+
+    if (CMTimeGetSeconds(timeLeft) == 0) {
+        [_player seekToTime:kCMTimeZero];
+        if (self.onEndPlay) {
+            self.onEndPlay(NULL);
+        }
+        if (_loop) {
+            [_player playImmediatelyAtRate:1.0];
+        } else {
+            [self setPaused:true];
+        }
+    }
 }
 
 // MARK: willMoveToSuperview
@@ -213,46 +231,30 @@
     [self addSubview:_videoPlayerParent];
     [_videoPlayerParent.layer addSublayer:_playerLayer];
     [_playerLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
-    
+
     if (!_toggleMuteButton) {
         _toggleMuteButton = [[ToggleMuteButton alloc] init];
         [self addSubview:_toggleMuteButton];
         [_toggleMuteButton toggleMuted:_muted];
     }
-    
+
     if (!_videoDurationView) {
         _videoDurationView = [[VideoDurationView alloc] init];
         _videoDurationView.x = [self getHudX];
         _videoDurationView.y = [self getHudY];
         [self addSubview:_videoDurationView];
     }
-    
+
     [self applyGestures];
-    
+
     // MARK: video observe duration
     __weak AppVideoView *weakSelf = self;
     CMTime interval = CMTimeMakeWithSeconds(1.0, 60000);
-    
+
     self->_timeObserverToken = [_player addPeriodicTimeObserverForInterval:interval queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
-        AppVideoView *strongSelf = weakSelf;
-        if (!strongSelf) return;
-        CMTime duration = strongSelf->_player.currentItem.duration;
-        CMTime timeLeft = CMTimeSubtract(duration, time);
-        [strongSelf->_videoDurationView setTime:timeLeft];
-        
-        if (CMTimeGetSeconds(timeLeft) == 0) {
-            [strongSelf->_player seekToTime:kCMTimeZero];
-            if (strongSelf.onEndPlay) {
-                strongSelf.onEndPlay(NULL);
-            }
-            if (strongSelf->_loop) {
-                [strongSelf->_player playImmediatelyAtRate:1.0];
-            } else {
-                [strongSelf setPaused:true];
-            }
-        }
+        [weakSelf sendProgressUpdate:time];
     }];
-    
+
     NSLog(@"⚽️ willMoveToSuperview %@", [[AppVideosManager sharedManager] videoId:self]);
     // MARK: video observe status
     [_player addObserver:self
