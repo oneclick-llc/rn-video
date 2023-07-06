@@ -15,11 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface VideoChannel : NSObject
 
 @property (nonatomic) NSMutableDictionary<NSString*, AppVideoView*>* videos;
-//@property (nonatomic) NSString* currentPlaying;
 @property (nonatomic, nullable) NSString* laterRestore;
 @property (nonatomic, nullable) NSString* backgroundRestore;
-
--(AppVideoView*)currentPlaying;
 @end
 
 

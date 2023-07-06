@@ -57,10 +57,10 @@
 }
 
 - (id)init {
-  if (self = [super init]) {
-      _channels = [[NSMutableDictionary alloc] init];
-  }
-  return self;
+    if (self = [super init]) {
+        _channels = [[NSMutableDictionary alloc] init];
+    }
+    return self;
 }
 
 -(NSString*) videoId:(AppVideoView*)video {
@@ -119,6 +119,48 @@
     [video setPaused:true];
 }
 
+-(void) pauseAllVideos {
+    NSDictionary<NSString*, VideoChannel*> *channels = AppVideosManager.sharedManager.channels;
+    NSArray<NSString*> *keys = channels.allKeys;
+    for (NSString *key in keys) {
+        VideoChannel *channel = [channels objectForKey:key];
+        if (!channel) continue;
+        NSArray<NSString*> *videoKeys = channel.videos.allKeys;
+        for (NSString *vKey in videoKeys) {
+            AppVideoView *video = [channel.videos objectForKey:vKey];
+            if (!video) continue;;
+            if (video.isVideoPaused) continue;
+            [video setPaused:true];
+        }
+    }
+}
+
+-(nullable AppVideoView*) findFirstPlayingVideo {
+    NSDictionary<NSString*, VideoChannel*> *channels = AppVideosManager.sharedManager.channels;
+    NSArray<NSString*> *keys = channels.allKeys;
+    for (NSString *key in keys) {
+        VideoChannel *channel = [channels objectForKey:key];
+        if (!channel) continue;
+        return [self findFirstPlayingVideo: key];
+    }
+    return nil;
+}
+
+-(nullable AppVideoView*) findFirstPlayingVideo:(nullable NSString*) channelId {
+    if (!channelId) return nil;
+    NSDictionary<NSString*, VideoChannel*> *channels = AppVideosManager.sharedManager.channels;
+    VideoChannel *channel = [channels objectForKey:channelId];
+    if (!channel) return nil;
+    NSArray<NSString*> *videoKeys = channel.videos.allKeys;
+    for (NSString *vKey in videoKeys) {
+        AppVideoView *video = [channel.videos objectForKey:vKey];
+        if (!video) continue;;
+        if (video.isVideoPaused) continue;
+        return video;
+    }
+    return nil;
+}
+
 
 @end
 
@@ -133,12 +175,16 @@ RCT_EXPORT_MODULE();
           videoId:(NSString *)videoId
       seekToStart:(BOOL)seekToStart {
     VideoChannel *videoChannel = [AppVideosManager.sharedManager getChannel:channel];
+    if (!videoChannel) return;
 
-    if (![[videoChannel currentPlayingKey] isEqualToString:videoId]) {
-        [AppVideosManager.sharedManager pauseVideo:videoChannel];
+    AppVideoView *playingVideo = [AppVideosManager.sharedManager findFirstPlayingVideo:channel];
+    AppVideoView *video = [videoChannel.videos objectForKey:videoId];
+
+    // pause current playing video
+    if (![[AppVideosManager.sharedManager videoId:playingVideo] isEqualToString:videoId]) {
+        [playingVideo setPaused:true];
     }
 
-    AppVideoView *video = [videoChannel.videos objectForKey:videoId];
     if (video) {
         NSLog(@"🤖 video.play %@", videoId);
         if (seekToStart) [video seekToStart];
@@ -156,22 +202,17 @@ RCT_EXPORT_METHOD(playVideo:(NSString *)channel
 
 RCT_EXPORT_METHOD(pauseCurrentPlaying) {
     NSLog(@"👺pauseCurrentPlaying");
-    NSArray<NSString*> *keys = [AppVideosManager.sharedManager.channels allKeys];
-    for (NSString *key in keys) {
-        VideoChannel *channel = [AppVideosManager.sharedManager.channels objectForKey:key];
-        if (!channel) continue;
-        if (![channel currentPlaying]) continue;
-        [AppVideosManager.sharedManager pauseVideo:channel];
-    }
+    [AppVideosManager.sharedManager pauseAllVideos];
 }
 
 RCT_EXPORT_METHOD(pauseCurrentPlayingWithLaterRestore:(nullable NSString *)channel) {
     NSLog(@"👺pauseCurrentPlayingWithLaterRestore channel: %@", channel);
     if (channel) {
-        VideoChannel *videoChannel = [AppVideosManager.sharedManager getChannel:channel];
-        AppVideoView *video = [videoChannel currentPlaying];
-        if (video) videoChannel.laterRestore = [AppVideosManager.sharedManager videoId:video];
-        [AppVideosManager.sharedManager pauseVideo:videoChannel];
+        VideoChannel *c = [AppVideosManager.sharedManager getChannel:channel];
+        if (!c) return;
+        AppVideoView *video = [AppVideosManager.sharedManager findFirstPlayingVideo:channel];
+        if (video) c.laterRestore = [AppVideosManager.sharedManager videoId:video];
+        [video setPaused:true];
         return;
     }
 
@@ -179,10 +220,11 @@ RCT_EXPORT_METHOD(pauseCurrentPlayingWithLaterRestore:(nullable NSString *)chann
     for (NSString *key in keys) {
         VideoChannel *channel = [AppVideosManager.sharedManager.channels objectForKey:key];
         if (!channel) continue;
-        AppVideoView *video = [channel currentPlaying];
+        AppVideoView *video = [AppVideosManager.sharedManager findFirstPlayingVideo:key];
         if (!video) continue;
         channel.laterRestore = [AppVideosManager.sharedManager videoId:video];
-        [AppVideosManager.sharedManager pauseVideo:channel];
+        [video setPaused:true];
+        break;
     }
 }
 
@@ -210,8 +252,8 @@ RCT_EXPORT_METHOD(restoreLastPlaying:(nullable NSString *)channel) {
 RCT_EXPORT_METHOD(togglePlay:(NSString *)channel
                   videoId:(NSString *)videoId) {
     NSLog(@"👺togglePlay channel: %@ videoId: %@", channel, videoId);
-    VideoChannel *videoChannel = [AppVideosManager.sharedManager getChannel:channel];
-    if ([videoChannel currentPlaying]) {
+    AppVideoView *video = [AppVideosManager.sharedManager findFirstPlayingVideo:channel];
+    if (video) {
         [self pauseCurrentPlaying];
     } else {
         [self playVideo:channel videoId:videoId];
@@ -238,7 +280,7 @@ RCT_EXPORT_METHOD(togglePlayInBackground:(NSString*)channelName
     if (!channel) return;
 
     if (playInBackground) {
-        AppVideoView *video = [channel currentPlaying];
+        AppVideoView *video = [AppVideosManager.sharedManager findFirstPlayingVideo:channelName];
         if (!video) return;
         [video applicationDidEnterBackground];
         channel.backgroundRestore = [AppVideosManager.sharedManager videoId:video];
