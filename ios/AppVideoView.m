@@ -66,31 +66,23 @@
 
 - (void)initializePlayer {
     if (_playerItem == NULL) {
-        __weak AppVideoView *weakSelf = self;
-        //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            AppVideoView *strongSelf = weakSelf;
-            if (!strongSelf) return;
-            NSURL *url = [[NSURL alloc] initWithString:strongSelf->_uri];
-    //        _playerItem = [[AVPlayerItem alloc] initWithURL:url];
-            NSString* videoId = [AppVideosManager.sharedManager videoId:strongSelf];
-            CachingPlayerItem* item = [CachingPlayerItem createItemWithUrl:url filename:[NSString stringWithFormat:@"%@.%@", videoId, url.pathExtension]];
-            strongSelf->_playerItem = item;
-            strongSelf->_player = [[AVPlayer alloc] initWithPlayerItem:strongSelf->_playerItem];
-            strongSelf->_player.automaticallyWaitsToMinimizeStalling = false;
-            strongSelf->_playerLayer = [AVPlayerLayer playerLayerWithPlayer:strongSelf->_player];
-        //});
+            NSURL *url = [[NSURL alloc] initWithString:_uri];
+            NSString* videoId = [AppVideosManager.sharedManager videoId:self];
+//            _playerItem = [CachingPlayerItem createItemWithUrl:url filename:[NSString stringWithFormat:@"%@.%@", videoId, url.pathExtension]];
+            _playerItem = [[AVPlayerItem alloc] initWithURL:url];
+            _player = [[AVPlayer alloc] initWithPlayerItem:_playerItem];
+            _player.automaticallyWaitsToMinimizeStalling = false;
+            _playerLayer = [AVPlayerLayer playerLayerWithPlayer:_player];
     } else {
-        __weak AppVideoView *weakSelf = self;
-        AppVideoView *strongSelf = weakSelf;
         NSURL *url = [[NSURL alloc] initWithString:self.uri];
-//        _playerItem = [[AVPlayerItem alloc] initWithURL:url];
-        NSString* videoId = [AppVideosManager.sharedManager videoId:strongSelf];
-        CachingPlayerItem* item = [CachingPlayerItem createItemWithUrl:url filename:[NSString stringWithFormat:@"%@.%@", videoId, url.pathExtension]];
-        strongSelf->_playerItem = item;
+        NSString* videoId = [AppVideosManager.sharedManager videoId:self];
+//        _playerItem = [CachingPlayerItem createItemWithUrl:url filename:[NSString stringWithFormat:@"%@.%@", videoId, url.pathExtension]];
+        _playerItem = [[AVPlayerItem alloc] initWithURL:url];
         [_player replaceCurrentItemWithPlayerItem:_playerItem];
     }
     self->_player.preventsDisplaySleepDuringVideoPlayback = true;
     [self setPaused:_paused];
+    [self setupUI];
 }
 
 - (void)setNativeID:(NSString *)nativeID {
@@ -150,11 +142,9 @@
     _paused = paused;
     if (!_player) return;
     if (paused) {
-        NSLog(@"🤖 setPaused: %@", self.nativeID);
         [_player pause];
         [_player setRate:0.0];
     } else {
-        NSLog(@"🤖 setPlaying: %@", self.nativeID);
         [_player playImmediatelyAtRate:1.0];
     }
 }
@@ -198,7 +188,7 @@
     }
     [_player removeObserver:self forKeyPath:@"status" context:nil];
 
-    _player = nil;
+    _player = NULL;
     _playerItem = NULL;
     [_playerLayer removeFromSuperlayer];
     _playerLayer.player = NULL;
@@ -225,8 +215,9 @@
     }
 }
 
-// MARK: willMoveToSuperview
-- (void)willMoveToSuperview:(UIView *)newSuperview {
+// MARK: setupUI
+- (void)setupUI {
+    if (_videoPlayerParent != NULL) return;
     _videoPlayerParent = [[UIView alloc] init];
     [self addSubview:_videoPlayerParent];
     [_videoPlayerParent.layer addSublayer:_playerLayer];
@@ -297,13 +288,13 @@
 
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    if (object == _player && [keyPath isEqualToString:@"status"]) {
+    if ([keyPath isEqualToString:@"status"]) {
+        if (_player == NULL) return;
+        if (self == NULL) return;
         if (_player.status == AVPlayerStatusReadyToPlay) {
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                [self->_videoDurationView setTime:self->_player.currentItem.asset.duration];
-                NSLog(@"⚽️ videoOnload %@", [[AppVideosManager sharedManager] videoId:self]);
-                if (self.onLoad) self.onLoad(NULL);
-            });
+            if (self.onLoad) self.onLoad(NULL);
+            if (_videoDurationView == NULL) return;
+            [_videoDurationView setTime:self->_player.currentItem.asset.duration];
         }
     }
 }
