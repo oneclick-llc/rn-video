@@ -23,6 +23,7 @@ export default function App() {
   const [video, setVideo] = useState(one);
   const [isPresented, setPresented] = useState(true);
   let vId = video === one ? 'one' : 'two';
+  const [height, setHeight] = useState(300);
 
   return (
     <View style={styles.container}>
@@ -44,13 +45,14 @@ export default function App() {
           videoUri={video}
           muted={false}
           loop={false}
-          style={styles.box}
+          style={[styles.box, { height }]}
         />
       )}
 
       <TouchableOpacity
         onPress={() => {
-          setVideo((v) => (v === one ? two : one));
+          setHeight(height === 300 ? 600 : 300);
+          //setVideo((v) => (v === one ? two : one));
         }}
       >
         <Text>toggle video</Text>

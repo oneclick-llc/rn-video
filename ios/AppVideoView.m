@@ -124,6 +124,9 @@
             ToggleMuteButton.size,
             ToggleMuteButton.size);
     }
+    if (_videoDurationView) {
+        [_videoDurationView layoutSubviews];
+    }
 }
 
 -(CGFloat)getHudX {
