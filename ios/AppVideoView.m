@@ -111,7 +111,10 @@
     [super layoutSubviews];
     _videoPlayerParent.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
     if (_playerLayer) {
-        _playerLayer.frame = _videoPlayerParent.frame;
+        [CATransaction begin];
+        [CATransaction setAnimationDuration:0];
+        _playerLayer.frame = _videoPlayerParent.bounds;
+        [CATransaction commit];
     }
 
     if (_toggleMuteButton) {
