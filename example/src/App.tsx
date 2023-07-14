@@ -10,7 +10,7 @@ import {
   toggleVideosMuted,
   toggleVideosMutedEvent,
   VideoView,
-} from 'react-native-video';
+} from 'rn-video';
 import { useState } from 'react';
 
 const one =

@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "react-native-video": ["./src/index"]
+      "rn-video": ["./src/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,

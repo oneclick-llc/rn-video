@@ -1,5 +1,5 @@
 {
-  "name": "react-native-video",
+  "name": "rn-video",
   "version": "0.0.14",
   "description": "test",
   "main": "src/index",
@@ -38,13 +38,13 @@
     "ios",
     "android"
   ],
-  "repository": "https://github.com/sergeymild/react-native-video",
+  "repository": "https://github.com/oneclick-llc/rn-video",
   "author": "sergeymild <sergeymild@yandex.ru> (https://github.com/sergeymild)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sergeymild/react-native-video/issues"
+    "url": "https://github.com/oneclick-llc/rn-video/issues"
   },
-  "homepage": "https://github.com/sergeymild/react-native-video#readme",
+  "homepage": "https://github.com/oneclick-llc/rn-video#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
@@ -61,6 +61,7 @@
     "prettier": "^2.0.5",
     "react": "18.2.0",
     "react-native": "0.71.10",
+    "react-native-reanimated": "2.14.4",
     "typescript": "^4.5.2"
   },
   "resolutions": {
@@ -68,7 +69,8 @@
   },
   "peerDependencies": {
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-reanimated": "2.14.4"
   },
   "eslintConfig": {
     "root": true,

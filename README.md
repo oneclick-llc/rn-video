@@ -1,17 +1,17 @@
-# react-native-video
+# rn-video
 
 R
 
 ## Installation
 
 ```sh
-npm install react-native-video
+npm install rn-video
 ```
 
 ## Usage
 
 ```js
-import { VideoView } from "react-native-video";
+import { VideoView } from "rn-video";
 
 // ...
 

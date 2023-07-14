@@ -1,17 +1,24 @@
 import React, { memo, useState } from 'react';
-import type { NativeProps } from './VideoViewNativeComponent';
-import V from './VideoViewNativeComponent';
 import { Image, StyleSheet, View } from 'react-native';
+import Video, { type NativeProps } from './VideoViewNativeComponent';
+import Animated from 'react-native-reanimated';
+
+const AnimatedVideo = Animated.createAnimatedComponent(Video);
 
 interface Props extends NativeProps {
+  isAnimated?: boolean;
   poster?: string;
 }
 
-export const VideoView: React.FC<Props> = memo((props) => {
+export const VideoView: React.FC<Props> = memo(({ style, ...props }) => {
   const [isLoaded, setLoaded] = useState(false);
+  const WrapComponent = props.isAnimated ? Animated.View : View;
+  const VideoComponent = props.isAnimated ? AnimatedVideo : Video;
+
   return (
-    <View style={props.style}>
-      <V
+    // @ts-ignore | it has call signature =|
+    <WrapComponent style={style}>
+      <VideoComponent
         {...props}
         style={StyleSheet.absoluteFillObject}
         onLoad={() => setLoaded(true)}
@@ -22,6 +29,6 @@ export const VideoView: React.FC<Props> = memo((props) => {
           source={{ uri: props.poster }}
         />
       )}
-    </View>
+    </WrapComponent>
   );
 });
