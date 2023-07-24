@@ -228,12 +228,13 @@ RCT_EXPORT_METHOD(pauseCurrentPlayingWithLaterRestore:(nullable NSString *)chann
     }
 }
 
-RCT_EXPORT_METHOD(restoreLastPlaying:(nullable NSString *)channel) {
+RCT_EXPORT_METHOD(restoreLastPlaying:(nullable NSString *)channel
+                  seekToStart:(BOOL)shouldSeekToStart) {
     NSLog(@"👺restoreLastPlaying channel: %@", channel);
     if (channel) {
         VideoChannel *videoChannel = [AppVideosManager.sharedManager getChannel:channel];
         if (videoChannel.laterRestore) {
-            [self togglePlay:channel videoId:videoChannel.laterRestore seekToStart:true];
+            [self togglePlay:channel videoId:videoChannel.laterRestore seekToStart:shouldSeekToStart];
         }
         videoChannel.laterRestore = nil;
         return;
@@ -244,7 +245,7 @@ RCT_EXPORT_METHOD(restoreLastPlaying:(nullable NSString *)channel) {
         VideoChannel *channel = [AppVideosManager.sharedManager.channels objectForKey:key];
         if (!channel) continue;
         if (!channel.laterRestore) continue;
-        [self togglePlay:key videoId:channel.laterRestore seekToStart: true];
+        [self togglePlay:key videoId:channel.laterRestore seekToStart: shouldSeekToStart];
         channel.laterRestore = nil;
     }
 }

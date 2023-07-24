@@ -53,9 +53,12 @@ export function pauseCurrentPlayingWithLaterRestore(
   LookyVideosManager.pauseCurrentPlayingWithLaterRestore(channelName);
 }
 
-export function restoreLastPlaying(channelName: string | undefined) {
-  _log(restoreLastPlaying.name, { channelName });
-  LookyVideosManager.restoreLastPlaying(channelName);
+export function restoreLastPlaying(
+  channelName: string | undefined,
+  shouldSeekToStart: boolean = true
+) {
+  _log(restoreLastPlaying.name, { channelName, shouldSeekToStart });
+  LookyVideosManager.restoreLastPlaying(channelName, shouldSeekToStart);
 }
 
 export function togglePlayVideo(channel: string, videoId: string) {
