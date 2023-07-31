@@ -49,6 +49,7 @@
 }
 
 - (void)setTime:(CMTime)time {
+    if (self.isHidden) return;
     NSUInteger dTotalSeconds = CMTimeGetSeconds(time);
 
     NSUInteger dHours = floor(dTotalSeconds / 3600);

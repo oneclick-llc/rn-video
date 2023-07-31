@@ -62,6 +62,11 @@
         _videoDurationView.y = [self getHudY];
         [_videoDurationView layoutSubviews];
     }
+    
+    if ([changedProps containsObject:@"hudHidden"]) {
+        [_videoDurationView setHidden:_hudHidden];
+        [_toggleMuteButton setHidden:_hudHidden];
+    }
 }
 
 - (void)initializePlayer {
