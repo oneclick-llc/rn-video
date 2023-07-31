@@ -207,6 +207,15 @@
     CMTime duration = _player.currentItem.duration;
     CMTime timeLeft = CMTimeSubtract(duration, time);
     [_videoDurationView setTime:timeLeft];
+    
+    if (self.onVideoProgress) {
+        self.onVideoProgress(@{
+            @"currentTime": [NSNumber numberWithFloat:CMTimeGetSeconds(time)],
+            @"totalDuration": [NSNumber numberWithFloat:CMTimeGetSeconds(duration)],
+            @"timeLeft": [NSNumber numberWithFloat:CMTimeGetSeconds(timeLeft)],
+            
+        });
+    }
 
     if (CMTimeGetSeconds(timeLeft) == 0) {
         [_player seekToTime:kCMTimeZero];
