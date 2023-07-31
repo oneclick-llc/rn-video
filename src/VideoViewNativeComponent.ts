@@ -12,7 +12,13 @@ export interface NativeProps extends ViewProps {
   onEndPlay?: (e: any) => void;
   onLoad?: () => void;
   hudOffset?: { x: number; y: number };
+  hudHidden?: boolean;
   resizeMode?: 'stretch' | 'contain' | 'cover';
+  onVideoProgress?: (data: {
+    currentTime: number;
+    totalDuration: number;
+    timeLeft: number;
+  }) => void;
 }
 
 export default codegenNativeComponent<NativeProps>('VideoView');

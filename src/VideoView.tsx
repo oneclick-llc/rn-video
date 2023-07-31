@@ -20,6 +20,12 @@ export const VideoView: React.FC<Props> = memo(({ style, ...props }) => {
     <WrapComponent style={style}>
       <VideoComponent
         {...props}
+        onVideoProgress={
+          props.onVideoProgress
+            ? //@ts-ignore
+              (event) => props.onVideoProgress(event.nativeEvent)
+            : undefined
+        }
         style={StyleSheet.absoluteFillObject}
         onLoad={() => setLoaded(true)}
       />

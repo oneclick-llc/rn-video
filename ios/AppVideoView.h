@@ -20,7 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) RCTDirectEventBlock onVideoTap;
 @property (nonatomic, copy) RCTDirectEventBlock onVideoDoubleTap;
 @property (nonatomic, copy) RCTDirectEventBlock onLoad;
+@property (nonatomic, copy) RCTDirectEventBlock onVideoProgress;
 @property (nonatomic, copy) NSDictionary* hudOffset;
+@property (nonatomic) BOOL hudHidden;
 
 -(void) setVideoUri:(NSString*)uri;
 -(void) setResizeMode:(NSString*)mode;

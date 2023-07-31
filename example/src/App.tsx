@@ -31,6 +31,7 @@ export default function App() {
         <VideoView
           hudOffset={{ x: 12, y: 12 }}
           resizeMode={'cover'}
+          onVideoProgress={(data) => console.log('[App.====||]', data)}
           onMuteToggle={toggleVideosMutedEvent}
           //poster={'https://picsum.photos/200/300'}
           onVideoDoubleTap={() => {
