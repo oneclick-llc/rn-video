@@ -12,12 +12,14 @@
 		8D1494752A482DD9001891BB /* PINMemoryCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D1494712A482DD9001891BB /* PINMemoryCache.m */; };
 		8D14947E2A482E86001891BB /* PINOperationGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D14947A2A482E86001891BB /* PINOperationGroup.m */; };
 		8D14947F2A482E86001891BB /* PINOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D14947B2A482E86001891BB /* PINOperationQueue.m */; };
+		8D22A3CE2A85F328006AF6C6 /* AppVideosManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D22A3CD2A85F328006AF6C6 /* AppVideosManager.swift */; };
 		8DA6A9BD2A39D07F00D1FA7E /* VideoViewManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8DA6A9BB2A39D07F00D1FA7E /* VideoViewManager.mm */; };
 		8DA6A9BE2A39D07F00D1FA7E /* VideoView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8DA6A9BC2A39D07F00D1FA7E /* VideoView.mm */; };
 		8DA6A9C12A39D0B300D1FA7E /* AppVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DA6A9C02A39D0B300D1FA7E /* AppVideoView.m */; };
 		8DA6A9C42A39E25B00D1FA7E /* VideoDurationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DA6A9C32A39E25B00D1FA7E /* VideoDurationView.m */; };
 		8DA6A9C72A39E26800D1FA7E /* ToggleMuteButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DA6A9C62A39E26800D1FA7E /* ToggleMuteButton.m */; };
 		8DA6A9CA2A39E27800D1FA7E /* VideoStatusView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DA6A9C92A39E27800D1FA7E /* VideoStatusView.m */; };
+		8DA86B1B2A85E39A0065DB9B /* VideoViewSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA86B1A2A85E39A0065DB9B /* VideoViewSwift.swift */; };
 		8DEC2F4E2A3B080000D9D69A /* VideosController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DEC2F4D2A3B080000D9D69A /* VideosController.m */; };
 		92AE7DBC2A4742EF00E7ED77 /* CachingItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92AE7DBB2A4742EF00E7ED77 /* CachingItem.swift */; };
 /* End PBXBuildFile section */
@@ -52,6 +54,7 @@
 		8D14947B2A482E86001891BB /* PINOperationQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PINOperationQueue.m; sourceTree = "<group>"; };
 		8D14947C2A482E86001891BB /* PINOperationTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PINOperationTypes.h; sourceTree = "<group>"; };
 		8D14947D2A482E86001891BB /* PINOperationQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PINOperationQueue.h; sourceTree = "<group>"; };
+		8D22A3CD2A85F328006AF6C6 /* AppVideosManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVideosManager.swift; sourceTree = "<group>"; };
 		8DA6A9BA2A39D07F00D1FA7E /* VideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoView.h; sourceTree = "<group>"; };
 		8DA6A9BB2A39D07F00D1FA7E /* VideoViewManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VideoViewManager.mm; sourceTree = "<group>"; };
 		8DA6A9BC2A39D07F00D1FA7E /* VideoView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VideoView.mm; sourceTree = "<group>"; };
@@ -64,6 +67,7 @@
 		8DA6A9C82A39E27800D1FA7E /* VideoStatusView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoStatusView.h; sourceTree = "<group>"; };
 		8DA6A9C92A39E27800D1FA7E /* VideoStatusView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoStatusView.m; sourceTree = "<group>"; };
 		8DA6A9CB2A39E5EA00D1FA7E /* VideoAsset.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = VideoAsset.xcassets; sourceTree = "<group>"; };
+		8DA86B1A2A85E39A0065DB9B /* VideoViewSwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoViewSwift.swift; sourceTree = "<group>"; };
 		8DEC2F4C2A3B080000D9D69A /* VideosController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideosController.h; sourceTree = "<group>"; };
 		8DEC2F4D2A3B080000D9D69A /* VideosController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideosController.m; sourceTree = "<group>"; };
 		92AE7DBA2A4742EF00E7ED77 /* Video-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Video-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -92,6 +96,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				8D22A3CD2A85F328006AF6C6 /* AppVideosManager.swift */,
+				8DA86B1A2A85E39A0065DB9B /* VideoViewSwift.swift */,
 				8D1494762A482E67001891BB /* PinOperation */,
 				8D1494692A482DBC001891BB /* Cache */,
 				92AE7DBB2A4742EF00E7ED77 /* CachingItem.swift */,
@@ -206,7 +212,9 @@
 				8D1494732A482DD9001891BB /* PINCache.m in Sources */,
 				8DA6A9C72A39E26800D1FA7E /* ToggleMuteButton.m in Sources */,
 				92AE7DBC2A4742EF00E7ED77 /* CachingItem.swift in Sources */,
+				8DA86B1B2A85E39A0065DB9B /* VideoViewSwift.swift in Sources */,
 				8DEC2F4E2A3B080000D9D69A /* VideosController.m in Sources */,
+				8D22A3CE2A85F328006AF6C6 /* AppVideosManager.swift in Sources */,
 				8DA6A9CA2A39E27800D1FA7E /* VideoStatusView.m in Sources */,
 				8DA6A9BE2A39D07F00D1FA7E /* VideoView.mm in Sources */,
 				8D1494752A482DD9001891BB /* PINMemoryCache.m in Sources */,

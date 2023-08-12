@@ -2,6 +2,7 @@
 #import <React/RCTUIManager.h>
 #import <React/RCTBridge.h>
 #import "AppVideoView.h"
+#import "rn_video-Swift.h"
 
 #ifndef RCT_NEW_ARCH_ENABLED
 
@@ -12,15 +13,16 @@
 
 RCT_EXPORT_MODULE(VideoView)
 
-- (AppVideoView *)view
+- (VideoViewSwift *)view
 {
-  return [[AppVideoView alloc] init];
+  return [[VideoViewSwift alloc] init];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(videoUri, NSString)
 RCT_EXPORT_VIEW_PROPERTY(resizeMode, NSString)
 RCT_EXPORT_VIEW_PROPERTY(muted, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(loop, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(isSloMo, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(hudHidden, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(hudOffset, NSDictionary)
 RCT_EXPORT_VIEW_PROPERTY(onMuteToggle, RCTDirectEventBlock)

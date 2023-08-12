@@ -3,3 +3,5 @@
 //
 
 #import "PinCache.h"
+#include "ToggleMuteButton.h"
+#include "VideoDurationView.h"
