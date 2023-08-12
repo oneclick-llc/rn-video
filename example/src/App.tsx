@@ -11,25 +11,44 @@ import {
   toggleVideosMutedEvent,
   VideoView,
 } from 'react-native-video';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { mediaLibrary } from 'react-native-media-library';
 
 const one =
   'https://cdn-test.looky.com/post-instagram/3093573415336326421/344572606_907419743843224_427802127932990228_n.mp4';
 const two =
   'https://cdn-test.looky.com/post/d7bd7109-1e0b-4bcd-83b7-db82be9f519d/0fc47b6aaffa29267b1cf3f3a57664e7.mp4';
 let key = 0;
+
 export default function App() {
   // const [video, setVideo] = useState()
-  const [video, setVideo] = useState(one);
+  const [video, setVideo] = useState<string | undefined>(undefined);
   const [isPresented, setPresented] = useState(true);
   let vId = video === one ? 'one' : 'two';
   const [height, setHeight] = useState(300);
 
+  useEffect(() => {
+    mediaLibrary
+      .getAssets({
+        mediaType: ['video'],
+        sortBy: 'creationTime',
+        sortOrder: 'desc',
+        limit: 1,
+      })
+      .then(async (r) => {
+        console.log('[App.]', r[0]);
+        //setAsset(r[0]);
+        setVideo(r[0].uri);
+        //setVideo(one);
+      });
+  });
+
   return (
     <View style={styles.container}>
-      {isPresented && (
+      {isPresented && !!video && (
         <VideoView
           hudOffset={{ x: 12, y: 12 }}
+          isSloMo={true}
           resizeMode={'cover'}
           onVideoProgress={(data) => console.log('[App.====||]', data)}
           onMuteToggle={toggleVideosMutedEvent}

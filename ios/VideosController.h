@@ -8,29 +8,29 @@
 
 #import <React/RCTBridgeModule.h>
 #import <React/RCTViewManager.h>
-#import "AppVideoView.h"
+#import "rn_video-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface VideoChannel : NSObject
-
-@property (nonatomic) NSMutableDictionary<NSString*, AppVideoView*>* videos;
-@property (nonatomic, nullable) NSString* laterRestore;
-@property (nonatomic, nullable) NSString* backgroundRestore;
-@end
-
-
-@interface AppVideosManager : NSObject
-
-@property (nonatomic) NSMutableDictionary<NSString*, VideoChannel*> *channels;
-
-+ (AppVideosManager*)sharedManager;
--(NSString*) videoId:(AppVideoView*)video;
-- (void)addVideo:(AppVideoView *)video nativeID:(NSString*)nativeID;
-- (void)removeVideo:(NSString *)nativeID;
--(nonnull VideoChannel*)getChannel:(nonnull NSString*)name;
-
-@end
+//@interface VideoChannel : NSObject
+//
+//@property (nonatomic) NSMutableDictionary<NSString*, AppVideoView*>* videos;
+//@property (nonatomic, nullable) NSString* laterRestore;
+//@property (nonatomic, nullable) NSString* backgroundRestore;
+//@end
+//
+//
+//@interface AppVideosManager : NSObject
+//
+//@property (nonatomic) NSMutableDictionary<NSString*, VideoChannel*> *channels;
+//
+//+ (AppVideosManager*)sharedManager;
+//-(NSString*) videoId:(AppVideoView*)video;
+//- (void)addVideo:(AppVideoView *)video nativeID:(NSString*)nativeID;
+//- (void)removeVideo:(NSString *)nativeID;
+//-(nonnull VideoChannel*)getChannel:(nonnull NSString*)name;
+//
+//@end
 
 
 @interface VideosController : NSObject <RCTBridgeModule>
