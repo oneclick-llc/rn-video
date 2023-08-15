@@ -48,7 +48,6 @@ export default function App() {
       {isPresented && !!video && (
         <VideoView
           hudOffset={{ x: 12, y: 12 }}
-          isSloMo={true}
           resizeMode={'cover'}
           onVideoProgress={(data) => console.log('[App.====||]', data)}
           onMuteToggle={toggleVideosMutedEvent}

@@ -24,8 +24,6 @@ public class VideoViewSwift: UIView {
     @objc
     var loop = false
     @objc
-    var isSloMo = false
-    @objc
     var hudHidden = false
     @objc
     var onMuteToggle: RCTDirectEventBlock?
