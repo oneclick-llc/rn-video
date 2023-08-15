@@ -205,8 +205,12 @@ public class VideoViewSwift: UIView {
         if _videoPlayerParent.superview != nil { return }
         addSubview(_videoPlayerParent)
         _videoPlayerParent.layer.addSublayer(_playerLayer)
+
         _playerLayer.videoGravity = .resizeAspectFill
-        
+        if resizeMode == "cover" { _playerLayer.videoGravity = .resizeAspectFill }
+        if resizeMode == "contain" { _playerLayer.videoGravity = .resizeAspect }
+        if resizeMode == "stretch" { _playerLayer.videoGravity = .resize }
+
         _toggleMuteButton.toggleMuted(_muted)
         addSubview(_toggleMuteButton)
         
