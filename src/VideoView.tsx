@@ -9,6 +9,7 @@ interface Props extends NativeProps {
 
 export const VideoView: React.FC<Props> = memo((props) => {
   const [isLoaded, setLoaded] = useState(false);
+
   return (
     <View style={props.style}>
       <V
@@ -20,7 +21,10 @@ export const VideoView: React.FC<Props> = memo((props) => {
             : undefined
         }
         style={StyleSheet.absoluteFillObject}
-        onLoad={() => setLoaded(true)}
+        onLoad={() => {
+          props.onLoad?.();
+          setLoaded(true);
+        }}
       />
       {!isLoaded && props.poster && (
         <Image
