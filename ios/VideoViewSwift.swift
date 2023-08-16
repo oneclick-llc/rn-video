@@ -212,6 +212,8 @@ public class VideoViewSwift: UIView {
         _toggleMuteButton.toggleMuted(_muted)
         addSubview(_toggleMuteButton)
         
+        self.setMuted(_muted)
+        
         _videoDurationView.x = hudX
         _videoDurationView.y = hudY
         addSubview(_videoDurationView)
