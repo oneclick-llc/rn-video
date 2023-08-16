@@ -8,7 +8,6 @@
 
 #import <React/RCTBridgeModule.h>
 #import <React/RCTViewManager.h>
-#import "rn_video-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
