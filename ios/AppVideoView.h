@@ -23,7 +23,6 @@
 //@property (nonatomic, copy) RCTDirectEventBlock onVideoProgress;
 //@property (nonatomic, copy) NSDictionary* hudOffset;
 //@property (nonatomic) BOOL hudHidden;
-//@property (nonatomic) BOOL isSloMo;
 //
 //-(void) setVideoUri:(NSString*)uri;
 //-(void) setResizeMode:(NSString*)mode;

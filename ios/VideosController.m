@@ -7,6 +7,7 @@
 //
 
 #import "VideosController.h"
+#import "rn_video-Swift.h"
 
 //// MARK: VideoChannel
 //@implementation VideoChannel
