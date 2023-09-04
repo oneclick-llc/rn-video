@@ -354,7 +354,7 @@ PODS:
     - React-jsi (= 0.71.10)
     - React-logger (= 0.71.10)
     - React-perflogger (= 0.71.10)
-  - rn-video (0.3.0):
+  - rn-video (0.3.1):
     - React-Core
   - RNReanimated (2.14.4):
     - DoubleConversion
@@ -544,7 +544,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: d13cc2d63286c633393d3a7f6f607cc2a09ec011
   React-runtimeexecutor: a9a1cd79996c9a0846e3232ecb25c64e1cc0172e
   ReactCommon: 65718685d4095d06b4b1af8042e12f1df2925c31
-  rn-video: 95eed7a2b0796fc3f971ece7804240a320067a99
+  rn-video: 79cf3264dde255177358ad04d5be34491867f22e
   RNReanimated: cc5e3aa479cb9170bcccf8204291a6950a3be128
   Yoga: e7ea9e590e27460d28911403b894722354d73479
 
