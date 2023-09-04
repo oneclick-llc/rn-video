@@ -4076,6 +4076,10 @@ react-native-video@5.2.1:
     prop-types "^15.7.2"
     shaka-player "^2.5.9"
 
+react-native-media-library@sergeymild/react-native-media-library#2.0.1:
+  version "2.0.1"
+  resolved "https://codeload.github.com/sergeymild/react-native-media-library/tar.gz/290f1587abca2f1da74308eb0273f5d9595c8a70"
+
 react-native@0.71.10:
   version "0.71.10"
   resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.71.10.tgz#4294d289b4226a3f35bd627bb157fc1f18395d58"

@@ -2,6 +2,7 @@
 #import <React/RCTUIManager.h>
 #import <React/RCTBridge.h>
 #import "AppVideoView.h"
+#import "rn_video-Swift.h"
 
 #ifndef RCT_NEW_ARCH_ENABLED
 
@@ -12,9 +13,9 @@
 
 RCT_EXPORT_MODULE(VideoView)
 
-- (AppVideoView *)view
+- (VideoViewSwift *)view
 {
-  return [[AppVideoView alloc] init];
+  return [[VideoViewSwift alloc] init];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(videoUri, NSString)

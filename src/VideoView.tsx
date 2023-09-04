@@ -1,7 +1,7 @@
 import React, { memo, useState } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { Platform, Image, StyleSheet, View, ViewProps } from 'react-native';
 import Video, { type NativeProps } from './VideoViewNativeComponent';
-import Animated from 'react-native-reanimated';
+import Animated, { AnimateProps } from 'react-native-reanimated';
 
 const AnimatedVideo = Animated.createAnimatedComponent(Video);
 
@@ -11,12 +11,16 @@ interface Props extends NativeProps {
 }
 
 export const VideoView: React.FC<Props> = memo(({ style, ...props }) => {
+  if (Platform.OS === 'android')
+    throw new Error('Trying to render iOS VideoView on a different Platform');
+
   const [isLoaded, setLoaded] = useState(false);
-  const WrapComponent = props.isAnimated ? Animated.View : View;
+  const WrapComponent = props.isAnimated
+    ? (Animated.View as React.ComponentType<AnimateProps<ViewProps>>)
+    : View;
   const VideoComponent = props.isAnimated ? AnimatedVideo : Video;
 
   return (
-    // @ts-ignore | it has call signature =|
     <WrapComponent style={style}>
       <VideoComponent
         {...props}
@@ -27,7 +31,10 @@ export const VideoView: React.FC<Props> = memo(({ style, ...props }) => {
             : undefined
         }
         style={StyleSheet.absoluteFillObject}
-        onLoad={() => setLoaded(true)}
+        onLoad={() => {
+          props.onLoad?.();
+          setLoaded(true);
+        }}
       />
       {!isLoaded && props.poster && (
         <Image
