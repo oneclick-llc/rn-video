@@ -1,26 +1,4 @@
-# rn-video
-
-R
-
-## Installation
-
-```sh
-npm install rn-video
-```
-
-## Usage
-
-```js
-import { VideoView } from "rn-video";
-
-// ...
-
-<VideoView color="tomato" />
-```
-
-## Contributing
-
-See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
+# react-native-video
 
 ## License
 

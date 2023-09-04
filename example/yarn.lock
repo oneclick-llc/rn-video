@@ -4053,6 +4053,10 @@ react-native-gradle-plugin@^0.71.19:
   resolved "https://registry.yarnpkg.com/react-native-gradle-plugin/-/react-native-gradle-plugin-0.71.19.tgz#3379e28341fcd189bc1f4691cefc84c1a4d7d232"
   integrity sha512-1dVk9NwhoyKHCSxcrM6vY6cxmojeATsBobDicX0ZKr7DgUF2cBQRTKsimQFvzH8XhOVXyH8p4HyDSZNIFI8OlQ==
 
+react-native-media-library@sergeymild/react-native-media-library#2.0.1:
+  version "2.0.1"
+  resolved "https://codeload.github.com/sergeymild/react-native-media-library/tar.gz/290f1587abca2f1da74308eb0273f5d9595c8a70"
+
 react-native-reanimated@2.14.4:
   version "2.14.4"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.14.4.tgz#3fa3da4e7b99f5dfb28f86bcf24d9d1024d38836"
@@ -4065,20 +4069,6 @@ react-native-reanimated@2.14.4:
     lodash.isequal "^4.5.0"
     setimmediate "^1.0.5"
     string-hash-64 "^1.0.3"
-
-react-native-video@5.2.1:
-  version "5.2.1"
-  resolved "https://registry.yarnpkg.com/react-native-video/-/react-native-video-5.2.1.tgz#a17e856759d7e17eee9cbd9df0d05ba22e88d457"
-  integrity sha512-aJlr9MeTuQ0LpZ4n+EC9RvhoKeiPbLtI2Rxy8u7zo/wzGevbRpWHSBj9xZ5YDBXnAVXzuqyNIkGhdw7bfdIBZw==
-  dependencies:
-    deprecated-react-native-prop-types "^2.2.0"
-    keymirror "^0.1.1"
-    prop-types "^15.7.2"
-    shaka-player "^2.5.9"
-
-react-native-media-library@sergeymild/react-native-media-library#2.0.1:
-  version "2.0.1"
-  resolved "https://codeload.github.com/sergeymild/react-native-media-library/tar.gz/290f1587abca2f1da74308eb0273f5d9595c8a70"
 
 react-native@0.71.10:
   version "0.71.10"
