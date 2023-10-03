@@ -194,7 +194,11 @@ public class VideoViewSwift: UIView {
         if CMTimeGetSeconds(timeLeft) == 0 {
             _player.seek(to: .zero)
             onEndPlay?(nil)
-            if loop { _player.playImmediately(atRate: 1) }
+            if loop {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    _player.play()
+                }
+            }
             else { setPaused(true) }
         }
     }
