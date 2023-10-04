@@ -195,7 +195,8 @@ public class VideoViewSwift: UIView {
             _player.seek(to: .zero)
             onEndPlay?(nil)
             if loop {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+                    if self?._paused == true { return }
                     _player.play()
                 }
             }
