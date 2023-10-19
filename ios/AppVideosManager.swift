@@ -13,7 +13,11 @@ public class VideoChannel: NSObject {
     @objc
     public var videos: [String: VideoViewSwift] = [:]
     @objc
-    public var laterRestore: String?
+    public var laterRestore: String? {
+        didSet {
+            debugPrint("👺 setLAterRestore id:", laterRestore as Any)
+        }
+    }
     @objc
     public var backgroundRestore: String?
     
