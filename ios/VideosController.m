@@ -200,6 +200,24 @@ RCT_EXPORT_METHOD(playVideo:(NSString *)channel
                   videoId:(NSString *)videoId) {
     [self togglePlay:channel videoId:videoId seekToStart:false];
 }
+RCT_EXPORT_METHOD(pauseVideo:(NSString *)channelName
+                  videoId:(NSString *)videoId) {
+    NSLog(@"👺pauseVideo channelName: %@ videoId: %@", channelName, videoId);
+
+    VideoChannel *videoChannel = [AppVideosManager.shared getChannel:channelName];
+    if (!videoChannel) {
+        NSLog(@"VideoManager couldn't find videoChannel");
+        return;
+    }
+
+    VideoViewSwift *video = [videoChannel videoFor:videoId];
+    if (video) {
+        NSLog(@"VideoManager found Video to pause");
+        [video setPaused: true];
+    } else {
+        NSLog(@"VideoManager couldn't find video to pause by provided videoId (%@)", videoId);
+    }
+}
 
 RCT_EXPORT_METHOD(pauseCurrentPlaying) {
     NSLog(@"👺 pauseAllVideos");

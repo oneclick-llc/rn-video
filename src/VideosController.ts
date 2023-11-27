@@ -26,6 +26,10 @@ export function getIdForVideoWithoutChannel(
 export function playVideo(channel: string, videoId: string) {
   LookyVideosManager.playVideo(channel, videoId);
 }
+export const pauseVideo = LookyVideosManager.pauseVideo as (
+  channelName: string,
+  videoId: string
+) => void;
 
 export function pauseCurrentPlaying() {
   LookyVideosManager.pauseCurrentPlaying();
