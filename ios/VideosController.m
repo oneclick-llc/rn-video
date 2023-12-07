@@ -190,9 +190,6 @@ RCT_EXPORT_MODULE();
         NSLog(@"👺 togglePlay channel: %@ id: %@ paused: false", channel, videoId);
         if (seekToStart) [video seekToStart];
         [video setPaused:false];
-        videoChannel.laterRestore = videoId;
-    } else {
-        videoChannel.laterRestore = videoId;
     }
 }
 
@@ -225,11 +222,14 @@ RCT_EXPORT_METHOD(pauseCurrentPlaying) {
 }
 
 RCT_EXPORT_METHOD(pauseCurrentPlayingWithLaterRestore:(nullable NSString *)channel) {
+    NSLog(@"pauseCurrentPlayingWithLaterRestore(channelName: %@)", channel);
     if (channel) {
         VideoChannel *c = [AppVideosManager.shared getChannel:channel];
         if (!c) return;
+        NSLog(@"Found videoChannel, going to seek Video");
         VideoViewSwift *video = [AppVideosManager.shared findFirstPlayingVideo:channel];
         if (video) {
+            NSLog(@"Found Video, going to put its' ID (%@) in laterRestore", [AppVideosManager.shared videoId:video]);
             c.laterRestore = [AppVideosManager.shared videoId:video];
             [video setPaused:true];
             NSLog(@"👺 pauseCurrentPlayingWithLaterRestore channel: %@ id: %@", channel, c.laterRestore);
