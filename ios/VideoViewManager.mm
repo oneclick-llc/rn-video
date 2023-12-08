@@ -1,7 +1,6 @@
 #import <React/RCTViewManager.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTBridge.h>
-#import "AppVideoView.h"
 #import "rn_video-Swift.h"
 
 #ifndef RCT_NEW_ARCH_ENABLED

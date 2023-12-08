@@ -1,6 +1,20 @@
-import { NativeModules, Platform } from 'react-native';
+import { NativeModules } from 'react-native';
 
-const LookyVideosManager = NativeModules.VideosController;
+
+NativeModules.JsiVideoManager.install()
+
+declare global {
+  var __lookyVideo: {
+    playVideo(channel: string, videoId: string): void
+    pauseVideo(channel: string, videoId: string): void
+    togglePlayInBackground(channelName: string | undefined, playInBackground: boolean): void
+    restoreLastPlaying(channelName: string | undefined, shouldSeekToStart: boolean): void
+    pauseCurrentPlayingWithLaterRestore(channelName: string | undefined): void
+    togglePlayVideo(channel: string, videoId: string): void
+    toggleVideosMuted(muted: boolean): void
+    pauseCurrentPlaying(): void
+  }
+}
 
 export function getIdForVideo(
   channelName: string,
@@ -23,48 +37,47 @@ export function getIdForVideoWithoutChannel(
   throw new Error('postId is undefined');
 }
 
-export function playVideo(channel: string, videoId: string) {
-  LookyVideosManager.playVideo(channel, videoId);
+export function pauseVideo(channelName: string, videoId: string) {
+  console.log('🍓[VideoManager.pauseVideo]', { channelName, videoId })
+  global.__lookyVideo.pauseVideo(channelName, videoId)
 }
-export const pauseVideo =
-  Platform.OS === 'ios'
-    ? (LookyVideosManager.pauseVideo as (
-        channelName: string,
-        videoId: string
-      ) => void)
-    : undefined;
+
+export function playVideo(channel: string, videoId: string) {
+  console.log('🍓[VideosController.playVideo]', channel, videoId)
+  global.__lookyVideo.playVideo(channel, videoId)
+}
 
 export function pauseCurrentPlaying() {
-  LookyVideosManager.pauseCurrentPlaying();
+  global.__lookyVideo.pauseCurrentPlaying();
+}
+
+export function pauseCurrentPlayingWithLaterRestore(
+  channelName: string | undefined
+) {
+  global.__lookyVideo.pauseCurrentPlayingWithLaterRestore(channelName);
 }
 
 export function togglePlayInBackground(
   channelName: string | undefined,
   playInBackground: boolean
 ) {
-  LookyVideosManager.togglePlayInBackground(channelName, playInBackground);
+  global.__lookyVideo.togglePlayInBackground(channelName, playInBackground);
 }
 
-export function pauseCurrentPlayingWithLaterRestore(
-  channelName: string | undefined
-) {
-  LookyVideosManager.pauseCurrentPlayingWithLaterRestore(channelName);
-}
-
-export function restoreLastPlaying(channelName: string | undefined) {
-  LookyVideosManager.restoreLastPlaying(channelName);
+export function restoreLastPlaying(channelName: string | undefined, shouldSeekToStart: boolean = true) {
+  global.__lookyVideo.restoreLastPlaying(channelName, shouldSeekToStart);
 }
 
 export function togglePlayVideo(channel: string, videoId: string) {
-  LookyVideosManager.togglePlay(channel, videoId);
+  global.__lookyVideo.togglePlayVideo(channel, videoId);
 }
 
 export function toggleVideosMuted(muted: boolean) {
-  LookyVideosManager.toggleVideosMuted(muted);
+  global.__lookyVideo.toggleVideosMuted(muted);
 }
 
 export function toggleVideosMutedEvent(event: {
   nativeEvent: { muted: boolean };
 }) {
-  LookyVideosManager.toggleVideosMuted(event.nativeEvent.muted);
+  global.__lookyVideo.toggleVideosMuted(event.nativeEvent.muted);
 }

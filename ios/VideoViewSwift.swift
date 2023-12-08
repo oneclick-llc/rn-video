@@ -13,13 +13,6 @@ import Photos
 @objc
 public class VideoViewSwift: UIView {
     @objc
-    var hudOffset: [String: CGFloat]? {
-        didSet {
-            debugPrint("++++", hudOffset)
-        }
-    }
-    
-    @objc
     var resizeMode: NSString?
     @objc
     var loop = false
@@ -46,18 +39,6 @@ public class VideoViewSwift: UIView {
     private var _playerItem: AVPlayerItem?
     private var _playerLayer = AVPlayerLayer()
     private var _videoPlayerParent = UIView()
-    private var _toggleMuteButton = ToggleMuteButton()
-    private var _videoDurationView = VideoDurationView()
-    
-    var hudX: CGFloat {
-        if let h = hudOffset { return RCTConvert.cgFloat(h["x"]) }
-        return 12
-    }
-    
-    var hudY: CGFloat {
-        if let h = hudOffset { return RCTConvert.cgFloat(h["y"]) }
-        return 12
-    }
     
     public override func didSetProps(_ changedProps: [String]!) {
         super.didSetProps(changedProps)
@@ -65,18 +46,6 @@ public class VideoViewSwift: UIView {
             if resizeMode == "cover" { _playerLayer.videoGravity = .resizeAspectFill }
             if resizeMode == "contain" { _playerLayer.videoGravity = .resizeAspect }
             if resizeMode == "stretch" { _playerLayer.videoGravity = .resize }
-        }
-        
-        if changedProps.contains("hudOffset") {
-            _videoDurationView.x = hudX
-            _videoDurationView.y = hudY
-            layoutSubviews()
-            _videoDurationView.layoutSubviews()
-        }
-        
-        if changedProps.contains("hudHidden") {
-            _videoDurationView.isHidden = hudHidden
-            _toggleMuteButton.isHidden = hudHidden
         }
         
         AppVideosManager.shared.addVideo(self, nativeID: self.nativeID)
@@ -102,9 +71,6 @@ public class VideoViewSwift: UIView {
         onVideoDoubleTap.numberOfTapsRequired = 2
         onVideoTap.require(toFail: onVideoDoubleTap)
         addGestureRecognizer(onVideoDoubleTap)
-        
-        
-        _toggleMuteButton.addTarget(self, action: #selector(toggleMuted), for: .touchUpInside)
     }
     
     public override func layoutSubviews() {
@@ -114,14 +80,6 @@ public class VideoViewSwift: UIView {
         CATransaction.setAnimationDuration(0)
         _playerLayer.frame = .init(origin: .zero, size: self.bounds.size)
         CATransaction.commit()
-        
-        _toggleMuteButton.frame = .init(
-            x: bounds.width - ToggleMuteButton.size - hudX,
-            y: bounds.height - ToggleMuteButton.size - hudY,
-            width: ToggleMuteButton.size,
-            height: ToggleMuteButton.size
-        )
-        _videoDurationView.layoutSubviews()
     }
     
     @objc
@@ -137,7 +95,7 @@ public class VideoViewSwift: UIView {
     @objc
     public func setPaused(_ paused: Bool) {
         self._paused = paused
-        guard let _player = _player else { return }
+        guard let _player else { return }
         if paused {
             _player.pause()
             _player.rate = 0
@@ -152,8 +110,6 @@ public class VideoViewSwift: UIView {
         guard let _player = _player else { return }
         _player.volume = muted ? 0 : 1
         _player.isMuted = muted
-        
-        _toggleMuteButton.toggleMuted(muted)
     }
     
     @objc
@@ -182,8 +138,6 @@ public class VideoViewSwift: UIView {
         guard let _player = _player else { return }
         let duration = _player.currentItem?.duration ?? .zero;
         let timeLeft = CMTimeSubtract(duration, time);
-        
-        _videoDurationView.setTime(timeLeft)
         
         onVideoProgress?([
             "currentTime": CMTimeGetSeconds(time),
@@ -214,14 +168,7 @@ public class VideoViewSwift: UIView {
         if resizeMode == "contain" { _playerLayer.videoGravity = .resizeAspect }
         if resizeMode == "stretch" { _playerLayer.videoGravity = .resize }
 
-        _toggleMuteButton.toggleMuted(_muted)
-        addSubview(_toggleMuteButton)
-        
         self.setMuted(_muted)
-        
-        _videoDurationView.x = hudX
-        _videoDurationView.y = hudY
-        addSubview(_videoDurationView)
         
         applyGestures()
         
@@ -264,7 +211,6 @@ public class VideoViewSwift: UIView {
             if _player == nil { return }
             if _player?.status == .readyToPlay {
                 onLoad?(nil)
-                _videoDurationView.setTime(_player?.currentItem?.asset.duration ?? .zero)
             }
         }
     }

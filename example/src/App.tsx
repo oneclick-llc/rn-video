@@ -28,26 +28,26 @@ export default function App() {
   const [height, setHeight] = useState(300);
 
   useEffect(() => {
-    mediaLibrary
-      .getAssets({
-        mediaType: ['video'],
-        sortBy: 'creationTime',
-        sortOrder: 'desc',
-        limit: 1,
-      })
-      .then(async (r) => {
-        console.log('[App.]', r[0]);
-        //setAsset(r[0]);
-        setVideo(r[0].uri);
-        //setVideo(one);
-      });
+    setVideo(one)
+    // mediaLibrary
+    //   .getAssets({
+    //     mediaType: ['video'],
+    //     sortBy: 'creationTime',
+    //     sortOrder: 'desc',
+    //     limit: 1,
+    //   })
+    //   .then(async (r) => {
+    //     console.log('[App.]', r[0]);
+    //     //setAsset(r[0]);
+    //     setVideo(r[0].uri);
+    //     //setVideo(one);
+    //   });
   });
 
   return (
     <View style={styles.container}>
       {isPresented && !!video && (
         <VideoView
-          hudOffset={{ x: 12, y: 12 }}
           resizeMode={'cover'}
           onVideoProgress={(data) => console.log('[App.====||]', data)}
           onMuteToggle={toggleVideosMutedEvent}
