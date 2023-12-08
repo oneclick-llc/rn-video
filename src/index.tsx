@@ -1,2 +1,2 @@
-export { VideoView } from './VideoView';
+export { LookyVideoView } from './LookyVideoView';
 export * from './VideosController';

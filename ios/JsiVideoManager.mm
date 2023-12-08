@@ -12,7 +12,7 @@ using namespace facebook;
     RCTBridge *_bridge;
     jsi::Runtime *_runtime;
     
-#define JSI_HOST_FUNCTION(NAME, ARGS_COUNT)                                   \
+#define JSI_HOST_FUNCTION(NAME, ARGS_COUNT)             \
     jsi::Function::createFromHostFunction(              \
         *_runtime,                                      \
         jsi::PropNameID::forUtf8(*_runtime, NAME),      \

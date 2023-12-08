@@ -6,11 +6,10 @@ export interface NativeProps extends ViewProps {
   muted: boolean;
   loop: boolean;
   nativeID: string;
-  onMuteToggle?: (e: any) => void;
   onVideoTap?: (e: any) => void;
   onVideoDoubleTap?: (e: any) => void;
-  onEndPlay?: (e: any) => void;
-  onLoad?: () => void;
+  onVideoEnd?: (e: any) => void;
+  onVideoLoad?: () => void;
   resizeMode?: 'stretch' | 'contain' | 'cover';
   onVideoProgress?: (data: {
     currentTime: number;
@@ -19,4 +18,4 @@ export interface NativeProps extends ViewProps {
   }) => void;
 }
 
-export default codegenNativeComponent<NativeProps>('VideoView');
+export default codegenNativeComponent<NativeProps>('LookyVideoView');

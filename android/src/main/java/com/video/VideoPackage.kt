@@ -14,6 +14,6 @@ class VideoViewPackage : ReactPackage {
   }
 
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
-    return emptyList()
+    return listOf(JsiVideoModule(reactContext))
   }
 }

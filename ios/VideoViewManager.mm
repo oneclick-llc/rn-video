@@ -10,7 +10,7 @@
 
 @implementation VideoViewManager
 
-RCT_EXPORT_MODULE(VideoView)
+RCT_EXPORT_MODULE(LookyVideoView)
 
 - (VideoViewSwift *)view
 {
@@ -21,14 +21,11 @@ RCT_EXPORT_VIEW_PROPERTY(videoUri, NSString)
 RCT_EXPORT_VIEW_PROPERTY(resizeMode, NSString)
 RCT_EXPORT_VIEW_PROPERTY(muted, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(loop, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(hudHidden, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(hudOffset, NSDictionary)
-RCT_EXPORT_VIEW_PROPERTY(onMuteToggle, RCTDirectEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onEndPlay, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onVideoEnd, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onVideoTap, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onVideoDoubleTap, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onVideoProgress, RCTDirectEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onLoad, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onVideoLoad, RCTDirectEventBlock)
 
 @end
 

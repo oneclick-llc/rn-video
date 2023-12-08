@@ -48,12 +48,14 @@ export function playVideo(channel: string, videoId: string) {
 }
 
 export function pauseCurrentPlaying() {
+  console.log('🍓[VideosController.pauseCurrentPlaying]')
   global.__lookyVideo.pauseCurrentPlaying();
 }
 
 export function pauseCurrentPlayingWithLaterRestore(
   channelName: string | undefined
 ) {
+  console.log('🍓[VideosController.pauseCurrentPlayingWithLaterRestore]' )
   global.__lookyVideo.pauseCurrentPlayingWithLaterRestore(channelName);
 }
 
@@ -74,10 +76,4 @@ export function togglePlayVideo(channel: string, videoId: string) {
 
 export function toggleVideosMuted(muted: boolean) {
   global.__lookyVideo.toggleVideosMuted(muted);
-}
-
-export function toggleVideosMutedEvent(event: {
-  nativeEvent: { muted: boolean };
-}) {
-  global.__lookyVideo.toggleVideosMuted(event.nativeEvent.muted);
 }

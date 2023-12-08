@@ -8,16 +8,12 @@ import {
   playVideo,
   togglePlayVideo,
   toggleVideosMuted,
-  toggleVideosMutedEvent,
-  VideoView,
-} from 'react-native-video';
+  LookyVideoView,
+} from 'rn-video';
 import { useEffect, useState } from 'react';
-import { mediaLibrary } from 'react-native-media-library';
 
 const one =
   'https://cdn-test.looky.com/post-instagram/3093573415336326421/344572606_907419743843224_427802127932990228_n.mp4';
-const two =
-  'https://cdn-test.looky.com/post/d7bd7109-1e0b-4bcd-83b7-db82be9f519d/0fc47b6aaffa29267b1cf3f3a57664e7.mp4';
 let key = 0;
 
 export default function App() {
@@ -47,10 +43,9 @@ export default function App() {
   return (
     <View style={styles.container}>
       {isPresented && !!video && (
-        <VideoView
+        <LookyVideoView
           resizeMode={'cover'}
           onVideoProgress={(data) => console.log('[App.====||]', data)}
-          onMuteToggle={toggleVideosMutedEvent}
           //poster={'https://picsum.photos/200/300'}
           onVideoDoubleTap={() => {
             console.log('[App.=-=-=-=-==-=]');
@@ -58,7 +53,7 @@ export default function App() {
           onVideoTap={() =>
             togglePlayVideo('cha', getIdForVideoWithoutChannel(vId))
           }
-          onEndPlay={(e) => console.log('[App.=====]')}
+          onVideoEnd={() => console.log('[App.=====]')}
           nativeID={getIdForVideo('cha', vId)}
           key={key}
           videoUri={video}

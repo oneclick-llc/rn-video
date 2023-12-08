@@ -17,11 +17,7 @@ public class VideoViewSwift: UIView {
     @objc
     var loop = false
     @objc
-    var hudHidden = false
-    @objc
-    var onMuteToggle: RCTDirectEventBlock?
-    @objc
-    var onEndPlay: RCTDirectEventBlock?
+    var onVideoEnd: RCTDirectEventBlock?
     @objc
     var onVideoTap: RCTDirectEventBlock?
     @objc
@@ -29,7 +25,7 @@ public class VideoViewSwift: UIView {
     @objc
     var onVideoProgress: RCTDirectEventBlock?
     @objc
-    var onLoad: RCTDirectEventBlock?
+    var onVideoLoad: RCTDirectEventBlock?
     
     var _timeObserverToken: Any?
     
@@ -112,11 +108,6 @@ public class VideoViewSwift: UIView {
         _player.isMuted = muted
     }
     
-    @objc
-    func toggleMuted() {
-        onMuteToggle?(["muted": !_muted])
-    }
-    
     func cleanUp() {
         if _player == nil { return }
         setPaused(true)
@@ -147,7 +138,7 @@ public class VideoViewSwift: UIView {
         
         if CMTimeGetSeconds(timeLeft) == 0 {
             _player.seek(to: .zero)
-            onEndPlay?(nil)
+            onVideoEnd?(nil)
             if loop {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
                     if self?._paused == true { return }
@@ -210,7 +201,7 @@ public class VideoViewSwift: UIView {
         if keyPath == "status" {
             if _player == nil { return }
             if _player?.status == .readyToPlay {
-                onLoad?(nil)
+                onVideoLoad?(nil)
             }
         }
     }
