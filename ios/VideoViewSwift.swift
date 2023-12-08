@@ -15,7 +15,7 @@ public class VideoViewSwift: UIView {
     @objc
     var hudOffset: [String: CGFloat]? {
         didSet {
-            debugPrint("++++", hudOffset)
+            print("VideoView.hudOffset.didSet | value: \(hudOffset) | nativeID: \(self.nativeID)")
         }
     }
     
@@ -60,6 +60,7 @@ public class VideoViewSwift: UIView {
     }
     
     public override func didSetProps(_ changedProps: [String]!) {
+        print("VideoView.didSetProps | nativeID: \(self.nativeID)")
         super.didSetProps(changedProps)
         if changedProps.contains("resizeMode") {
             if resizeMode == "cover" { _playerLayer.videoGravity = .resizeAspectFill }
@@ -83,6 +84,7 @@ public class VideoViewSwift: UIView {
     }
     
     func initializePlayer() {
+        print("VideoView.initializePlayer | nativeID: \(self.nativeID)")
         _player = AVPlayer(playerItem: _playerItem)
         _player?.automaticallyWaitsToMinimizeStalling = false
         if #available(iOS 12.0, *) {
@@ -95,6 +97,7 @@ public class VideoViewSwift: UIView {
     }
     
     func applyGestures() {
+        print("VideoView.applyGestures | nativeID: \(self.nativeID)")
         let onVideoTap = UITapGestureRecognizer(target: self, action: #selector(didVideoTap))
         addGestureRecognizer(onVideoTap)
         
@@ -108,6 +111,7 @@ public class VideoViewSwift: UIView {
     }
     
     public override func layoutSubviews() {
+        print("VideoView.layoutSubviews | nativeID: \(self.nativeID)")
         super.layoutSubviews()
         _videoPlayerParent.frame = .init(origin: .zero, size: self.bounds.size)
         CATransaction.begin()
@@ -136,6 +140,7 @@ public class VideoViewSwift: UIView {
     
     @objc
     public func setPaused(_ paused: Bool) {
+        print("VideoView.setPaused(\(paused)) | nativeID: \(self.nativeID)")
         self._paused = paused
         guard let _player = _player else { return }
         if paused {
@@ -148,6 +153,7 @@ public class VideoViewSwift: UIView {
     
     @objc
     public func setMuted(_ muted: Bool) {
+        print("VideoView.setMuted(\(muted)) | nativeID: \(self.nativeID)")
         self._muted = muted
         guard let _player = _player else { return }
         _player.volume = muted ? 0 : 1
@@ -158,10 +164,12 @@ public class VideoViewSwift: UIView {
     
     @objc
     func toggleMuted() {
+        print("VideoView.toggleMuted | nativeID: \(self.nativeID)")
         onMuteToggle?(["muted": !_muted])
     }
     
     func cleanUp() {
+        print("VideoView.cleanUp | nativeID \(self.nativeID)")
         if _player == nil { return }
         setPaused(true)
         
@@ -179,6 +187,7 @@ public class VideoViewSwift: UIView {
     }
     
     func sendProgressUpdate(time: CMTime) {
+        // not here
         guard let _player = _player else { return }
         let duration = _player.currentItem?.duration ?? .zero;
         let timeLeft = CMTimeSubtract(duration, time);
@@ -205,6 +214,7 @@ public class VideoViewSwift: UIView {
     }
     
     func setupUI() {
+        print("VideoView.setupUI | nativeID: \(self.nativeID)")
         if _videoPlayerParent.superview != nil { return }
         addSubview(_videoPlayerParent)
         _videoPlayerParent.layer.addSublayer(_playerLayer)
@@ -239,6 +249,7 @@ public class VideoViewSwift: UIView {
     }
     
     public override func removeFromSuperview() {
+        print("VideoView.removeFromSuperview | nativeID: \(self.nativeID)")
         super.removeFromSuperview()
         cleanUp()
     }
@@ -264,6 +275,8 @@ public class VideoViewSwift: UIView {
             if _player == nil { return }
             if _player?.status == .readyToPlay {
                 onLoad?(nil)
+                // causes Main Thread Lock
+                // VideoDurationView is not used in Looky => Should be removed
                 _videoDurationView.setTime(_player?.currentItem?.asset.duration ?? .zero)
             }
         }
