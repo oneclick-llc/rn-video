@@ -277,7 +277,7 @@ public class VideoViewSwift: UIView {
                 onLoad?(nil)
                 // causes Main Thread Lock
                 // VideoDurationView is not used in Looky => Should be removed
-                _videoDurationView.setTime(_player?.currentItem?.asset.duration ?? .zero)
+                // _videoDurationView.setTime(_player?.currentItem?.asset.duration ?? .zero)
             }
         }
     }
