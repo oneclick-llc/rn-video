@@ -1,10 +1,11 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import type { NativeProps } from './VideoViewNativeComponent';
 import V from './VideoViewNativeComponent';
 import { Image, StyleSheet, View } from 'react-native';
+import { videoController } from 'src/VideosController';
 
 interface Props extends NativeProps {
-  poster?: string;
+  poster?: string | number;
 }
 
 export const LookyVideoView: React.FC<Props> = memo((props) => {
@@ -29,15 +30,25 @@ export const LookyVideoView: React.FC<Props> = memo((props) => {
       {!isLoaded && props.poster && (
         <Image
           style={StyleSheet.absoluteFillObject}
-          source={{ uri: props.poster }}
+          source={
+            typeof props.poster === 'number'
+              ? props.poster
+              : { uri: props.poster }
+          }
         />
       )}
     </View>
   );
 });
 
-export const SimpleLookyVideoView: React.FC<Props & { paused: boolean }> = memo(
-  (props) => {
+export const SimpleLookyVideoView: React.FC<Props & { autoplay?: boolean }> =
+  memo((props) => {
+    useEffect(() => {
+      if (props.autoplay) {
+        videoController.playWithId(props.nativeID);
+      } else {
+        videoController.pauseWithId(props.nativeID);
+      }
+    }, [props.autoplay, props.nativeID]);
     return <LookyVideoView {...props} />;
-  }
-);
+  });

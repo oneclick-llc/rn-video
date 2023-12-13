@@ -49,6 +49,20 @@ export const videoController = {
     global.__lookyVideo.playVideo(channel, videoId);
   },
 
+  playWithId(nativeId: string) {
+    console.log('🍓[VideosController.playVideo]', nativeId);
+    const [channel, id] = nativeId.split(':');
+    if (!channel || !id) return;
+    global.__lookyVideo.playVideo(channel, id);
+  },
+
+  pauseWithId(nativeId: string) {
+    console.log('🍓[VideosController.pauseWithId]', nativeId);
+    const [channel, id] = nativeId.split(':');
+    if (!channel || !id) return;
+    global.__lookyVideo.pauseVideo(channel, id);
+  },
+
   pauseCurrentPlaying() {
     console.log('🍓[VideosController.pauseCurrentPlaying]');
     global.__lookyVideo.pauseCurrentPlaying();
