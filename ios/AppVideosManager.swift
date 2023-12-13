@@ -8,20 +8,23 @@
 
 import Foundation
 
+public typealias LookyVideoView = VideoViewSwift
+
 public class VideoChannel {
-    public var videos: [String: VideoViewSwift] = [:]
-    public var laterRestore: String?
-    public var backgroundRestore: String?
+    var videos: [String: LookyVideoView] = [:]
+    var laterRestore: String?
+    var backgroundRestore: String?
     
-    var currentPlaying: (key: String, value: VideoViewSwift)? {
+    var currentPlaying: (key: String, value: LookyVideoView)? {
         for v in videos {
+            debugPrint("🍓 currentPlaying", v.key, v.value._paused)
             if v.value._paused { continue }
             return v
         }
         return nil
     }
 
-    var forRestore: VideoViewSwift? {
+    var forRestore: LookyVideoView? {
         if let backgroundRestore {
             return videos[backgroundRestore]
         }
@@ -34,8 +37,14 @@ public class VideoChannel {
             video.value.setPaused(true)
         }
     }
+    
+    func toggleMuted(_ muted: Bool) {
+        for video in videos {
+            video.value.setMuted(muted)
+        }
+    }
 
-    func video(for videoId: String) -> VideoViewSwift? {
+    func video(for videoId: String) -> LookyVideoView? {
         return videos[videoId]
     }
 }
@@ -46,13 +55,15 @@ public class AppVideosManager: NSObject {
     public static let shared = AppVideosManager()
     public var channels: [String: VideoChannel] = [:]
 
-    public func addVideo(_ video: VideoViewSwift, nativeID: String) {
+    public func addVideo(_ video: LookyVideoView, nativeID: String) {
         let parts = nativeID.components(separatedBy: ":")
         let channelName = parts[0]
         let id = parts[1]
         
         let channel = getChannel(name: channelName)
         channel?.videos[id] = video
+        
+        debugPrint("🍓 addVideo", channelName, id)
         
         if channel?.laterRestore == id {
             video.setPaused(false)
@@ -64,6 +75,7 @@ public class AppVideosManager: NSObject {
         let parts = nativeID.components(separatedBy: ":")
         let channelName = parts[0]
         let id = parts[1]
+        debugPrint("🍓 removeVideo", channelName, id)
         
         let channel = getChannel(name: channelName)
         if channel?.videos.isEmpty == true {
@@ -76,28 +88,31 @@ public class AppVideosManager: NSObject {
 // MARK: public api
 extension AppVideosManager {
     @objc
-    public func playVideo(_ channel: String, videoId: String) {
-        guard let channel = getChannel(name: channel) else { return }
+    public func playVideo(_ channelName: String, videoId: String) {
+        guard let channel = getChannel(name: channelName) else { return }
         if channel.currentPlaying?.key == videoId { return }
         self.pauseCurrentPlaying()
         if let video = channel.video(for: videoId) {
+            debugPrint("🍓 playVideo", channelName, videoId)
             video.setPaused(false)
         }
     }
     
     @objc
-    public func pauseVideo(_ channel: String, videoId: String) {
-        guard let channel = getChannel(name: channel) else { return }
+    public func pauseVideo(_ channelName: String, videoId: String) {
+        guard let channel = getChannel(name: channelName) else { return }
         if let video = channel.video(for: videoId), !video._paused {
+            debugPrint("🍓 playVideo", channelName, videoId)
             video.setPaused(true)
         }
     }
     
     @objc
-    public func togglePlayInBackground(_ channel: String?, playInBackground: Bool) {
-        guard let videoChannel = getChannel(name: channel) else { return }
+    public func togglePlayInBackground(_ channelName: String?, playInBackground: Bool) {
+        guard let videoChannel = getChannel(name: channelName) else { return }
         if playInBackground {
-            if let video = findFirstPlayingVideo(channelName: channel) {
+            if let video = findFirstPlayingVideo(channelName: channelName) {
+                debugPrint("🍓 togglePlayInBackground", channelName as Any, videoId(video) as Any)
                 video.applicationDidEnterBackground()
                 videoChannel.backgroundRestore = videoId(video)
             }
@@ -109,69 +124,62 @@ extension AppVideosManager {
     }
     
     @objc
-    public func restoreLastPlaying(_ channel: String?, shouldSeekToStart: Bool) {
-        if let channel {
-            let videoChannel = getChannel(name: channel)
+    public func restoreLastPlaying(_ channelName: String?, shouldSeekToStart: Bool) {
+        pauseAllVideos()
+        debugPrint("🍓 restoreLastPlaying.knownChannel", channelName as Any)
+        if let channelName {
+            let videoChannel = getChannel(name: channelName)
             if let restore = videoChannel?.laterRestore {
-                togglePlay(channel: channel, videoId: restore, seekToStart: true)
+                togglePlay(channel: channelName, videoId: restore, seekToStart: true)
             }
             return
         }
         
-        let keys = channels.keys
-        for key in keys {
-            guard let channel = channels[key] else { continue }
-            if channel.laterRestore == nil { continue }
+        for entry in channels {
+            if entry.value.laterRestore == nil { continue }
             togglePlay(
-                channel: key,
-                videoId: channel.laterRestore!,
+                channel: entry.key,
+                videoId: entry.value.laterRestore!,
                 seekToStart: true
             )
-            channel.laterRestore = nil
+            entry.value.laterRestore = nil
         }
     }
     
     @objc
-    public func pauseCurrentPlayingWithLaterRestore(_ channel: String?) {
-        if let channel {
-            guard let videoChannel = getChannel(name: channel) else {
-                return
-            }
-            if let video = findFirstPlayingVideo(channelName: channel) {
-                videoChannel.laterRestore = self.videoId(video)
+    public func pauseCurrentPlayingWithLaterRestore(_ channelName: String?) {
+        if let channelName {
+            guard let channel = getChannel(name: channelName) else { return }
+            if let video = channel.currentPlaying?.value {
+                channel.laterRestore = videoId(video)
                 video.setPaused(true)
+                debugPrint("🍓 pauseCurrentPlayingWithLaterRestore.knownChannel", channelName as Any, videoId(video) as Any)
             }
             return;
         }
         
         let keys = channels.keys
-        for key in keys {
-            if let channel = channels[key],
-               let video = findFirstPlayingVideo(channelName: key) {
-                channel.laterRestore = self.videoId(video)
-                video.setPaused(true)
-                channels[key] = channel
-                break
-            }
+        for entry in channels {
+            let channel = entry.value
+            let video = channel.currentPlaying?.value
+            channel.laterRestore = videoId(video)
+            video?.setPaused(true)
+            debugPrint("🍓 pauseCurrentPlayingWithLaterRestore", entry.key, videoId(video) as Any)
         }
     }
     
     @objc
-    public func togglePlayVideo(_ channel: String, videoId: String) {
-        let video = findFirstPlayingVideo(channelName: channel)
+    public func togglePlayVideo(_ channelName: String, videoId: String) {
+        let video = findFirstPlayingVideo(channelName: channelName)
         if let video { pauseCurrentPlaying() }
-        else { playVideo(channel, videoId: videoId) }
+        else { playVideo(channelName, videoId: videoId) }
     }
     
     @objc
     public func toggleVideosMuted(_ muted: Bool) {
         DispatchQueue.main.async {
-            let keys = self.channels.keys
-            for key in keys {
-                guard let channel = self.channels[key] else { continue }
-                for v in channel.videos {
-                    v.value.setMuted(muted)
-                }
+            for entry in self.channels {
+                entry.value.toggleMuted(muted)
             }
         }
     }
@@ -179,6 +187,21 @@ extension AppVideosManager {
     @objc
     public func pauseCurrentPlaying() {
         pauseAllVideos()
+    }
+    
+    @objc
+    public func isPaused(_ channelName: String, videoId: String) -> Bool {
+        return getChannel(name: channelName)?.video(for: videoId)?._paused == true
+    }
+    
+    @objc
+    public func isMuted(_ channelName: String, videoId: String) -> Bool {
+        return getChannel(name: channelName)?.video(for: videoId)?._muted == true
+    }
+    
+    @objc
+    public func seek(_ channelName: String, videoId: String, duration: Double) {
+        getChannel(name: channelName)?.video(for: videoId)?.seekTo(duration: duration)
     }
 }
 
@@ -205,7 +228,7 @@ extension AppVideosManager {
         }
     }
     
-    private func videoId(_ video: VideoViewSwift?) -> String? {
+    private func videoId(_ video: LookyVideoView?) -> String? {
         guard let video = video else { return nil }
         let parts = video.nativeID.components(separatedBy: ":")
         return parts[1]
@@ -223,27 +246,21 @@ extension AppVideosManager {
     }
     
     private func pauseAllVideos() {
-        let allChannels = channels
-        let allKeys = allChannels.keys
-        for key in allKeys {
-            allChannels[key]?.pauseAllVideos()
+        for entry in channels {
+            entry.value.pauseAllVideos()
         }
     }
     
-    private func findFirstPlayingVideo() -> VideoViewSwift? {
-        let allChannels = channels
-        let allKeys = allChannels.keys
-        for key in allKeys {
-            if let video = allChannels[key]?.currentPlaying {
-                return video.value
-            }
+    private func findFirstPlayingVideo() -> LookyVideoView? {
+        for entry in channels {
+            if let v = entry.value.currentPlaying { return v.value }
         }
         return nil
     }
     
-    private func findFirstPlayingVideo(channelName: String?) -> VideoViewSwift? {
+    private func findFirstPlayingVideo(channelName: String?) -> LookyVideoView? {
         guard let name = channelName else { return nil }
-        guard let channel = channels[name] else { return nil }
+        guard let channel = getChannel(name: name) else { return nil }
         return channel.currentPlaying?.value
     }
 }

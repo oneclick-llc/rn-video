@@ -29,7 +29,7 @@ public class VideoViewSwift: UIView {
     
     var _timeObserverToken: Any?
     
-    private var _muted = true
+    public var _muted = true
     public var _paused = true
     private var _player: AVPlayer?
     private var _playerItem: AVPlayerItem?
@@ -212,6 +212,11 @@ public class VideoViewSwift: UIView {
         if item.status == .readyToPlay {
             item.seek(to: .zero, completionHandler: nil)
         }
+    }
+    
+    @objc
+    public func seekTo(duration: Double) {
+        _player?.seek(to: CMTime(seconds: duration, preferredTimescale: 60000))
     }
     
     

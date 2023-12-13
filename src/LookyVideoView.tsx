@@ -35,3 +35,9 @@ export const LookyVideoView: React.FC<Props> = memo((props) => {
     </View>
   );
 });
+
+export const SimpleLookyVideoView: React.FC<Props & { paused: boolean }> = memo(
+  (props) => {
+    return <LookyVideoView {...props} />;
+  }
+);

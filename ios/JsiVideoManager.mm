@@ -22,13 +22,16 @@ using namespace facebook;
             const jsi::Value *args,                     \
             size_t count) -> jsi::Value
     
-#define FromJSIString(string)                           \
-    [[NSString alloc] initWithCString:string.c_str() encoding:NSUTF8StringEncoding]
 }
 
 @end
 
 @implementation JsiVideoManager
+
+NSString* fromJSIString(std::string string) {
+    if (string.length() == 0) return nil;
+    return [[NSString alloc] initWithCString:string.c_str() encoding:NSUTF8StringEncoding];
+};
 
 RCT_EXPORT_MODULE()
 
@@ -46,8 +49,8 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install) {
         auto rawChannel = args[0].asString(runtime).utf8(runtime);;
         auto rawVideoId = args[1].asString(runtime).utf8(runtime);;
         
-        [AppVideosManager.shared playVideo:FromJSIString(rawChannel)
-                                   videoId:FromJSIString(rawVideoId)];
+        [AppVideosManager.shared playVideo:fromJSIString(rawChannel)
+                                   videoId:fromJSIString(rawVideoId)];
         
         return jsi::Value::undefined();
     });
@@ -56,8 +59,8 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install) {
         auto rawChannel = args[0].asString(runtime).utf8(runtime);
         auto rawVideoId = args[1].asString(runtime).utf8(runtime);
         
-        [AppVideosManager.shared pauseVideo:FromJSIString(rawChannel)
-                                    videoId:FromJSIString(rawVideoId)];
+        [AppVideosManager.shared pauseVideo:fromJSIString(rawChannel)
+                                    videoId:fromJSIString(rawVideoId)];
         
         return jsi::Value::undefined();
     });
@@ -69,8 +72,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install) {
         }
         
         auto playInBackground = args[1].asBool();
-        
-        [AppVideosManager.shared togglePlayInBackground:FromJSIString(rawChannel)
+        [AppVideosManager.shared togglePlayInBackground:fromJSIString(rawChannel)
                                        playInBackground:playInBackground == 1];
         
         return jsi::Value::undefined();
@@ -84,7 +86,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install) {
         
         auto shouldSeekToStart = args[1].asBool();
         
-        [AppVideosManager.shared restoreLastPlaying:FromJSIString(rawChannel)
+        [AppVideosManager.shared restoreLastPlaying:fromJSIString(rawChannel)
                                   shouldSeekToStart:shouldSeekToStart];
         
         return jsi::Value::undefined();
@@ -96,7 +98,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install) {
             rawChannel = args[0].asString(runtime).utf8(runtime);
         }
         
-        [AppVideosManager.shared pauseCurrentPlayingWithLaterRestore:FromJSIString(rawChannel)];
+        [AppVideosManager.shared pauseCurrentPlayingWithLaterRestore:fromJSIString(rawChannel)];
         
         return jsi::Value::undefined();
     });
@@ -105,8 +107,8 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install) {
         auto rawChannel = args[0].asString(runtime).utf8(runtime);
         auto rawVideoId = args[1].asString(runtime).utf8(runtime);
         
-        [AppVideosManager.shared togglePlayVideo:FromJSIString(rawChannel)
-                                         videoId:FromJSIString(rawVideoId)];
+        [AppVideosManager.shared togglePlayVideo:fromJSIString(rawChannel)
+                                         videoId:fromJSIString(rawVideoId)];
         
         return jsi::Value::undefined();
     });
@@ -120,8 +122,38 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install) {
     });
     
     auto pauseCurrentPlaying = JSI_HOST_FUNCTION("pauseCurrentPlaying", 0) {
-        
         [AppVideosManager.shared pauseCurrentPlaying];
+        return jsi::Value::undefined();
+    });
+    
+    auto isPaused = JSI_HOST_FUNCTION("isPaused", 2) {
+        auto rawChannel = args[0].asString(runtime).utf8(runtime);
+        auto rawVideoId = args[1].asString(runtime).utf8(runtime);
+        
+        auto isPaused = [AppVideosManager.shared isPaused:fromJSIString(rawChannel)
+                                                         videoId:fromJSIString(rawVideoId)];
+        
+        return jsi::Value(isPaused);
+    });
+    
+    auto isMuted = JSI_HOST_FUNCTION("isMuted", 2) {
+        auto rawChannel = args[0].asString(runtime).utf8(runtime);
+        auto rawVideoId = args[1].asString(runtime).utf8(runtime);
+        
+        auto isPaused = [AppVideosManager.shared isMuted:fromJSIString(rawChannel)
+                                                         videoId:fromJSIString(rawVideoId)];
+        
+        return jsi::Value(isPaused);
+    });
+    
+    auto seek = JSI_HOST_FUNCTION("isMuted", 3) {
+        auto rawChannel = args[0].asString(runtime).utf8(runtime);
+        auto rawVideoId = args[1].asString(runtime).utf8(runtime);
+        auto rawDuration = args[2].asNumber();
+        
+        [AppVideosManager.shared seek:fromJSIString(rawChannel)
+                              videoId:fromJSIString(rawVideoId)
+                             duration:rawDuration];
         
         return jsi::Value::undefined();
     });
@@ -136,6 +168,9 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install) {
     viewHelpers.setProperty(runtime, "togglePlayVideo", std::move(togglePlayVideo));
     viewHelpers.setProperty(runtime, "toggleVideosMuted", std::move(toggleVideosMuted));
     viewHelpers.setProperty(runtime, "pauseCurrentPlaying", std::move(pauseCurrentPlaying));
+    viewHelpers.setProperty(runtime, "isPaused", std::move(isPaused));
+    viewHelpers.setProperty(runtime, "isMuted", std::move(isMuted));
+    viewHelpers.setProperty(runtime, "seek", std::move(seek));
     runtime.global().setProperty(runtime, "__lookyVideo", std::move(viewHelpers));
     
     return @true;
