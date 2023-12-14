@@ -88,8 +88,8 @@ public class ReactVideoView extends ScalableVideoView implements
     public static final String EVENT_PROP_STEP_BACKWARD = "canStepBackward";
 
     public static final String EVENT_PROP_DURATION = "duration";
-    public static final String EVENT_PROP_PLAYABLE_DURATION = "playableDuration";
-    public static final String EVENT_PROP_SEEKABLE_DURATION = "seekableDuration";
+    public static final String EVENT_PROP_PLAYABLE_DURATION = "totalDuration";
+    public static final String EVENT_PROP_SEEKABLE_DURATION = "timeLeft";
     public static final String EVENT_PROP_CURRENT_TIME = "currentTime";
     public static final String EVENT_PROP_SEEK_TIME = "seekTime";
     public static final String EVENT_PROP_NATURALSIZE = "naturalSize";
@@ -106,7 +106,7 @@ public class ReactVideoView extends ScalableVideoView implements
     public static final String EVENT_PROP_EXTRA = "extra";
 
     private ThemedReactContext mThemedReactContext;
-    private RCTEventEmitter mEventEmitter;
+    public RCTEventEmitter mEventEmitter;
 
     private Handler mProgressUpdateHandler = new Handler();
     private Runnable mProgressUpdateRunnable = null;
@@ -160,8 +160,8 @@ public class ReactVideoView extends ScalableVideoView implements
                 if (mMediaPlayerValid && !isCompleted && !mPaused && !mBackgroundPaused) {
                     WritableMap event = Arguments.createMap();
                     event.putDouble(EVENT_PROP_CURRENT_TIME, mMediaPlayer.getCurrentPosition() / 1000.0);
-                    event.putDouble(EVENT_PROP_PLAYABLE_DURATION, mVideoBufferedDuration / 1000.0); //TODO:mBufferUpdateRunnable
-                    event.putDouble(EVENT_PROP_SEEKABLE_DURATION, mVideoDuration / 1000.0);
+                    event.putDouble(EVENT_PROP_PLAYABLE_DURATION, mVideoDuration / 1000.0);
+                    event.putDouble(EVENT_PROP_SEEKABLE_DURATION, (mVideoDuration / 1000.0) - (mMediaPlayer.getCurrentPosition() / 1000.0));
                     mEventEmitter.receiveEvent(getId(), Events.EVENT_PROGRESS.toString(), event);
 
                     // Check for update after an interval

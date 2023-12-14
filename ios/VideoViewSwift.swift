@@ -17,6 +17,8 @@ public class VideoViewSwift: UIView {
     @objc
     var loop = false
     @objc
+    var progressUpdateInterval = 1.0
+    @objc
     var onVideoEnd: RCTDirectEventBlock?
     @objc
     var onVideoTap: RCTDirectEventBlock?
@@ -162,8 +164,9 @@ public class VideoViewSwift: UIView {
         self.setMuted(_muted)
         
         applyGestures()
-        
-        let interval = CMTimeMakeWithSeconds(1.0, preferredTimescale: 60000)
+        let progress = progressUpdateInterval
+        debugPrint("===-=", progressUpdateInterval)
+        let interval = CMTimeMakeWithSeconds(progress, preferredTimescale: 60000)
         
         _player?.addPeriodicTimeObserver(
             forInterval: interval,
@@ -218,8 +221,6 @@ public class VideoViewSwift: UIView {
     public func seekTo(duration: Double) {
         _player?.seek(to: CMTime(seconds: duration, preferredTimescale: 60000))
     }
-    
-    
     
     @objc
     func setVideoUri(_ uri: String) {

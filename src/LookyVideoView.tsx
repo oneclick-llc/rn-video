@@ -1,11 +1,12 @@
 import React, { memo, useEffect, useState } from 'react';
 import type { NativeProps } from './VideoViewNativeComponent';
 import V from './VideoViewNativeComponent';
-import { Image, StyleSheet, View } from 'react-native';
-import { videoController } from 'src/VideosController';
+import { Image, ImageStyle, StyleProp, StyleSheet, View } from 'react-native';
+import { videoController } from './VideosController';
 
 interface Props extends NativeProps {
   poster?: string | number;
+  posterStyle?: StyleProp<ImageStyle>;
 }
 
 export const LookyVideoView: React.FC<Props> = memo((props) => {
@@ -29,7 +30,7 @@ export const LookyVideoView: React.FC<Props> = memo((props) => {
       />
       {!isLoaded && props.poster && (
         <Image
-          style={StyleSheet.absoluteFillObject}
+          style={props.posterStyle ?? StyleSheet.absoluteFillObject}
           source={
             typeof props.poster === 'number'
               ? props.poster

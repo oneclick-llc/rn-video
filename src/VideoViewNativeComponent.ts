@@ -10,6 +10,7 @@ export interface NativeProps extends ViewProps {
   onVideoDoubleTap?: (e: any) => void;
   onVideoEnd?: (e: any) => void;
   onVideoLoad?: () => void;
+  progressUpdateInterval?: number;
   resizeMode?: 'stretch' | 'contain' | 'cover';
   onVideoProgress?: (data: {
     currentTime: number;

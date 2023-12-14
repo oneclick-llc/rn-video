@@ -15,6 +15,7 @@ export const AppVideo: React.FC<Props> = (props) => {
     <View style={{ flex: 1 }}>
       {isPresented && (
         <LookyVideoView
+          progressUpdateInterval={0.25}
           resizeMode={'cover'}
           onVideoProgress={(data) =>
             console.log('AppVideo.onVideoProgress', data)

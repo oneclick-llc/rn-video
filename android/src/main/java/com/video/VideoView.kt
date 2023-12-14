@@ -1,8 +1,22 @@
 package com.video
 
+import android.view.View
 import com.facebook.react.uimanager.ThemedReactContext
 
 class VideoView(themedReactContext: ThemedReactContext?) : ReactVideoView(themedReactContext) {
+
+  init {
+      setOnClickListener(DoubleClick(object : DoubleClick.DoubleClickListener {
+        override fun onSingleClick(view: View) {
+          mEventEmitter.receiveEvent(id, "onVideoTap", null)
+        }
+
+        override fun onDoubleClick(view: View) {
+          mEventEmitter.receiveEvent(id, "onVideoDoubleTap", null)
+        }
+
+      }))
+  }
 
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
