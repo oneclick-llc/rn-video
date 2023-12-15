@@ -6,12 +6,14 @@ import { videoController } from 'rn-video';
 
 const one =
   'https://cdn-test.looky.com/post-instagram/3093573415336326421/344572606_907419743843224_427802127932990228_n.mp4';
+const two =
+  'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8';
 
 export default function App() {
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.container}>
-        <AppVideo channel={'channel'} src={one} vId={'one'} />
+        <AppVideo channel={'channel'} src={two} vId={'one'} />
         <AppVideo loop channel={'channel'} src={one} vId={'two'} />
         <AppVideo channel={'channel2'} src={one} vId={'two'} />
       </View>

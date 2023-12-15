@@ -53,20 +53,11 @@ public class ReactVideoView extends ScalableVideoView implements
     MediaController.MediaPlayerControl {
 
     public enum Events {
-        EVENT_LOAD_START("onVideoLoadStart"),
         EVENT_LOAD("onVideoLoad"),
         EVENT_ERROR("onVideoError"),
         EVENT_PROGRESS("onVideoProgress"),
-        EVENT_TIMED_METADATA("onTimedMetadata"),
-        EVENT_SEEK("onVideoSeek"),
         EVENT_END("onVideoEnd"),
-        EVENT_STALLED("onPlaybackStalled"),
-        EVENT_RESUME("onPlaybackResume"),
-        EVENT_READY_FOR_DISPLAY("onReadyForDisplay"),
-        EVENT_FULLSCREEN_WILL_PRESENT("onVideoFullscreenPlayerWillPresent"),
-        EVENT_FULLSCREEN_DID_PRESENT("onVideoFullscreenPlayerDidPresent"),
-        EVENT_FULLSCREEN_WILL_DISMISS("onVideoFullscreenPlayerWillDismiss"),
-        EVENT_FULLSCREEN_DID_DISMISS("onVideoFullscreenPlayerDidDismiss");
+        EVENT_BUFFER("onVideoBuffer");
 
         private final String mName;
 
@@ -131,7 +122,6 @@ public class ReactVideoView extends ScalableVideoView implements
     private long mSeekTime = 0;
     private boolean mPlayInBackground = false;
     private boolean mBackgroundPaused = false;
-    private boolean mIsFullscreen = false;
 
     private int mMainVer = 0;
     private int mPatchVer = 0;
@@ -139,7 +129,6 @@ public class ReactVideoView extends ScalableVideoView implements
     private boolean mMediaPlayerValid = false; // True if mMediaPlayer is in prepared, started, paused or completed state.
 
     private int mVideoDuration = 0;
-    private int mVideoBufferedDuration = 0;
     private boolean isCompleted = false;
     private boolean mUseNativeControls = false;
 
@@ -240,9 +229,7 @@ public class ReactVideoView extends ScalableVideoView implements
             mMediaPlayerValid = false;
             release();
         }
-        if (mIsFullscreen) {
-            setFullscreen(false);
-        }
+
         if (mThemedReactContext != null) {
             mThemedReactContext.removeLifecycleEventListener(this);
             mThemedReactContext = null;
@@ -266,7 +253,6 @@ public class ReactVideoView extends ScalableVideoView implements
 
         mMediaPlayerValid = false;
         mVideoDuration = 0;
-        mVideoBufferedDuration = 0;
 
         initializeMediaPlayerIfNeeded();
         mMediaPlayer.reset();
@@ -341,24 +327,6 @@ public class ReactVideoView extends ScalableVideoView implements
             return;
         }
 
-        WritableMap src = Arguments.createMap();
-
-        WritableMap wRequestHeaders = Arguments.createMap();
-        wRequestHeaders.merge(mRequestHeaders);
-
-        src.putString(ReactVideoViewManager.PROP_SRC_URI, uriString);
-        src.putString(ReactVideoViewManager.PROP_SRC_TYPE, type);
-        src.putMap(ReactVideoViewManager.PROP_SRC_HEADERS, wRequestHeaders);
-        src.putBoolean(ReactVideoViewManager.PROP_SRC_IS_NETWORK, isNetwork);
-        if(mMainVer>0) {
-            src.putInt(ReactVideoViewManager.PROP_SRC_MAINVER, mMainVer);
-            if(mPatchVer>0) {
-                src.putInt(ReactVideoViewManager.PROP_SRC_PATCHVER, mPatchVer);
-            }
-        }
-        WritableMap event = Arguments.createMap();
-        event.putMap(ReactVideoViewManager.PROP_SRC, src);
-        mEventEmitter.receiveEvent(getId(), Events.EVENT_LOAD_START.toString(), event);
         isCompleted = false;
 
         try {
@@ -489,39 +457,6 @@ public class ReactVideoView extends ScalableVideoView implements
         }
     }
 
-    public void setFullscreen(boolean isFullscreen) {
-        if (isFullscreen == mIsFullscreen) {
-            return; // Avoid generating events when nothing is changing
-        }
-        mIsFullscreen = isFullscreen;
-
-        Activity activity = mThemedReactContext.getCurrentActivity();
-        if (activity == null) {
-            return;
-        }
-        Window window = activity.getWindow();
-        View decorView = window.getDecorView();
-        int uiOptions;
-        if (mIsFullscreen) {
-            if (Build.VERSION.SDK_INT >= 19) { // 4.4+
-                uiOptions = SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                        | SYSTEM_UI_FLAG_FULLSCREEN;
-            } else {
-                uiOptions = SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | SYSTEM_UI_FLAG_FULLSCREEN;
-            }
-            mEventEmitter.receiveEvent(getId(), Events.EVENT_FULLSCREEN_WILL_PRESENT.toString(), null);
-            decorView.setSystemUiVisibility(uiOptions);
-            mEventEmitter.receiveEvent(getId(), Events.EVENT_FULLSCREEN_DID_PRESENT.toString(), null);
-        } else {
-            uiOptions = View.SYSTEM_UI_FLAG_VISIBLE;
-            mEventEmitter.receiveEvent(getId(), Events.EVENT_FULLSCREEN_WILL_DISMISS.toString(), null);
-            decorView.setSystemUiVisibility(uiOptions);
-            mEventEmitter.receiveEvent(getId(), Events.EVENT_FULLSCREEN_DID_DISMISS.toString(), null);
-        }
-    }
-
     public void applyModifiers() {
         setResizeModeModifier(mResizeMode);
         setRepeatModifier(mRepeat);
@@ -602,15 +537,17 @@ public class ReactVideoView extends ScalableVideoView implements
 
     @Override
     public boolean onInfo(MediaPlayer mp, int what, int extra) {
+      WritableMap map = Arguments.createMap();
         switch (what) {
             case MediaPlayer.MEDIA_INFO_BUFFERING_START:
-                mEventEmitter.receiveEvent(getId(), Events.EVENT_STALLED.toString(), Arguments.createMap());
+              map.putBoolean("isBuffering", true);
+              mEventEmitter.receiveEvent(getId(), Events.EVENT_BUFFER.toString(), map);
                 break;
             case MediaPlayer.MEDIA_INFO_BUFFERING_END:
-                mEventEmitter.receiveEvent(getId(), Events.EVENT_RESUME.toString(), Arguments.createMap());
                 break;
             case MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START:
-                mEventEmitter.receiveEvent(getId(), Events.EVENT_READY_FOR_DISPLAY.toString(), Arguments.createMap());
+              map.putBoolean("isBuffering", false);
+                mEventEmitter.receiveEvent(getId(), Events.EVENT_BUFFER.toString(), map);
                 break;
 
             default:
@@ -621,14 +558,9 @@ public class ReactVideoView extends ScalableVideoView implements
     @Override
     public void onBufferingUpdate(MediaPlayer mp, int percent) {
         selectTimedMetadataTrack(mp);
-        mVideoBufferedDuration = (int) Math.round((double) (mVideoDuration * percent) / 100.0);
     }
 
     public void onSeekComplete(MediaPlayer mp) {
-        WritableMap event = Arguments.createMap();
-        event.putDouble(EVENT_PROP_CURRENT_TIME, getCurrentPosition() / 1000.0);
-        event.putDouble(EVENT_PROP_SEEK_TIME, mSeekTime / 1000.0);
-        mEventEmitter.receiveEvent(getId(), Events.EVENT_SEEK.toString(), event);
         mSeekTime = 0;
     }
 
@@ -683,26 +615,7 @@ public class ReactVideoView extends ScalableVideoView implements
             implements MediaPlayer.OnTimedMetaDataAvailableListener
     {
         public void onTimedMetaDataAvailable(MediaPlayer mp, TimedMetaData data) {
-            WritableMap event = Arguments.createMap();
 
-            try {
-                String rawMeta  = new String(data.getMetaData(), "UTF-8");
-                WritableMap id3 = Arguments.createMap();
-
-                id3.putString(EVENT_PROP_METADATA_VALUE, rawMeta.substring(rawMeta.lastIndexOf("\u0003") + 1));
-                id3.putString(EVENT_PROP_METADATA_IDENTIFIER, "id3/TDEN");
-
-                WritableArray metadata = new WritableNativeArray();
-
-                metadata.pushMap(id3);
-
-                event.putArray(EVENT_PROP_METADATA, metadata);
-                event.putDouble(EVENT_PROP_TARGET, getId());
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-
-            mEventEmitter.receiveEvent(getId(), Events.EVENT_TIMED_METADATA.toString(), event);
         }
     }
 

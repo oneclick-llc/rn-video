@@ -21,6 +21,8 @@ public class VideoViewSwift: UIView {
     @objc
     var onVideoEnd: RCTDirectEventBlock?
     @objc
+    var onVideoBuffer: RCTDirectEventBlock?
+    @objc
     var onVideoTap: RCTDirectEventBlock?
     @objc
     var onVideoDoubleTap: RCTDirectEventBlock?
@@ -119,6 +121,8 @@ public class VideoViewSwift: UIView {
             _timeObserverToken = nil
         }
         _player?.removeObserver(self, forKeyPath: "status")
+        _player?.removeObserver(self, forKeyPath: "playbackBufferEmpty")
+        _player?.removeObserver(self, forKeyPath: "playbackLikelyToKeepUp")
         
         _player = nil;
         _playerItem = nil;
@@ -177,6 +181,8 @@ public class VideoViewSwift: UIView {
         )
         
         _player?.addObserver(self, forKeyPath: "status", options: [.new, .initial], context: nil)
+        _player?.addObserver(self, forKeyPath: "playbackBufferEmpty", options: [.new], context: nil)
+        _player?.addObserver(self, forKeyPath: "playbackLikelyToKeepUp", options: [.new], context: nil)
     }
     
     public override func removeFromSuperview() {
@@ -206,6 +212,14 @@ public class VideoViewSwift: UIView {
             if _player?.status == .readyToPlay {
                 onVideoLoad?(nil)
             }
+        }
+        
+        if keyPath == "playbackBufferEmpty" {
+            onVideoBuffer?(["isBuffering": true])
+        }
+        
+        if keyPath == "playbackLikelyToKeepUp" {
+            onVideoBuffer?(["isBuffering": false])
         }
     }
     

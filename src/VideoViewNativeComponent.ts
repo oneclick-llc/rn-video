@@ -1,22 +1,28 @@
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 import type { ViewProps } from 'react-native';
 
-export interface NativeProps extends ViewProps {
+interface Callbacks {
+  onVideoTap?: (e: any) => void;
+  onVideoDoubleTap?: (e: any) => void;
+  onVideoBuffer?: (e: any) => void;
+  onVideoEnd?: (e: any) => void;
+  onVideoLoad?: () => void;
+  onVideoProgress?: (data: {
+    nativeEvent: {
+      currentTime: number;
+      totalDuration: number;
+      timeLeft: number;
+    };
+  }) => void;
+}
+
+export interface NativeProps extends ViewProps, Callbacks {
   videoUri: string;
   muted: boolean;
   loop: boolean;
   nativeID: string;
-  onVideoTap?: (e: any) => void;
-  onVideoDoubleTap?: (e: any) => void;
-  onVideoEnd?: (e: any) => void;
-  onVideoLoad?: () => void;
   progressUpdateInterval?: number;
   resizeMode?: 'stretch' | 'contain' | 'cover';
-  onVideoProgress?: (data: {
-    currentTime: number;
-    totalDuration: number;
-    timeLeft: number;
-  }) => void;
 }
 
 export default codegenNativeComponent<NativeProps>('LookyVideoView');

@@ -16,12 +16,10 @@ export const LookyVideoView: React.FC<Props> = memo((props) => {
     <View style={props.style}>
       <V
         {...props}
-        onVideoProgress={
-          props.onVideoProgress
-            ? //@ts-ignore
-              (event) => props.onVideoProgress(event.nativeEvent)
-            : undefined
+        onVideoBuffer={(event) =>
+          console.log('🍓[LookyVideoView.onVideoBuffer]', event.nativeEvent)
         }
+        onVideoProgress={props.onVideoProgress}
         style={StyleSheet.absoluteFillObject}
         onVideoLoad={() => {
           props.onVideoLoad?.();

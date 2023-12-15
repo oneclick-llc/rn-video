@@ -17,9 +17,9 @@ export const AppVideo: React.FC<Props> = (props) => {
         <LookyVideoView
           progressUpdateInterval={0.25}
           resizeMode={'cover'}
-          onVideoProgress={(data) =>
-            console.log('AppVideo.onVideoProgress', data)
-          }
+          // onVideoProgress={(data) =>
+          //   console.log('AppVideo.onVideoProgress', data)
+          // }
           //poster={'https://picsum.photos/200/300'}
           onVideoDoubleTap={() => {
             console.log('🍓[AppVideo.onVideoDoubleTap]');
