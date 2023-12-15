@@ -1,12 +1,23 @@
-import React, { memo, useEffect, useState } from 'react';
-import type { NativeProps } from './VideoViewNativeComponent';
+import React, { memo, useEffect, useRef, useState } from 'react';
+import type { LookyVideoProps } from './VideoViewNativeComponent';
 import V from './VideoViewNativeComponent';
-import { Image, ImageStyle, StyleProp, StyleSheet, View } from 'react-native';
+import {
+  Image,
+  ImageStyle,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewProps,
+} from 'react-native';
 import { videoController } from './VideosController';
 
-interface Props extends NativeProps {
+interface Props extends Omit<LookyVideoProps, 'nativeId'> {
   poster?: string | number;
   posterStyle?: StyleProp<ImageStyle>;
+  onLayout?: ViewProps['onLayout'];
+  channel: string;
+  videoId: string;
+  pointerEvents?: ViewProps['pointerEvents'];
 }
 
 export const LookyVideoView: React.FC<Props> = memo((props) => {
@@ -16,13 +27,14 @@ export const LookyVideoView: React.FC<Props> = memo((props) => {
     <View style={props.style}>
       <V
         {...props}
+        nativeId={videoController.getId(props.channel, props.videoId)}
         onVideoBuffer={(event) =>
           console.log('🍓[LookyVideoView.onVideoBuffer]', event.nativeEvent)
         }
         onVideoProgress={props.onVideoProgress}
         style={StyleSheet.absoluteFillObject}
-        onVideoLoad={() => {
-          props.onVideoLoad?.();
+        onVideoLoad={(params) => {
+          props.onVideoLoad?.(params);
           setLoaded(true);
         }}
       />
@@ -40,14 +52,27 @@ export const LookyVideoView: React.FC<Props> = memo((props) => {
   );
 });
 
-export const SimpleLookyVideoView: React.FC<Props & { autoplay?: boolean }> =
-  memo((props) => {
-    useEffect(() => {
-      if (props.autoplay) {
-        videoController.playWithId(props.nativeID);
-      } else {
-        videoController.pauseWithId(props.nativeID);
-      }
-    }, [props.autoplay, props.nativeID]);
-    return <LookyVideoView {...props} />;
-  });
+interface SimpleProps extends Omit<Props, 'videoId' | 'channel'> {
+  autoplay?: boolean;
+}
+
+let unqueVideoId = 1;
+let channel = 'SimpleLookyVideoView';
+export const SimpleLookyVideoView: React.FC<SimpleProps> = memo((props) => {
+  const videoId = useRef<string>();
+  if (videoId.current === undefined) {
+    videoId.current = (++unqueVideoId).toString();
+  }
+
+  useEffect(() => {
+    const nativeId = videoController.getId(channel, videoId.current!);
+    if (props.autoplay) {
+      videoController.playWithId(nativeId);
+    } else {
+      videoController.pauseWithId(nativeId);
+    }
+  }, [props.autoplay]);
+  return (
+    <LookyVideoView {...props} channel={channel} videoId={videoId.current} />
+  );
+});

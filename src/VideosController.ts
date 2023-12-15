@@ -32,6 +32,11 @@ export const videoController = {
     throw new Error('postId is undefined');
   },
 
+  getVideoId(postId?: string, pagerIndex?: number) {
+    if (postId && pagerIndex) return `${postId}_${pagerIndex}`;
+    throw new Error('postId is undefined');
+  },
+
   getIdWithoutChannel(postId?: string, pagerIndex?: number) {
     if (postId && pagerIndex) return `${postId}_${pagerIndex}`;
     else if (postId) return `${postId}`;
