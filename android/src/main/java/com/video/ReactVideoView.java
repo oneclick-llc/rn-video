@@ -525,13 +525,8 @@ public class ReactVideoView extends ScalableVideoView implements
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
-
         WritableMap error = Arguments.createMap();
-        error.putInt(EVENT_PROP_WHAT, what);
-        error.putInt(EVENT_PROP_EXTRA, extra);
-        WritableMap event = Arguments.createMap();
-        event.putMap(EVENT_PROP_ERROR, error);
-        mEventEmitter.receiveEvent(getId(), Events.EVENT_ERROR.toString(), event);
+        mEventEmitter.receiveEvent(getId(), Events.EVENT_ERROR.toString(), error);
         return true;
     }
 

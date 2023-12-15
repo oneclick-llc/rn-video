@@ -29,6 +29,8 @@ public class VideoViewSwift: UIView {
     @objc
     var onVideoProgress: RCTDirectEventBlock?
     @objc
+    var onVideoError: RCTDirectEventBlock?
+    @objc
     var onVideoLoad: RCTDirectEventBlock?
     
     var _timeObserverToken: Any?
@@ -211,6 +213,10 @@ public class VideoViewSwift: UIView {
             if _player == nil { return }
             if _player?.status == .readyToPlay {
                 onVideoLoad?(nil)
+            }
+            
+            if _player?.status == .failed {
+                onVideoError?(nil)
             }
         }
         
