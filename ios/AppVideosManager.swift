@@ -14,10 +14,9 @@ public class VideoChannel {
     var videos: [String: LookyVideoView] = [:]
     var laterRestore: String?
     var backgroundRestore: String?
-    
+
     var currentPlaying: (key: String, value: LookyVideoView)? {
         for v in videos {
-            debugPrint("🍓 currentPlaying", v.key, v.value._paused)
             if v.value._paused { continue }
             return v
         }
@@ -30,14 +29,14 @@ public class VideoChannel {
         }
         return nil
     }
-    
+
     func pauseAllVideos() {
         for video in videos {
             if video.value._paused { continue }
             video.value.setPaused(true)
         }
     }
-    
+
     func toggleMuted(_ muted: Bool) {
         for video in videos {
             video.value.setMuted(muted)
@@ -59,12 +58,12 @@ public class AppVideosManager: NSObject {
         let parts = nativeID.components(separatedBy: ":")
         let channelName = parts[0]
         let id = parts[1]
-        
+
         let channel = getChannel(name: channelName)
         channel?.videos[id] = video
-        
+
         debugPrint("🍓 addVideo", channelName, id)
-        
+
         if channel?.laterRestore == id {
             video.setPaused(false)
             channel?.laterRestore = nil
@@ -76,7 +75,7 @@ public class AppVideosManager: NSObject {
         let channelName = parts[0]
         let id = parts[1]
         debugPrint("🍓 removeVideo", channelName, id)
-        
+
         let channel = getChannel(name: channelName)
         channel?.videos.removeValue(forKey: id)
         if channel?.videos.isEmpty == true {
@@ -98,7 +97,7 @@ extension AppVideosManager {
             video.setPaused(false)
         }
     }
-    
+
     @objc
     public func pauseVideo(_ channelName: String, videoId: String) {
         guard let channel = getChannel(name: channelName) else { return }
@@ -107,7 +106,7 @@ extension AppVideosManager {
             video.setPaused(true)
         }
     }
-    
+
     @objc
     public func togglePlayInBackground(_ channelName: String?, playInBackground: Bool) {
         guard let videoChannel = getChannel(name: channelName) else { return }
@@ -123,7 +122,7 @@ extension AppVideosManager {
         }
 
     }
-    
+
     @objc
     public func restoreLastPlaying(_ channelName: String?, shouldSeekToStart: Bool) {
         pauseAllVideos()
@@ -135,7 +134,7 @@ extension AppVideosManager {
             }
             return
         }
-        
+
         for entry in channels {
             if entry.value.laterRestore == nil { continue }
             togglePlay(
@@ -146,7 +145,7 @@ extension AppVideosManager {
             entry.value.laterRestore = nil
         }
     }
-    
+
     @objc
     public func pauseCurrentPlayingWithLaterRestore(_ channelName: String?) {
         if let channelName {
@@ -158,7 +157,7 @@ extension AppVideosManager {
             }
             return;
         }
-        
+
         let keys = channels.keys
         for entry in channels {
             let channel = entry.value
@@ -168,14 +167,14 @@ extension AppVideosManager {
             debugPrint("🍓 pauseCurrentPlayingWithLaterRestore", entry.key, videoId(video) as Any)
         }
     }
-    
+
     @objc
     public func togglePlayVideo(_ channelName: String, videoId: String) {
         let video = findFirstPlayingVideo(channelName: channelName)
         if let video { pauseCurrentPlaying() }
         else { playVideo(channelName, videoId: videoId) }
     }
-    
+
     @objc
     public func toggleVideosMuted(_ muted: Bool) {
         DispatchQueue.main.async {
@@ -184,22 +183,22 @@ extension AppVideosManager {
             }
         }
     }
-    
+
     @objc
     public func pauseCurrentPlaying() {
         pauseAllVideos()
     }
-    
+
     @objc
     public func isPaused(_ channelName: String, videoId: String) -> Bool {
         return getChannel(name: channelName)?.video(for: videoId)?._paused == true
     }
-    
+
     @objc
     public func isMuted(_ channelName: String, videoId: String) -> Bool {
         return getChannel(name: channelName)?.video(for: videoId)?._muted == true
     }
-    
+
     @objc
     public func seek(_ channelName: String, videoId: String, duration: Double) {
         getChannel(name: channelName)?.video(for: videoId)?.seekTo(duration: duration)
@@ -213,11 +212,11 @@ extension AppVideosManager {
         guard let videoChannel = getChannel(name: channel) else {
             return
         }
-        
+
         let playingVideo = findFirstPlayingVideo(channelName: channel);
         let video = videoChannel.video(for: videoId)
         let playingVideId = self.videoId(playingVideo)
-        
+
         // pause current playing video
         if let playingVideId, playingVideId != videoId {
             playingVideo?.setPaused(true)
@@ -228,7 +227,7 @@ extension AppVideosManager {
             video.setPaused(false)
         }
     }
-    
+
     private func videoId(_ video: LookyVideoView?) -> String? {
         guard let video = video else { return nil }
         let parts = video.nativeID.components(separatedBy: ":")
@@ -241,24 +240,24 @@ extension AppVideosManager {
         channels[name] = channel
         return channel
     }
-    
+
     private func pauseVideo(channel: VideoChannel) {
         channel.currentPlaying?.value.setPaused(true)
     }
-    
+
     private func pauseAllVideos() {
         for entry in channels {
             entry.value.pauseAllVideos()
         }
     }
-    
+
     private func findFirstPlayingVideo() -> LookyVideoView? {
         for entry in channels {
             if let v = entry.value.currentPlaying { return v.value }
         }
         return nil
     }
-    
+
     private func findFirstPlayingVideo(channelName: String?) -> LookyVideoView? {
         guard let name = channelName else { return nil }
         guard let channel = getChannel(name: name) else { return nil }

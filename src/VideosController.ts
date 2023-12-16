@@ -26,32 +26,29 @@ declare global {
 
 export const videoController = {
   getId(channelName: string, postId?: string, pagerIndex?: number) {
-    if (postId && pagerIndex) return `${channelName}:${postId}_${pagerIndex}`;
-    else if (postId) return `${channelName}:${postId}`;
-
-    throw new Error('postId is undefined');
+    return `${channelName}:${videoController.getVideoId(postId, pagerIndex)}`;
   },
 
   getVideoId(postId?: string, pagerIndex?: number) {
-    if (postId && pagerIndex) return `${postId}_${pagerIndex}`;
-    throw new Error('postId is undefined');
-  },
-
-  getIdWithoutChannel(postId?: string, pagerIndex?: number) {
-    if (postId && pagerIndex) return `${postId}_${pagerIndex}`;
-    else if (postId) return `${postId}`;
-
+    if (postId && pagerIndex !== undefined) return `${postId}___${pagerIndex}`;
+    if (postId) {
+      if (postId.includes('___')) return postId.toString();
+      return `${postId}___0`;
+    }
     throw new Error('postId is undefined');
   },
 
   pause(channelName: string, videoId: string) {
     console.log('🍓[VideoManager.pauseVideo]', { channelName, videoId });
-    global.__lookyVideo.pauseVideo(channelName, videoId);
+    global.__lookyVideo.pauseVideo(
+      channelName,
+      videoController.getVideoId(videoId)
+    );
   },
 
   play(channel: string, videoId: string) {
     console.log('🍓[VideosController.playVideo]', channel, videoId);
-    global.__lookyVideo.playVideo(channel, videoId);
+    global.__lookyVideo.playVideo(channel, videoController.getVideoId(videoId));
   },
 
   playWithId(nativeId: string) {
