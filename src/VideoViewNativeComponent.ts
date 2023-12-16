@@ -37,7 +37,7 @@ export interface LookyVideoProps extends Pick<ViewProps, 'style'>, Callbacks {
   loop: boolean;
   progressUpdateInterval?: number;
   resizeMode?: 'stretch' | 'contain' | 'cover';
-  nativeId: string;
+  nativeID: string;
 }
 
 export default codegenNativeComponent<LookyVideoProps>('LookyVideoView');

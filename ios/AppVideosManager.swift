@@ -78,6 +78,7 @@ public class AppVideosManager: NSObject {
         debugPrint("🍓 removeVideo", channelName, id)
         
         let channel = getChannel(name: channelName)
+        channel?.videos.removeValue(forKey: id)
         if channel?.videos.isEmpty == true {
             channels.removeValue(forKey: channelName)
         }

@@ -71,38 +71,15 @@ public class ReactVideoView extends ScalableVideoView implements
         }
     }
 
-    public static final String EVENT_PROP_FAST_FORWARD = "canPlayFastForward";
-    public static final String EVENT_PROP_SLOW_FORWARD = "canPlaySlowForward";
-    public static final String EVENT_PROP_SLOW_REVERSE = "canPlaySlowReverse";
-    public static final String EVENT_PROP_REVERSE = "canPlayReverse";
-    public static final String EVENT_PROP_STEP_FORWARD = "canStepForward";
-    public static final String EVENT_PROP_STEP_BACKWARD = "canStepBackward";
-
-    public static final String EVENT_PROP_DURATION = "duration";
     public static final String EVENT_PROP_PLAYABLE_DURATION = "totalDuration";
     public static final String EVENT_PROP_SEEKABLE_DURATION = "timeLeft";
     public static final String EVENT_PROP_CURRENT_TIME = "currentTime";
-    public static final String EVENT_PROP_SEEK_TIME = "seekTime";
-    public static final String EVENT_PROP_NATURALSIZE = "naturalSize";
-    public static final String EVENT_PROP_WIDTH = "width";
-    public static final String EVENT_PROP_HEIGHT = "height";
-    public static final String EVENT_PROP_ORIENTATION = "orientation";
-    public static final String EVENT_PROP_METADATA = "metadata";
-    public static final String EVENT_PROP_TARGET = "target";
-    public static final String EVENT_PROP_METADATA_IDENTIFIER = "identifier";
-    public static final String EVENT_PROP_METADATA_VALUE = "value";
-
-    public static final String EVENT_PROP_ERROR = "error";
-    public static final String EVENT_PROP_WHAT = "what";
-    public static final String EVENT_PROP_EXTRA = "extra";
 
     private ThemedReactContext mThemedReactContext;
     public RCTEventEmitter mEventEmitter;
 
     private Handler mProgressUpdateHandler = new Handler();
     private Runnable mProgressUpdateRunnable = null;
-    private Handler videoControlHandler = new Handler();
-    private MediaController mediaController;
 
     private String mSrcUriString = null;
     private String mSrcType = "mp4";
@@ -111,15 +88,14 @@ public class ReactVideoView extends ScalableVideoView implements
     private boolean mSrcIsAsset = false;
     private ScalableType mResizeMode = ScalableType.LEFT_TOP;
     private boolean mRepeat = false;
-    private boolean mPaused = false;
-    private boolean mMuted = false;
+    public boolean mPaused = false;
+    public boolean mMuted = false;
     private boolean mPreventsDisplaySleepDuringVideoPlayback = true;
     private float mVolume = 1.0f;
     private float mStereoPan = 0.0f;
     private float mProgressUpdateInterval = 250.0f;
     private float mRate = 1.0f;
     private float mActiveRate = 1.0f;
-    private long mSeekTime = 0;
     private boolean mPlayInBackground = false;
     private boolean mBackgroundPaused = false;
 
@@ -130,7 +106,6 @@ public class ReactVideoView extends ScalableVideoView implements
 
     private int mVideoDuration = 0;
     private boolean isCompleted = false;
-    private boolean mUseNativeControls = false;
 
     public ReactVideoView(ThemedReactContext themedReactContext) {
         super(themedReactContext);
@@ -158,16 +133,6 @@ public class ReactVideoView extends ScalableVideoView implements
                 }
             }
         };
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (mUseNativeControls) {
-            initializeMediaControllerIfNeeded();
-            mediaController.show();
-        }
-
-        return super.onTouchEvent(event);
     }
 
     @Override
@@ -212,16 +177,7 @@ public class ReactVideoView extends ScalableVideoView implements
         }
     }
 
-    private void initializeMediaControllerIfNeeded() {
-        if (mediaController == null) {
-            mediaController = new MediaController(this.getContext());
-        }
-    }
-
     public void cleanupMediaPlayerResources() {
-        if ( mediaController != null ) {
-            mediaController.hide();
-        }
         if ( mMediaPlayer != null ) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 mMediaPlayer.setOnTimedMetaDataAvailableListener(null);
@@ -467,58 +423,17 @@ public class ReactVideoView extends ScalableVideoView implements
         setRateModifier(mRate);
     }
 
-    public void setPlayInBackground(final boolean playInBackground) {
-
-        mPlayInBackground = playInBackground;
-    }
-
-    public void setControls(boolean controls) {
-        this.mUseNativeControls = controls;
-    }
-
     @Override
     public void onPrepared(MediaPlayer mp) {
 
         mMediaPlayerValid = true;
         mVideoDuration = mp.getDuration();
 
-        WritableMap naturalSize = Arguments.createMap();
-        naturalSize.putInt(EVENT_PROP_WIDTH, mp.getVideoWidth());
-        naturalSize.putInt(EVENT_PROP_HEIGHT, mp.getVideoHeight());
-        if (mp.getVideoWidth() > mp.getVideoHeight())
-            naturalSize.putString(EVENT_PROP_ORIENTATION, "landscape");
-        else
-            naturalSize.putString(EVENT_PROP_ORIENTATION, "portrait");
-
         WritableMap event = Arguments.createMap();
-        event.putDouble(EVENT_PROP_DURATION, mVideoDuration / 1000.0);
-        event.putDouble(EVENT_PROP_CURRENT_TIME, mp.getCurrentPosition() / 1000.0);
-        event.putMap(EVENT_PROP_NATURALSIZE, naturalSize);
-        // TODO: Actually check if you can.
-        event.putBoolean(EVENT_PROP_FAST_FORWARD, true);
-        event.putBoolean(EVENT_PROP_SLOW_FORWARD, true);
-        event.putBoolean(EVENT_PROP_SLOW_REVERSE, true);
-        event.putBoolean(EVENT_PROP_REVERSE, true);
-        event.putBoolean(EVENT_PROP_FAST_FORWARD, true);
-        event.putBoolean(EVENT_PROP_STEP_BACKWARD, true);
-        event.putBoolean(EVENT_PROP_STEP_FORWARD, true);
+        event.putDouble(EVENT_PROP_PLAYABLE_DURATION, mVideoDuration / 1000.0);
         mEventEmitter.receiveEvent(getId(), Events.EVENT_LOAD.toString(), event);
 
         applyModifiers();
-
-        if (mUseNativeControls) {
-            initializeMediaControllerIfNeeded();
-            mediaController.setMediaPlayer(this);
-            mediaController.setAnchorView(this);
-
-            videoControlHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mediaController.setEnabled(true);
-                    mediaController.show();
-                }
-            });
-        }
 
         selectTimedMetadataTrack(mp);
     }
@@ -556,13 +471,12 @@ public class ReactVideoView extends ScalableVideoView implements
     }
 
     public void onSeekComplete(MediaPlayer mp) {
-        mSeekTime = 0;
+
     }
 
     @Override
     public void seekTo(int msec) {
         if (mMediaPlayerValid) {
-            mSeekTime = msec;
             super.seekTo(msec);
             if (isCompleted && mVideoDuration != 0 && msec < mVideoDuration) {
                 isCompleted = false;

@@ -129,6 +129,35 @@ void JsiVideoManager::installJSIBindings() {
         return jsi::Value::undefined();
     });
 
+    auto isPaused = JSI_HOST_FUNCTION("isPaused", 2) {
+         auto rawChannel = args[0].asString(runtime).utf8(runtime);
+         auto rawVideoId = args[1].asString(runtime).utf8(runtime);
+
+         auto method = javaPart_->getClass()->getMethod<jboolean (jni::local_ref<JString>, jni::local_ref<JString>)>("isPaused");
+         auto isPaused = method(javaPart_.get(), jni::make_jstring(rawChannel), jni::make_jstring(rawVideoId));
+         return {isPaused == 1};
+    });
+
+    auto isMuted = JSI_HOST_FUNCTION("isMuted", 2) {
+       auto rawChannel = args[0].asString(runtime).utf8(runtime);
+       auto rawVideoId = args[1].asString(runtime).utf8(runtime);
+
+       auto method = javaPart_->getClass()->getMethod<jboolean (jni::local_ref<JString>, jni::local_ref<JString>)>("isMuted");
+       auto isMuted = method(javaPart_.get(), jni::make_jstring(rawChannel), jni::make_jstring(rawVideoId));
+
+       return {isMuted == 1};
+    });
+
+    auto seek = JSI_HOST_FUNCTION("seek", 3) {
+        auto rawChannel = args[0].asString(runtime).utf8(runtime);
+        auto rawVideoId = args[1].asString(runtime).utf8(runtime);
+        auto rawDuration = args[2].asNumber();
+
+        auto method = javaPart_->getClass()->getMethod<void (jni::local_ref<JString>, jni::local_ref<JString>, jdouble)>("seek");
+        method(javaPart_.get(), jni::make_jstring(rawChannel), jni::make_jstring(rawVideoId), rawDuration);
+        return jsi::Value::undefined();
+    });
+
 
     jsi::Object viewHelpers = jsi::Object(*runtime_);
     viewHelpers.setProperty(*runtime_, "playVideo", std::move(playVideo));
@@ -139,5 +168,8 @@ void JsiVideoManager::installJSIBindings() {
     viewHelpers.setProperty(*runtime_, "togglePlayVideo", std::move(togglePlayVideo));
     viewHelpers.setProperty(*runtime_, "toggleVideosMuted", std::move(toggleVideosMuted));
     viewHelpers.setProperty(*runtime_, "pauseCurrentPlaying", std::move(pauseCurrentPlaying));
+    viewHelpers.setProperty(*runtime_, "isPaused", std::move(isPaused));
+    viewHelpers.setProperty(*runtime_, "isMuted", std::move(isMuted));
+    viewHelpers.setProperty(*runtime_, "seek", std::move(seek));
     runtime_->global().setProperty(*runtime_, "__lookyVideo", std::move(viewHelpers));
 }

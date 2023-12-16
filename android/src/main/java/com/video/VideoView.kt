@@ -22,7 +22,7 @@ class VideoView(themedReactContext: ThemedReactContext?) : ReactVideoView(themed
     super.onAttachedToWindow()
     val id = getTag(R.id.view_tag_native_id) as? String
     if (id == null) {
-      return println("WARNING: videoId didn't passed")
+      return println("🍓 WARNING: videoId didn't passed")
     }
     AppVideosManager.shared.addVideo(this, id)
   }
@@ -31,7 +31,7 @@ class VideoView(themedReactContext: ThemedReactContext?) : ReactVideoView(themed
     super.onDetachedFromWindow()
     val id = getTag(R.id.view_tag_native_id) as? String
     if (id == null) {
-      return println("WARNING: videoId didn't passed")
+      return println("🍓 WARNING: videoId didn't passed")
     }
     AppVideosManager.shared.removeVideo(id)
   }

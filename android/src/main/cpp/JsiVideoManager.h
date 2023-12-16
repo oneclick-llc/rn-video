@@ -1,4 +1,3 @@
-
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 #include <ReactCommon/CallInvokerHolder.h>

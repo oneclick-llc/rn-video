@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { videoController } from './VideosController';
 
-interface Props extends Omit<LookyVideoProps, 'nativeId'> {
+interface Props extends Omit<LookyVideoProps, 'nativeID'> {
   poster?: string | number;
   posterStyle?: StyleProp<ImageStyle>;
   onLayout?: ViewProps['onLayout'];
@@ -27,10 +27,13 @@ export const LookyVideoView: React.FC<Props> = memo((props) => {
     <View style={props.style}>
       <V
         {...props}
-        nativeId={videoController.getId(props.channel, props.videoId)}
+        nativeID={videoController.getId(props.channel, props.videoId)}
         onVideoBuffer={(event) =>
           console.log('🍓[LookyVideoView.onVideoBuffer]', event.nativeEvent)
         }
+        onVideoError={() => {
+          console.log('🍓[LookyVideoView.error]');
+        }}
         onVideoProgress={props.onVideoProgress}
         style={StyleSheet.absoluteFillObject}
         onVideoLoad={(params) => {

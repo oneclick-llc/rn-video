@@ -53,6 +53,7 @@ class AppVideosManager {
     val parts = nativeID.split(":")
     val channelName = parts[0]
     val id = parts[1]
+    println("🍓 addVideo $channelName $id")
 
     val channel = getChannel(channelName)?.also {
       it.videos[id] = video
@@ -68,8 +69,10 @@ class AppVideosManager {
     val parts = nativeID.split(":")
     val channelName = parts[0]
     val id = parts[1]
+    println("🍓 removeVideo $channelName $id")
 
     val channel = getChannel(channelName)
+    channel?.videos?.remove(id)
     if (channel?.videos?.isEmpty() == true) {
       channels.remove(channelName)
     }
@@ -150,6 +153,18 @@ fun AppVideosManager.toggleVideosMuted(muted: Boolean) {
 
 fun AppVideosManager.pauseCurrentPlaying() {
   pauseAllVideos()
+}
+
+fun AppVideosManager.isPaused(channel: String, videoId: String): Boolean {
+  return getChannel(channel)?.video(videoId)?.mPaused == true
+}
+
+fun AppVideosManager.isMuted(channel: String, videoId: String): Boolean {
+  return getChannel(channel)?.video(videoId)?.mMuted == true
+}
+
+fun AppVideosManager.seek(channel: String, videoId: String, duration: Double) {
+  getChannel(channel)?.video(videoId)?.seekTo((duration / 1000.0).toInt())
 }
 
 

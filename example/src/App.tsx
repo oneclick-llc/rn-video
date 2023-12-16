@@ -16,6 +16,11 @@ export default function App() {
         <AppVideo channel={'channel'} src={two} vId={'one'} />
         <AppVideo loop channel={'channel'} src={one} vId={'two'} />
         <AppVideo channel={'channel2'} src={one} vId={'two'} />
+        <AppVideo
+          channel={'channel3'}
+          src={'https://cdn-test.looky.com'}
+          vId={'tgree'}
+        />
       </View>
 
       <TouchableOpacity

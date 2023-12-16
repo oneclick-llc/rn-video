@@ -146,7 +146,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install) {
         return jsi::Value(isPaused);
     });
     
-    auto seek = JSI_HOST_FUNCTION("isMuted", 3) {
+    auto seek = JSI_HOST_FUNCTION("seek", 3) {
         auto rawChannel = args[0].asString(runtime).utf8(runtime);
         auto rawVideoId = args[1].asString(runtime).utf8(runtime);
         auto rawDuration = args[2].asNumber();

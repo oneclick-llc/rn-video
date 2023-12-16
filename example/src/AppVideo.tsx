@@ -28,8 +28,12 @@ export const AppVideo: React.FC<Props> = (props) => {
             console.log('🍓[AppVideo.onVideoTap]');
             videoController.togglePlay(props.channel, props.vId);
           }}
+          onVideoLoad={(d) =>
+            console.log('🍓[AppVideo.onVideoLoad]', d.nativeEvent)
+          }
           onVideoEnd={() => console.log('🍓[AppVideo.onVideoEnd]')}
-          nativeID={videoController.getId(props.channel, props.vId)}
+          channel={props.channel}
+          videoId={props.vId}
           key={props.vId}
           videoUri={props.src}
           muted={false}
