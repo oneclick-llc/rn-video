@@ -16,9 +16,7 @@ class VideoViewManager : ReactVideoViewManager() {
   }
 
   public override fun createViewInstance(context: ThemedReactContext): VideoView {
-    val video = VideoView(context)
-    video.setPausedModifier(true)
-    return video
+    return VideoView(context)
   }
 
   companion object {

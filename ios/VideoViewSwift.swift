@@ -60,7 +60,7 @@ public class VideoViewSwift: UIView {
             _player?.preventsDisplaySleepDuringVideoPlayback = true
         }
         _playerLayer.player = _player
-        
+        if !_paused { AppVideosManager.shared.pauseCurrentPlaying() }
         setPaused(_paused)
         setupUI()
     }
@@ -112,6 +112,11 @@ public class VideoViewSwift: UIView {
         guard let _player = _player else { return }
         _player.volume = muted ? 0 : 1
         _player.isMuted = muted
+    }
+    
+    @objc
+    public func setAutoplay(_ autoplay: Bool) {
+        self._paused = !autoplay
     }
     
     func cleanUp() {

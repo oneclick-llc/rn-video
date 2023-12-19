@@ -72,4 +72,9 @@ public class ReactVideoViewManager extends SimpleViewManager<ReactVideoView> {
     public void setProgressUpdateInterval(final ReactVideoView videoView, final float progressUpdateInterval) {
         videoView.setProgressUpdateInterval(progressUpdateInterval);
     }
+
+    @ReactProp(name = "autoplay")
+    public void isAutoplay(final ReactVideoView videoView, final boolean isAutoplay) {
+        videoView.setAutoplay(isAutoplay);
+    }
 }

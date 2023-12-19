@@ -7,14 +7,16 @@ interface Props {
   readonly vId: string;
   readonly channel: string;
   readonly loop?: boolean;
+  readonly poster?: string;
 }
 
 export const AppVideo: React.FC<Props> = (props) => {
   const [isPresented, setPresented] = useState(true);
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, overflow: 'hidden' }}>
       {isPresented && (
         <LookyVideoView
+          poster={props.poster}
           progressUpdateInterval={0.25}
           resizeMode={'cover'}
           // onVideoProgress={(data) =>
@@ -38,9 +40,16 @@ export const AppVideo: React.FC<Props> = (props) => {
           videoUri={props.src}
           muted={false}
           loop={props.loop ?? false}
-          style={{
-            width: 200,
+          posterStyle={{
+            width: '100%',
             height: 200,
+            overflow: 'hidden',
+            resizeMode: 'cover',
+          }}
+          style={{
+            width: '100%',
+            height: 200,
+            overflow: 'hidden',
           }}
         />
       )}
