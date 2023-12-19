@@ -1,20 +1,28 @@
 package com.video;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Matrix;
 import android.media.MediaPlayer;
+import android.media.TimedMetaData;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.Window;
 import android.webkit.CookieManager;
 import android.widget.MediaController;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.yqritc.scalablevideoview.ScalableType;
@@ -23,6 +31,7 @@ import com.yqritc.scalablevideoview.ScaleManager;
 import com.yqritc.scalablevideoview.Size;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -84,14 +93,11 @@ public class ReactVideoView extends ScalableVideoView implements
   private boolean mPreventsDisplaySleepDuringVideoPlayback = true;
   private float mVolume = 1.0f;
   private float mStereoPan = 0.0f;
-  private boolean autoplay = false;
   private float mProgressUpdateInterval = 250.0f;
   private float mRate = 1.0f;
   private float mActiveRate = 1.0f;
   private boolean mPlayInBackground = false;
   private boolean mBackgroundPaused = false;
-  private boolean isInitialized = false;
-  private boolean isInitializing = false;
 
   private int mMainVer = 0;
   private int mPatchVer = 0;
@@ -127,11 +133,6 @@ public class ReactVideoView extends ScalableVideoView implements
         }
       }
     };
-  }
-
-  public boolean isSafePlaying() {
-    if (mMediaPlayer == null) return false;
-    return mMediaPlayer.isPlaying();
   }
 
   @Override
@@ -170,6 +171,9 @@ public class ReactVideoView extends ScalableVideoView implements
       mMediaPlayer.setOnSeekCompleteListener(this);
       mMediaPlayer.setOnCompletionListener(this);
       mMediaPlayer.setOnInfoListener(this);
+      if (Build.VERSION.SDK_INT >= 23) {
+        mMediaPlayer.setOnTimedMetaDataAvailableListener(new TimedMetaDataAvailableListener());
+      }
     }
   }
 
@@ -193,7 +197,7 @@ public class ReactVideoView extends ScalableVideoView implements
   }
 
   public void setSrc(final String uriString, final String type, final boolean isNetwork, final boolean isAsset, final ReadableMap requestHeaders, final int expansionMainVersion, final int expansionPatchVersion) {
-    System.out.println("🍓 setSrc isAutoplay: " + autoplay);
+
     mSrcUriString = uriString;
     mSrcType = type;
     mSrcIsNetwork = isNetwork;
@@ -201,44 +205,26 @@ public class ReactVideoView extends ScalableVideoView implements
     mRequestHeaders = requestHeaders;
     mMainVer = expansionMainVersion;
     mPatchVer = expansionPatchVersion;
-    isInitialized = false;
+
 
     mMediaPlayerValid = false;
     mVideoDuration = 0;
 
     initializeMediaPlayerIfNeeded();
-    if (mMediaPlayer != null) mMediaPlayer.reset();
-    if (autoplay) {
-      autoplay = false;
-      AppVideosManagerKt.pauseAllVideos(AppVideosManager.Companion.getShared());
-      setPausedModifier(false);
-    }
-  }
+    mMediaPlayer.reset();
 
-  public void setAutoplay(boolean isAutoplay) {
-    System.out.println("🍓 setAutoplay: " + isAutoplay + " src: " + mSrcUriString != null);
-    this.autoplay = isAutoplay;
-    if (this.mSrcUriString != null) {
-      AppVideosManagerKt.pauseAllVideos(AppVideosManager.Companion.getShared());
-      setPausedModifier(false);
-    }
-  }
-
-  private void initialize() {
-    System.out.println("🍓 initialize isInitialized: " + isInitialized + " isInitializing: " + isInitializing);
-    if (isInitialized || isInitializing) return;
     try {
-      if (mSrcIsNetwork) {
+      if (isNetwork) {
         // Use the shared CookieManager to access the cookies
         // set by WebViews inside the same app
         CookieManager cookieManager = CookieManager.getInstance();
 
-        Uri parsedUrl = Uri.parse(mSrcUriString);
+        Uri parsedUrl = Uri.parse(uriString);
         Uri.Builder builtUrl = parsedUrl.buildUpon();
 
         String cookie = cookieManager.getCookie(builtUrl.build().toString());
 
-        Map<String, String> headers = new HashMap<>();
+        Map<String, String> headers = new HashMap<String, String>();
 
         if (cookie != null) {
           headers.put("Cookie", cookie);
@@ -253,12 +239,12 @@ public class ReactVideoView extends ScalableVideoView implements
          * TODO: diagnose this exception and fix it
          */
         setDataSource(mThemedReactContext, parsedUrl, headers);
-      } else if (mSrcIsAsset) {
-        if (mSrcUriString.startsWith("content://")) {
-          Uri parsedUrl = Uri.parse(mSrcUriString);
+      } else if (isAsset) {
+        if (uriString.startsWith("content://")) {
+          Uri parsedUrl = Uri.parse(uriString);
           setDataSource(mThemedReactContext, parsedUrl);
         } else {
-          setDataSource(mSrcUriString);
+          setDataSource(uriString);
         }
       } else {
         ZipResourceFile expansionFile = null;
@@ -266,7 +252,7 @@ public class ReactVideoView extends ScalableVideoView implements
         if (mMainVer > 0) {
           try {
             expansionFile = APKExpansionSupport.getAPKExpansionZipFile(mThemedReactContext, mMainVer, mPatchVer);
-            fd = expansionFile.getAssetFileDescriptor(mSrcUriString.replace(".mp4", "") + ".mp4");
+            fd = expansionFile.getAssetFileDescriptor(uriString.replace(".mp4", "") + ".mp4");
           } catch (IOException e) {
             e.printStackTrace();
           } catch (NullPointerException e) {
@@ -275,13 +261,13 @@ public class ReactVideoView extends ScalableVideoView implements
         }
         if (fd == null) {
           int identifier = mThemedReactContext.getResources().getIdentifier(
-            mSrcUriString,
+            uriString,
             "drawable",
             mThemedReactContext.getPackageName()
           );
           if (identifier == 0) {
             identifier = mThemedReactContext.getResources().getIdentifier(
-              mSrcUriString,
+              uriString,
               "raw",
               mThemedReactContext.getPackageName()
             );
@@ -324,27 +310,24 @@ public class ReactVideoView extends ScalableVideoView implements
   }
 
   public void setPausedModifier(final boolean paused) {
-    System.out.println("🍓 setPausedModifier paused: " + paused + " isInitialized: " + isInitialized + " isInitializing: " + isInitializing);
     mPaused = paused;
-    if (!isInitialized && !isInitializing) {
-      initialize();
-      isInitializing = true;
+
+    if (!mMediaPlayerValid) {
+      return;
     }
 
-    if (!mMediaPlayerValid) return;
-    updatePausedState();
-  }
-
-  private void updatePausedState() {
-    if (!isInitialized) return;
-    System.out.println("🍓 updatePausedState mPaused: " + mPaused + " isPlaying: " + mMediaPlayer.isPlaying());
     if (mPaused) {
-      if (mMediaPlayer.isPlaying()) pause();
+      if (mMediaPlayer.isPlaying()) {
+        pause();
+      }
     } else {
       if (!mMediaPlayer.isPlaying()) {
         start();
         // Setting the rate unpauses, so we have to wait for an unpause
-        if (mRate != mActiveRate) setRateModifier(mRate);
+        if (mRate != mActiveRate) {
+          setRateModifier(mRate);
+        }
+
         // Also Start the Progress Update Handler
         mProgressUpdateHandler.post(mProgressUpdateRunnable);
       }
@@ -392,6 +375,16 @@ public class ReactVideoView extends ScalableVideoView implements
     }
   }
 
+  public void setVolumeModifier(final float volume) {
+    mVolume = volume;
+    setMutedModifier(mMuted);
+  }
+
+  public void setStereoPan(final float stereoPan) {
+    mStereoPan = stereoPan;
+    setMutedModifier(mMuted);
+  }
+
   public void setProgressUpdateInterval(final float progressUpdateInterval) {
     mProgressUpdateInterval = progressUpdateInterval;
   }
@@ -431,7 +424,7 @@ public class ReactVideoView extends ScalableVideoView implements
 
   @Override
   public void onPrepared(MediaPlayer mp) {
-    System.out.println("🍓 onPrepared");
+
     mMediaPlayerValid = true;
     mVideoDuration = mp.getDuration();
 
@@ -440,9 +433,8 @@ public class ReactVideoView extends ScalableVideoView implements
     mEventEmitter.receiveEvent(getId(), Events.EVENT_LOAD.toString(), event);
 
     applyModifiers();
-    isInitialized = true;
-    isInitializing = false;
-    updatePausedState();
+
+    selectTimedMetadataTrack(mp);
   }
 
   @Override
@@ -474,6 +466,7 @@ public class ReactVideoView extends ScalableVideoView implements
 
   @Override
   public void onBufferingUpdate(MediaPlayer mp, int percent) {
+    selectTimedMetadataTrack(mp);
   }
 
   public void onSeekComplete(MediaPlayer mp) {
@@ -524,6 +517,15 @@ public class ReactVideoView extends ScalableVideoView implements
     }
   }
 
+  // This is not fully tested and does not work for all forms of timed metadata
+  @TargetApi(23) // 6.0
+  public class TimedMetaDataAvailableListener
+    implements MediaPlayer.OnTimedMetaDataAvailableListener {
+    public void onTimedMetaDataAvailable(MediaPlayer mp, TimedMetaData data) {
+
+    }
+  }
+
   @Override
   protected void onDetachedFromWindow() {
     mMediaPlayerValid = false;
@@ -535,11 +537,11 @@ public class ReactVideoView extends ScalableVideoView implements
   protected void onAttachedToWindow() {
     super.onAttachedToWindow();
 
-//    if (mMainVer > 0) {
-//      setSrc(mSrcUriString, mSrcType, mSrcIsNetwork, mSrcIsAsset, mRequestHeaders, mMainVer, mPatchVer);
-//    } else {
-//      setSrc(mSrcUriString, mSrcType, mSrcIsNetwork, mSrcIsAsset, mRequestHeaders);
-//    }
+    if (mMainVer > 0) {
+      setSrc(mSrcUriString, mSrcType, mSrcIsNetwork, mSrcIsAsset, mRequestHeaders, mMainVer, mPatchVer);
+    } else {
+      setSrc(mSrcUriString, mSrcType, mSrcIsNetwork, mSrcIsAsset, mRequestHeaders);
+    }
     setKeepScreenOn(mPreventsDisplaySleepDuringVideoPlayback);
   }
 
@@ -592,5 +594,34 @@ public class ReactVideoView extends ScalableVideoView implements
     }
 
     return result;
+  }
+
+  public boolean isSafePlaying() {
+    if (mMediaPlayer == null) return false;
+    return mMediaPlayer.isPlaying();
+  }
+
+  public void setAutoplay(boolean autoplay) {
+    System.out.println("🍓 setAutoplay " + autoplay);
+    if (!autoplay) return;
+    AppVideosManagerKt.pauseAllVideos(AppVideosManager.Companion.getShared());
+    mPaused = false;
+  }
+
+  // Select track (so we can use it to listen to timed meta data updates)
+  private void selectTimedMetadataTrack(MediaPlayer mp) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+      return;
+    }
+    try { // It's possible this could throw an exception if the framework doesn't support getting track info
+      MediaPlayer.TrackInfo[] trackInfo = mp.getTrackInfo();
+      for (int i = 0; i < trackInfo.length; ++i) {
+        if (trackInfo[i].getTrackType() == MediaPlayer.TrackInfo.MEDIA_TRACK_TYPE_TIMEDTEXT) {
+          mp.selectTrack(i);
+          break;
+        }
+      }
+    } catch (Exception e) {
+    }
   }
 }

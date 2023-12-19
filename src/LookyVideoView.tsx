@@ -58,6 +58,7 @@ export const SimpleLookyVideoView: React.FC<SimpleProps> = memo((props) => {
   if (videoId.current === undefined) {
     videoId.current = (++unqueVideoId).toString();
   }
+  console.log('🍓[LookyVideoView.]', props.autoplay);
   return (
     <LookyVideoView {...props} channel={channel} videoId={videoId.current} />
   );
