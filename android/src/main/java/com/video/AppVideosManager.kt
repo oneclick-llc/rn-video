@@ -14,7 +14,7 @@ class VideoChannel {
   val currentPlaying: MutableMap.MutableEntry<String, LookyVideoView>?
     get() {
       for (video in videos) {
-        if (video.value.isPlaying) return video
+        if (video.value.isSafePlaying()) return video
       }
       return null
     }
@@ -27,7 +27,7 @@ class VideoChannel {
 
   fun pauseAllVideos() {
     for (entry in videos) {
-      if (entry.value.isPlaying)
+      if (entry.value.isSafePlaying())
         entry.value.setPausedModifier(true)
     }
   }
@@ -92,7 +92,7 @@ fun AppVideosManager.playVideo(channelName: String, videoId: String) {
 fun AppVideosManager.pauseVideo(channelName: String, videoId: String) {
   val channel = getChannel(channelName) ?: return
   val video = channel.video(videoId) ?: return
-  if (!video.isPlaying) return
+  if (!video.isSafePlaying()) return
   println("🍓 pauseVideo $channelName, $videoId")
   video.setPausedModifier(true)
 }

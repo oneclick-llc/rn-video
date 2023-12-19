@@ -129,6 +129,11 @@ public class ReactVideoView extends ScalableVideoView implements
     };
   }
 
+  public boolean isSafePlaying() {
+    if (mMediaPlayer == null) return false;
+    return mMediaPlayer.isPlaying();
+  }
+
   @Override
   @SuppressLint("DrawAllocation")
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
