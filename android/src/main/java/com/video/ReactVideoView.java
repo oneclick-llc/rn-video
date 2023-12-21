@@ -57,6 +57,7 @@ public class ReactVideoView extends ScalableVideoView implements
     EVENT_ERROR("onVideoError"),
     EVENT_PROGRESS("onVideoProgress"),
     EVENT_END("onVideoEnd"),
+    EVENT_SHOW_POSTER("onShowPoster"),
     EVENT_BUFFER("onVideoBuffer");
 
     private final String mName;
@@ -86,7 +87,7 @@ public class ReactVideoView extends ScalableVideoView implements
   private ReadableMap mRequestHeaders = null;
   private boolean mSrcIsNetwork = false;
   private boolean mSrcIsAsset = false;
-  private ScalableType mResizeMode = ScalableType.LEFT_TOP;
+  private ScalableType mResizeMode = ScalableType.CENTER_CROP;
   private boolean mRepeat = false;
   public boolean mPaused = true;
   public boolean mMuted = false;
@@ -96,8 +97,10 @@ public class ReactVideoView extends ScalableVideoView implements
   private float mProgressUpdateInterval = 250.0f;
   private float mRate = 1.0f;
   private float mActiveRate = 1.0f;
+  private boolean mPausedBeforeDetached = false;
   private boolean mPlayInBackground = false;
   private boolean mBackgroundPaused = false;
+  private boolean _isPosterPresent = true;
 
   private int mMainVer = 0;
   private int mPatchVer = 0;
@@ -312,17 +315,14 @@ public class ReactVideoView extends ScalableVideoView implements
   public void setPausedModifier(final boolean paused) {
     mPaused = paused;
 
-    if (!mMediaPlayerValid) {
-      return;
-    }
+    if (!mMediaPlayerValid) return;
 
     if (mPaused) {
-      if (mMediaPlayer.isPlaying()) {
-        pause();
-      }
+      if (mMediaPlayer.isPlaying()) pause();
     } else {
       if (!mMediaPlayer.isPlaying()) {
         start();
+        showPoster(false);
         // Setting the rate unpauses, so we have to wait for an unpause
         if (mRate != mActiveRate) {
           setRateModifier(mRate);
@@ -526,10 +526,27 @@ public class ReactVideoView extends ScalableVideoView implements
     }
   }
 
+  public void showPoster(boolean show) {
+
+    if (_isPosterPresent && !show) {
+      _isPosterPresent = false;
+      WritableMap map = Arguments.createMap();
+      map.putBoolean("show", false);
+      mEventEmitter.receiveEvent(getId(), Events.EVENT_SHOW_POSTER.toString(), map);
+    } else if (!_isPosterPresent && show) {
+      _isPosterPresent = true;
+      WritableMap map = Arguments.createMap();
+      map.putBoolean("show", true);
+      mEventEmitter.receiveEvent(getId(), Events.EVENT_SHOW_POSTER.toString(), map);
+    }
+  }
+
   @Override
   protected void onDetachedFromWindow() {
     mMediaPlayerValid = false;
     super.onDetachedFromWindow();
+    mPausedBeforeDetached = mPaused;
+    showPoster(true);
     setKeepScreenOn(false);
   }
 

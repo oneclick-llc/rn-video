@@ -13,7 +13,7 @@ import Photos
 @objc
 public class VideoViewSwift: UIView {
     @objc
-    var resizeMode: NSString?
+    var videoResizeMode: NSString?
     @objc
     var loop = false
     @objc
@@ -24,6 +24,8 @@ public class VideoViewSwift: UIView {
     var onVideoBuffer: RCTDirectEventBlock?
     @objc
     var onVideoTap: RCTDirectEventBlock?
+    @objc
+    var onShowPoster: RCTDirectEventBlock?
     @objc
     var onVideoDoubleTap: RCTDirectEventBlock?
     @objc
@@ -41,13 +43,19 @@ public class VideoViewSwift: UIView {
     private var _playerItem: AVPlayerItem?
     private var _playerLayer = AVPlayerLayer()
     private var _videoPlayerParent = UIView()
+    private var _isPosterPresent = true
+    
+    private func updateReizeMode() {
+        _playerLayer.videoGravity = .resizeAspectFill
+        if videoResizeMode == "cover" { _playerLayer.videoGravity = .resizeAspectFill }
+        if videoResizeMode == "contain" { _playerLayer.videoGravity = .resizeAspect }
+        if videoResizeMode == "stretch" { _playerLayer.videoGravity = .resize }
+    }
     
     public override func didSetProps(_ changedProps: [String]!) {
         super.didSetProps(changedProps)
-        if changedProps.contains("resizeMode") {
-            if resizeMode == "cover" { _playerLayer.videoGravity = .resizeAspectFill }
-            if resizeMode == "contain" { _playerLayer.videoGravity = .resizeAspect }
-            if resizeMode == "stretch" { _playerLayer.videoGravity = .resize }
+        if changedProps.contains("videoResizeMode") {
+            updateReizeMode()
         }
         
         AppVideosManager.shared.addVideo(self, nativeID: self.nativeID)
@@ -103,6 +111,17 @@ public class VideoViewSwift: UIView {
             _player.rate = 0
         } else {
             _player.playImmediately(atRate: 1)
+            showPoster(show: false)
+        }
+    }
+    
+    func showPoster(show: Bool) {
+        if _isPosterPresent && !show {
+            onShowPoster?(["show": false])
+            _isPosterPresent = false
+        } else if !_isPosterPresent && show {
+            onShowPoster?(["show": true])
+            _isPosterPresent = true
         }
     }
     
@@ -167,10 +186,7 @@ public class VideoViewSwift: UIView {
         addSubview(_videoPlayerParent)
         _videoPlayerParent.layer.addSublayer(_playerLayer)
 
-        _playerLayer.videoGravity = .resizeAspectFill
-        if resizeMode == "cover" { _playerLayer.videoGravity = .resizeAspectFill }
-        if resizeMode == "contain" { _playerLayer.videoGravity = .resizeAspect }
-        if resizeMode == "stretch" { _playerLayer.videoGravity = .resize }
+        updateReizeMode()
 
         self.setMuted(_muted)
         

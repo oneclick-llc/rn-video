@@ -1,15 +1,10 @@
 import * as React from 'react';
+import { useState } from 'react';
+import Video from 'react-native-video';
 
-import {
-  Appearance,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { AppVideo } from './AppVideo';
 import { SimpleLookyVideoView, videoController } from 'rn-video';
-import { useEffect, useState } from 'react';
 
 const one =
   'https://cdn-test.looky.com/post-instagram/3093573415336326421/344572606_907419743843224_427802127932990228_n.mp4';
@@ -24,7 +19,13 @@ export default function App() {
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.container}>
-        <AppVideo channel={'channel'} src={two} vId={'one'} poster={poster} />
+        <AppVideo
+          channel={'channel'}
+          resizeMode={'contain'}
+          src={one}
+          vId={'one'}
+          poster={poster}
+        />
         <AppVideo loop channel={'channel'} src={one} vId={'two'} />
         <AppVideo channel={'channel2'} src={one} vId={'two'} />
         <AppVideo

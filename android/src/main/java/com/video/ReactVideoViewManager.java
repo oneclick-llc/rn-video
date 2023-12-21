@@ -7,6 +7,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.yqritc.scalablevideoview.ScalableType;
 
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 
@@ -14,7 +15,7 @@ public class ReactVideoViewManager extends SimpleViewManager<ReactVideoView> {
 
     public static final String REACT_CLASS = "RCTVideo";
 
-    public static final String PROP_RESIZE_MODE = "resizeMode";
+    public static final String PROP_RESIZE_MODE = "videoResizeMode";
     public static final String PROP_MUTED = "muted";
     public static final String PROP_PROGRESS_UPDATE_INTERVAL = "progressUpdateInterval";
 
@@ -44,22 +45,16 @@ public class ReactVideoViewManager extends SimpleViewManager<ReactVideoView> {
         return builder.build();
     }
 
-    @Override
-    @Nullable
-    public Map getExportedViewConstants() {
-        return MapBuilder.of(
-                "ScaleNone", Integer.toString(ScalableType.LEFT_TOP.ordinal()),
-                "ScaleToFill", Integer.toString(ScalableType.FIT_XY.ordinal()),
-                "ScaleAspectFit", Integer.toString(ScalableType.FIT_CENTER.ordinal()),
-                "ScaleAspectFill", Integer.toString(ScalableType.CENTER_CROP.ordinal())
-        );
-    }
-
-
-
     @ReactProp(name = PROP_RESIZE_MODE)
     public void setResizeMode(final ReactVideoView videoView, final String resizeModeOrdinalString) {
-        videoView.setResizeModeModifier(ScalableType.values()[Integer.parseInt(resizeModeOrdinalString)]);
+      System.out.println("🍓 videoResizeMode " + resizeModeOrdinalString);
+        if (Objects.equals(resizeModeOrdinalString, "stretch")) {
+          videoView.setResizeModeModifier(ScalableType.FIT_XY);
+        } else if (Objects.equals(resizeModeOrdinalString, "contain")) {
+          videoView.setResizeModeModifier(ScalableType.FIT_CENTER);
+        } else if (Objects.equals(resizeModeOrdinalString, "cover")) {
+          videoView.setResizeModeModifier(ScalableType.CENTER_CROP);
+        }
     }
 
     @ReactProp(name = PROP_MUTED, defaultBoolean = false)

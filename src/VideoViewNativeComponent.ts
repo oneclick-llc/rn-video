@@ -21,6 +21,12 @@ export interface OnVideoBufferParams {
   };
 }
 
+export interface OnShowPosterParams {
+  nativeEvent: {
+    show: boolean;
+  };
+}
+
 interface Callbacks {
   onVideoTap?: () => void;
   onVideoDoubleTap?: () => void;
@@ -29,6 +35,7 @@ interface Callbacks {
   onVideoLoad?: (data: OnVideoLoadParams) => void;
   onVideoProgress?: (data: OnVideoProgressParams) => void;
   onVideoError?: () => void;
+  onShowPoster?: (data: OnShowPosterParams) => void;
 }
 
 export interface LookyVideoProps extends Pick<ViewProps, 'style'>, Callbacks {
@@ -36,7 +43,7 @@ export interface LookyVideoProps extends Pick<ViewProps, 'style'>, Callbacks {
   muted: boolean;
   loop: boolean;
   progressUpdateInterval?: number;
-  resizeMode?: 'stretch' | 'contain' | 'cover';
+  videoResizeMode?: 'stretch' | 'contain' | 'cover';
   nativeID: string;
   autoplay?: boolean;
 }

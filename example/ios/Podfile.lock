@@ -355,7 +355,7 @@ PODS:
     - React-jsi (= 0.71.14)
     - React-logger (= 0.71.14)
     - React-perflogger (= 0.71.14)
-  - rn-video (0.5.0):
+  - rn-video (1.0.8):
     - React-Core
   - Yoga (1.14.0)
 
@@ -515,9 +515,9 @@ SPEC CHECKSUMS:
   React-RCTVibration: 64e412b9ac684c4edc938fa1187135ada9af7faf
   React-runtimeexecutor: ffe826b7b1cfbc32a35ed5b64d5886c0ff75f501
   ReactCommon: 7f3dd5e98a9ec627c6b03d26c062bf37ea9fc888
-  rn-video: 071f36f8fc4ff74d035ca61d95af214fb30f4b5b
+  rn-video: 282cd273d59b5c3447659360cf40f9b1319f3d9d
   Yoga: e71803b4c1fff832ccf9b92541e00f9b873119b9
 
-PODFILE CHECKSUM: 5db4ef29dff46b5389e8c34ed9a9311ec51d0491
+PODFILE CHECKSUM: 6cbfc1c7869d8cbc075a17e714bf7d5ea7ed301e
 
 COCOAPODS: 1.14.3

@@ -62,6 +62,8 @@ class AppVideosManager {
     if (channel?.laterRestore == id) {
       video.setPausedModifier(false)
       channel.laterRestore = null
+    } else {
+      video.showPoster(true)
     }
   }
 

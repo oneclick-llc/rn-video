@@ -67,6 +67,8 @@ public class AppVideosManager: NSObject {
         if channel?.laterRestore == id {
             video.setPaused(false)
             channel?.laterRestore = nil
+        } else {
+            video.showPoster(show: true)
         }
     }
 

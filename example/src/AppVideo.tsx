@@ -8,6 +8,7 @@ interface Props {
   readonly channel: string;
   readonly loop?: boolean;
   readonly poster?: string;
+  readonly resizeMode?: 'stretch' | 'contain' | 'cover';
 }
 
 export const AppVideo: React.FC<Props> = (props) => {
@@ -18,7 +19,7 @@ export const AppVideo: React.FC<Props> = (props) => {
         <LookyVideoView
           poster={props.poster}
           progressUpdateInterval={0.25}
-          resizeMode={'cover'}
+          videoResizeMode={props.resizeMode ?? 'cover'}
           // onVideoProgress={(data) =>
           //   console.log('AppVideo.onVideoProgress', data)
           // }

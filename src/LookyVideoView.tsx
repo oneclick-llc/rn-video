@@ -1,5 +1,8 @@
 import React, { memo, useRef, useState } from 'react';
-import type { LookyVideoProps } from './VideoViewNativeComponent';
+import type {
+  LookyVideoProps,
+  OnShowPosterParams,
+} from './VideoViewNativeComponent';
 import V from './VideoViewNativeComponent';
 import {
   Image,
@@ -21,7 +24,11 @@ interface Props extends Omit<LookyVideoProps, 'nativeID'> {
 }
 
 export const LookyVideoView: React.FC<Props> = memo((props) => {
-  const [isLoaded, setLoaded] = useState(false);
+  const [showPoster, setShowPoster] = useState<OnShowPosterParams>({
+    nativeEvent: { show: true },
+  });
+
+  console.log('🍓[LookyVideoView.]', showPoster);
 
   return (
     <View style={props.style}>
@@ -30,12 +37,11 @@ export const LookyVideoView: React.FC<Props> = memo((props) => {
         nativeID={videoController.getId(props.channel, props.videoId)}
         onVideoProgress={props.onVideoProgress}
         style={StyleSheet.absoluteFillObject}
-        onVideoLoad={(params) => {
-          props.onVideoLoad?.(params);
-          setLoaded(true);
+        onShowPoster={(params) => {
+          setShowPoster({ nativeEvent: { show: params.nativeEvent.show } });
         }}
       />
-      {!isLoaded && props.poster && (
+      {showPoster.nativeEvent?.show && props.poster && (
         <Image
           style={props.posterStyle ?? StyleSheet.absoluteFillObject}
           source={
