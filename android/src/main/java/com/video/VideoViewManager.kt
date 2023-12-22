@@ -35,7 +35,13 @@ class VideoViewManager : ReactVideoViewManager() {
   @ReactProp(name = "videoUri")
   fun videoUri(videoView: VideoView, videoUri: String) {
     val isNetwork = videoUri.startsWith("http")
-    val isAsset = Regex("^(assets-library|ipod-library|file|content|ms-appx|ms-appdata):").matches(videoUri)
+    var isAsset = false
+    if (videoUri.startsWith("assets-library:")) isAsset = true
+    if (videoUri.startsWith("ipod-library:")) isAsset = true
+    if (videoUri.startsWith("file:")) isAsset = true
+    if (videoUri.startsWith("content:")) isAsset = true
+    if (videoUri.startsWith("ms-appx:")) isAsset = true
+    if (videoUri.startsWith("ms-appdata:")) isAsset = true
     videoView.setSrc(videoUri, "", isNetwork, isAsset, Arguments.createMap())
   }
 
