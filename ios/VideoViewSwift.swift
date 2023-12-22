@@ -266,7 +266,8 @@ public class VideoViewSwift: UIView {
     @objc
     func setVideoUri(_ uri: String) {
         if !uri.starts(with: "ph://") {
-            _playerItem = AVPlayerItem(asset: AVAsset(url: URL(string: uri)!))
+            guard let url = URL(string: uri) else { return }
+            _playerItem = AVPlayerItem(asset: AVAsset(url: url))
             return initializePlayer()
         }
         
