@@ -1,4 +1,6 @@
-import { NativeModules } from 'react-native';
+import { AppState, NativeModules, Platform } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { useEffect } from 'react';
 
 NativeModules.JsiVideoManager.install();
 
@@ -109,3 +111,47 @@ export const videoController = {
     global.__lookyVideo.seek(channel, videoId, duration);
   },
 };
+
+export function useSubscribeOnFocusEventForChannel(
+  channelName: string,
+  shouldSeekToStartOnRestore: boolean = true
+) {
+  const navigation = useNavigation();
+  useEffect(() => {
+    let skipFirst = true;
+    let isFocussed = true;
+    const focus = navigation.addListener('focus', () => {
+      isFocussed = true;
+      if (skipFirst) {
+        skipFirst = false;
+        return;
+      }
+      videoController.restoreLastPlaying(
+        channelName,
+        shouldSeekToStartOnRestore
+      );
+    });
+
+    const blur = navigation.addListener('blur', () => {
+      isFocussed = false;
+      videoController.pauseCurrentPlayingWithLaterRestore(channelName);
+    });
+
+    const change = AppState.addEventListener('change', (state) => {
+      // do nothing on android platform
+      if (Platform.OS === 'android') return;
+      if (state === 'background' && isFocussed) {
+        videoController.togglePlayInBackground(channelName, true);
+      }
+
+      if (state === 'active' && isFocussed) {
+        videoController.togglePlayInBackground(channelName, false);
+      }
+    }).remove;
+    return () => {
+      focus();
+      blur();
+      change();
+    };
+  }, [channelName, navigation, shouldSeekToStartOnRestore]);
+}
