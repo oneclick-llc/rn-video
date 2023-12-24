@@ -98,6 +98,7 @@ public class ReactVideoView extends ScalableVideoView implements
   private float mRate = 1.0f;
   private float mActiveRate = 1.0f;
   private boolean mPausedBeforeDetached = false;
+  private boolean autoplay = false;
   private boolean mPlayInBackground = false;
   private boolean mBackgroundPaused = false;
   private boolean _isPosterPresent = true;
@@ -200,7 +201,7 @@ public class ReactVideoView extends ScalableVideoView implements
   }
 
   public void setSrc(final String uriString, final String type, final boolean isNetwork, final boolean isAsset, final ReadableMap requestHeaders, final int expansionMainVersion, final int expansionPatchVersion) {
-
+    System.out.println("🍓 setSrc " + uriString + " isNetwork: " + isNetwork + " isAsset: " + isAsset);
     mSrcUriString = uriString;
     mSrcType = type;
     mSrcIsNetwork = isNetwork;
@@ -314,6 +315,7 @@ public class ReactVideoView extends ScalableVideoView implements
 
   public void setPausedModifier(final boolean paused) {
     mPaused = paused;
+    System.out.println("🍓 setPausedModifier paused: " + paused + " " + autoplay);
 
     if (!mMediaPlayerValid) return;
 
@@ -433,8 +435,6 @@ public class ReactVideoView extends ScalableVideoView implements
     mEventEmitter.receiveEvent(getId(), Events.EVENT_LOAD.toString(), event);
 
     applyModifiers();
-
-    selectTimedMetadataTrack(mp);
   }
 
   @Override
@@ -466,7 +466,6 @@ public class ReactVideoView extends ScalableVideoView implements
 
   @Override
   public void onBufferingUpdate(MediaPlayer mp, int percent) {
-    selectTimedMetadataTrack(mp);
   }
 
   public void onSeekComplete(MediaPlayer mp) {
@@ -545,7 +544,8 @@ public class ReactVideoView extends ScalableVideoView implements
   protected void onDetachedFromWindow() {
     mMediaPlayerValid = false;
     super.onDetachedFromWindow();
-    mPausedBeforeDetached = mPaused;
+    mPausedBeforeDetached = mPaused && !autoplay;
+    System.out.println("🍓 onDetachedFromWindow mPausedBeforeDetached: " + mPausedBeforeDetached);
     showPoster(true);
     setKeepScreenOn(false);
   }
@@ -553,6 +553,7 @@ public class ReactVideoView extends ScalableVideoView implements
   @Override
   protected void onAttachedToWindow() {
     super.onAttachedToWindow();
+    System.out.println("🍓 onAttachedToWindow mBackgroundPaused:" + mBackgroundPaused);
 
     if (mMainVer > 0) {
       setSrc(mSrcUriString, mSrcType, mSrcIsNetwork, mSrcIsAsset, mRequestHeaders, mMainVer, mPatchVer);
@@ -560,6 +561,7 @@ public class ReactVideoView extends ScalableVideoView implements
       setSrc(mSrcUriString, mSrcType, mSrcIsNetwork, mSrcIsAsset, mRequestHeaders);
     }
     setKeepScreenOn(mPreventsDisplaySleepDuringVideoPlayback);
+    setPausedModifier(mPausedBeforeDetached);
   }
 
   @Override
@@ -619,26 +621,10 @@ public class ReactVideoView extends ScalableVideoView implements
   }
 
   public void setAutoplay(boolean autoplay) {
+    this.autoplay = autoplay;
     System.out.println("🍓 setAutoplay " + autoplay);
     if (!autoplay) return;
     AppVideosManagerKt.pauseAllVideos(AppVideosManager.Companion.getShared());
     mPaused = false;
-  }
-
-  // Select track (so we can use it to listen to timed meta data updates)
-  private void selectTimedMetadataTrack(MediaPlayer mp) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      return;
-    }
-    try { // It's possible this could throw an exception if the framework doesn't support getting track info
-      MediaPlayer.TrackInfo[] trackInfo = mp.getTrackInfo();
-      for (int i = 0; i < trackInfo.length; ++i) {
-        if (trackInfo[i].getTrackType() == MediaPlayer.TrackInfo.MEDIA_TRACK_TYPE_TIMEDTEXT) {
-          mp.selectTrack(i);
-          break;
-        }
-      }
-    } catch (Exception e) {
-    }
   }
 }

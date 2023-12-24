@@ -192,6 +192,17 @@ extension AppVideosManager {
     }
 
     @objc
+    public func pauseAll(except video: LookyVideoView) {
+        let videoId = self.videoId(video)
+        for entry in channels {
+            for vEntry in entry.value.videos {
+                if vEntry.key == videoId { continue }
+                vEntry.value.setPaused(true)
+            }
+        }
+    }
+
+    @objc
     public func isPaused(_ channelName: String, videoId: String) -> Bool {
         return getChannel(name: channelName)?.video(for: videoId)?._paused == true
     }
