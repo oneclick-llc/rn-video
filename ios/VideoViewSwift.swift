@@ -232,14 +232,14 @@ public class VideoViewSwift: UIView {
         change: [NSKeyValueChangeKey : Any]?,
         context: UnsafeMutableRawPointer?
     ) {
-
+        guard let player = object as? AVPlayer else { return }
+        debugPrint("=-=", player.status == .unknown, player.status == .readyToPlay, player.status == .failed)
         if keyPath == "status" {
-            if _player == nil { return }
-            if _player?.status == .readyToPlay {
+            if player.status == .readyToPlay {
                 onVideoLoad?(nil)
             }
 
-            if _player?.status == .failed {
+            if player.status == .failed {
                 onVideoError?(nil)
             }
         }

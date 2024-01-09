@@ -158,6 +158,20 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install) {
         return jsi::Value::undefined();
     });
     
+    auto pauseAll = JSI_HOST_FUNCTION("pauseAll", 1) {
+        auto rawChannel = args[0].asString(runtime).utf8(runtime);
+        
+        [AppVideosManager.shared pauseAll:fromJSIString(rawChannel)];
+        return jsi::Value::undefined();
+    });
+    
+    auto playAll = JSI_HOST_FUNCTION("playAll", 1) {
+        auto rawChannel = args[0].asString(runtime).utf8(runtime);
+        
+        [AppVideosManager.shared playAll:fromJSIString(rawChannel)];
+        return jsi::Value::undefined();
+    });
+    
     
     jsi::Object viewHelpers = jsi::Object(runtime);
     viewHelpers.setProperty(runtime, "playVideo", std::move(playVideo));
@@ -171,6 +185,8 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install) {
     viewHelpers.setProperty(runtime, "isPaused", std::move(isPaused));
     viewHelpers.setProperty(runtime, "isMuted", std::move(isMuted));
     viewHelpers.setProperty(runtime, "seek", std::move(seek));
+    viewHelpers.setProperty(runtime, "pauseAll", std::move(pauseAll));
+    viewHelpers.setProperty(runtime, "playAll", std::move(playAll));
     runtime.global().setProperty(runtime, "__lookyVideo", std::move(viewHelpers));
     
     return @true;

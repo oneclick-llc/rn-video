@@ -23,6 +23,8 @@ declare global {
     togglePlayVideo(channel: string, videoId: string): void;
     toggleVideosMuted(muted: boolean): void;
     pauseCurrentPlaying(): void;
+    pauseAll(channelName: string): void;
+    playAll(channelName: string): void;
   };
 }
 
@@ -70,6 +72,16 @@ export const videoController = {
   pauseCurrentPlaying() {
     console.log('🍓[VideosController.pauseCurrentPlaying]');
     global.__lookyVideo.pauseCurrentPlaying();
+  },
+
+  pauseAll(channelName: string) {
+    console.log('🍓[VideosController.pauseAll]');
+    global.__lookyVideo.pauseAll(channelName);
+  },
+
+  playAll(channelName: string) {
+    console.log('🍓[VideosController.playAll]');
+    global.__lookyVideo.playAll(channelName);
   },
 
   pauseCurrentPlayingWithLaterRestore(channelName: string | undefined) {

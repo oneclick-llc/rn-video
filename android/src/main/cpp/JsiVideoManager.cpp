@@ -158,6 +158,20 @@ void JsiVideoManager::installJSIBindings() {
         return jsi::Value::undefined();
     });
 
+    auto playAll = JSI_HOST_FUNCTION("playAll", 1) {
+        auto rawChannel = args[0].asString(runtime).utf8(runtime);
+        auto method = javaPart_->getClass()->getMethod<void (jni::local_ref<JString>)>("playAll");
+        method(javaPart_.get(), jni::make_jstring(rawChannel));
+        return jsi::Value::undefined();
+    });
+
+    auto pauseAll = JSI_HOST_FUNCTION("pauseAll", 1) {
+        auto rawChannel = args[0].asString(runtime).utf8(runtime);
+        auto method = javaPart_->getClass()->getMethod<void (jni::local_ref<JString>)>("pauseAll");
+        method(javaPart_.get(), jni::make_jstring(rawChannel));
+        return jsi::Value::undefined();
+    });
+
 
     jsi::Object viewHelpers = jsi::Object(*runtime_);
     viewHelpers.setProperty(*runtime_, "playVideo", std::move(playVideo));
@@ -171,5 +185,7 @@ void JsiVideoManager::installJSIBindings() {
     viewHelpers.setProperty(*runtime_, "isPaused", std::move(isPaused));
     viewHelpers.setProperty(*runtime_, "isMuted", std::move(isMuted));
     viewHelpers.setProperty(*runtime_, "seek", std::move(seek));
+    viewHelpers.setProperty(*runtime_, "playAll", std::move(playAll));
+    viewHelpers.setProperty(*runtime_, "pauseAll", std::move(pauseAll));
     runtime_->global().setProperty(*runtime_, "__lookyVideo", std::move(viewHelpers));
 }

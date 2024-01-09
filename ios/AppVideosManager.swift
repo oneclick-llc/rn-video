@@ -160,7 +160,6 @@ extension AppVideosManager {
             return;
         }
 
-        let keys = channels.keys
         for entry in channels {
             let channel = entry.value
             let video = channel.currentPlaying?.value
@@ -173,7 +172,7 @@ extension AppVideosManager {
     @objc
     public func togglePlayVideo(_ channelName: String, videoId: String) {
         let video = findFirstPlayingVideo(channelName: channelName)
-        if let video { pauseCurrentPlaying() }
+        if video != nil { pauseCurrentPlaying() }
         else { playVideo(channelName, videoId: videoId) }
     }
 
@@ -188,17 +187,32 @@ extension AppVideosManager {
 
     @objc
     public func pauseCurrentPlaying() {
-        pauseAllVideos()
+        for entry in channels {
+            let channel = entry.value
+            let video = channel.currentPlaying?.value
+            video?.setPaused(true)
+        }
     }
 
     @objc
-    public func pauseAll(except video: LookyVideoView) {
-        let videoId = self.videoId(video)
-        for entry in channels {
-            for vEntry in entry.value.videos {
-                if vEntry.key == videoId { continue }
-                vEntry.value.setPaused(true)
-            }
+    public func pauseAll(_ channelName: String) {
+        guard let channel = getChannel(name: channelName) else {
+            return
+        }
+
+        for entry in channel.videos {
+            entry.value.setPaused(true)
+        }
+    }
+    
+    @objc
+    public func playAll(_ channelName: String) {
+        guard let channel = getChannel(name: channelName) else {
+            return
+        }
+
+        for entry in channel.videos {
+            entry.value.setPaused(false)
         }
     }
 

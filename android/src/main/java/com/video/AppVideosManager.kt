@@ -169,6 +169,20 @@ fun AppVideosManager.seek(channel: String, videoId: String, duration: Double) {
   getChannel(channel)?.video(videoId)?.seekTo((duration / 1000.0).toInt())
 }
 
+fun AppVideosManager.playAll(channelName: String) {
+  val channel = getChannel(channelName) ?: return
+  for (video in channel.videos) {
+    video.value.setPausedModifier(false)
+  }
+}
+
+fun AppVideosManager.pauseAll(channelName: String) {
+  val channel = getChannel(channelName) ?: return
+  for (video in channel.videos) {
+    video.value.setPausedModifier(true)
+  }
+}
+
 
 fun AppVideosManager.togglePlay(channel: String, videoId: String, seekToStart: Boolean) {
   val videoChannel = getChannel(channel) ?: return

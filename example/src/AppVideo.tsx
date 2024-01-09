@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { LookyVideoView, videoController } from 'rn-video';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Text, TouchableOpacity, View } from 'react-native';
 
 interface Props {
   readonly src: string;
@@ -34,6 +34,10 @@ export const AppVideo: React.FC<Props> = (props) => {
           onVideoLoad={(d) =>
             console.log('🍓[AppVideo.onVideoLoad]', d.nativeEvent)
           }
+          onVideoError={() => {
+            console.log('🍓[AppVideo.onVideoError]');
+            Alert.alert('Error load video');
+          }}
           onVideoEnd={() => console.log('🍓[AppVideo.onVideoEnd]')}
           channel={props.channel}
           videoId={props.vId}

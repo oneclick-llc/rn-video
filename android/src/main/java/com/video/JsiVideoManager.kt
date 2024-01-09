@@ -103,4 +103,18 @@ class JsiVideoManager(private val context: ReactApplicationContext) {
   fun seek(channel: String, videoId: String, duration: Double) {
     AppVideosManager.shared.seek(channel, videoId, duration)
   }
+
+  @DoNotStrip
+  fun playAll(channel: String) {
+    AppVideosManager.shared.handler.post {
+      AppVideosManager.shared.playAll(channel)
+    }
+  }
+
+  @DoNotStrip
+  fun pauseAll(channel: String) {
+    AppVideosManager.shared.handler.post {
+      AppVideosManager.shared.pauseAll(channel)
+    }
+  }
 }

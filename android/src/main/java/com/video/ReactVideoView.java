@@ -2,7 +2,6 @@ package com.video;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Matrix;
 import android.media.MediaPlayer;
@@ -11,18 +10,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.Window;
 import android.webkit.CookieManager;
 import android.widget.MediaController;
+
+import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.yqritc.scalablevideoview.ScalableType;
@@ -31,12 +27,9 @@ import com.yqritc.scalablevideoview.ScaleManager;
 import com.yqritc.scalablevideoview.Size;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 import zipfile.APKExpansionSupport;
 import zipfile.ZipResourceFile;
@@ -97,7 +90,8 @@ public class ReactVideoView extends ScalableVideoView implements
   private float mProgressUpdateInterval = 250.0f;
   private float mRate = 1.0f;
   private float mActiveRate = 1.0f;
-  private boolean mPausedBeforeDetached = false;
+  @androidx.annotation.Nullable
+  private Boolean mPausedBeforeDetached = null;
   private boolean autoplay = false;
   private boolean mPlayInBackground = false;
   private boolean mBackgroundPaused = false;
@@ -561,7 +555,8 @@ public class ReactVideoView extends ScalableVideoView implements
       setSrc(mSrcUriString, mSrcType, mSrcIsNetwork, mSrcIsAsset, mRequestHeaders);
     }
     setKeepScreenOn(mPreventsDisplaySleepDuringVideoPlayback);
-    setPausedModifier(mPausedBeforeDetached);
+    if (mPausedBeforeDetached != null)
+      setPausedModifier(mPausedBeforeDetached);
   }
 
   @Override
