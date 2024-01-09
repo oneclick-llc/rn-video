@@ -57,16 +57,19 @@ export const videoController = {
 
   playWithId(nativeId: string) {
     console.log('🍓[VideosController.playVideo]', nativeId);
-    const [channel, id] = nativeId.split(':');
-    if (!channel || !id) return;
-    global.__lookyVideo.playVideo(channel, id);
+    const [channel, videoId] = nativeId.split(':');
+    if (!channel || !videoId) return;
+    global.__lookyVideo.playVideo(channel, videoController.getVideoId(videoId));
   },
 
   pauseWithId(nativeId: string) {
     console.log('🍓[VideosController.pauseWithId]', nativeId);
-    const [channel, id] = nativeId.split(':');
-    if (!channel || !id) return;
-    global.__lookyVideo.pauseVideo(channel, id);
+    const [channel, videoId] = nativeId.split(':');
+    if (!channel || !videoId) return;
+    global.__lookyVideo.pauseVideo(
+      channel,
+      videoController.getVideoId(videoId)
+    );
   },
 
   pauseCurrentPlaying() {
@@ -104,7 +107,10 @@ export const videoController = {
   },
 
   togglePlay(channel: string, videoId: string) {
-    global.__lookyVideo.togglePlayVideo(channel, videoId);
+    global.__lookyVideo.togglePlayVideo(
+      channel,
+      videoController.getVideoId(videoId)
+    );
   },
 
   toggleMuted(muted: boolean) {
@@ -112,15 +118,25 @@ export const videoController = {
   },
 
   isPaused(channel: string, videoId: string) {
-    return global.__lookyVideo.isPaused(channel, videoId);
+    return global.__lookyVideo.isPaused(
+      channel,
+      videoController.getVideoId(videoId)
+    );
   },
 
   isMuted(channel: string, videoId: string) {
-    return global.__lookyVideo.isMuted(channel, videoId);
+    return global.__lookyVideo.isMuted(
+      channel,
+      videoController.getVideoId(videoId)
+    );
   },
 
   seek(channel: string, videoId: string, duration: number) {
-    global.__lookyVideo.seek(channel, videoId, duration);
+    global.__lookyVideo.seek(
+      channel,
+      videoController.getVideoId(videoId),
+      duration
+    );
   },
 };
 

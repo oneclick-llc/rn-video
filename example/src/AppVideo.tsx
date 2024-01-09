@@ -82,7 +82,9 @@ export const AppVideo: React.FC<Props> = (props) => {
       <TouchableOpacity
         style={{ marginTop: 20 }}
         onPress={() => {
-          videoController.toggleMuted(true);
+          const isMuted = videoController.isMuted(props.channel, props.vId);
+          console.log('🍓[AppVideo.]', isMuted);
+          videoController.toggleMuted(!isMuted);
         }}
         children={<Text children={'Mute'} />}
       />

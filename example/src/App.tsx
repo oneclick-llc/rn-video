@@ -26,6 +26,11 @@ const screens = [
         slug: 'AutoPlayAll',
         getScreen: () => require('./screens/PlayAll').PlayAll,
       },
+      {
+        name: 'PlayByNativeId',
+        slug: 'PlayByNativeId',
+        getScreen: () => require('./screens/PlayByNativeId').PlayByNativeId,
+      },
     ],
   },
 ];

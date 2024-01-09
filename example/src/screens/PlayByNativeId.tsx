@@ -4,7 +4,7 @@ import { AppVideo } from '../AppVideo';
 import { videoController } from 'rn-video';
 import { oneVideo, poster } from '../constants';
 
-export const BaseScreen: React.FC = () => {
+export const PlayByNativeId: React.FC = () => {
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.container}>
@@ -15,23 +15,18 @@ export const BaseScreen: React.FC = () => {
           vId={'one'}
           poster={poster}
         />
-        <AppVideo loop channel={'channel'} src={oneVideo} vId={'two'} />
-        <AppVideo channel={'channel2'} src={oneVideo} vId={'three'} />
       </View>
 
       <TouchableOpacity
         style={{ marginTop: 20 }}
         onPress={() => {
-          videoController.togglePlayInBackground('channel', true);
+          if (videoController.isPaused('channel', 'one')) {
+            videoController.playWithId(`channel:one`);
+          } else {
+            videoController.pauseWithId(`channel:one`);
+          }
         }}
-        children={<Text children={'Toggle play in background'} />}
-      />
-      <TouchableOpacity
-        style={{ marginTop: 20 }}
-        onPress={() => {
-          videoController.restoreLastPlaying(undefined, true);
-        }}
-        children={<Text children={'restore last playing'} />}
+        children={<Text children={'Toggle play with native id'} />}
       />
     </View>
   );
