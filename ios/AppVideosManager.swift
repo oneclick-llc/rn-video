@@ -92,7 +92,7 @@ extension AppVideosManager {
     @objc
     public func playVideo(_ channelName: String, videoId: String) {
         guard let channel = getChannel(name: channelName) else { return }
-        if channel.currentPlaying?.key == videoId { return }
+        //if channel.currentPlaying?.key == videoId { return }
         self.pauseCurrentPlaying()
         if let video = channel.video(for: videoId) {
             debugPrint("🍓 playVideo", channelName, videoId)

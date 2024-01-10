@@ -84,7 +84,7 @@ class AppVideosManager {
 // MARK: public api
 fun AppVideosManager.playVideo(channelName: String, videoId: String) {
   val channel = getChannel(channelName) ?: return
-  if (channel.currentPlaying?.key == videoId) { return }
+  //if (channel.currentPlaying?.key == videoId) { return }
   pauseCurrentPlaying()
   val video = channel.video(videoId) ?: return
   println("🍓 playVideo $channelName, $videoId")

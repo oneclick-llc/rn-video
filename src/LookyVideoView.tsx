@@ -1,18 +1,21 @@
-import React, { memo, useRef, useState } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import type {
   LookyVideoProps,
   OnShowPosterParams,
 } from './VideoViewNativeComponent';
 import V from './VideoViewNativeComponent';
 import {
+  AppState,
   Image,
   ImageStyle,
+  Platform,
   StyleProp,
   StyleSheet,
   View,
   ViewProps,
 } from 'react-native';
 import { videoController } from './VideosController';
+import { useNavigation } from '@react-navigation/native';
 
 interface Props extends Omit<LookyVideoProps, 'nativeID'> {
   poster?: string | number;
@@ -57,15 +60,58 @@ export const LookyVideoView: React.FC<Props> = memo((props) => {
 
 interface SimpleProps extends Omit<Props, 'videoId' | 'channel'> {}
 
-let unqueVideoId = 1;
-let channel = 'SimpleLookyVideoView';
-export const SimpleLookyVideoView: React.FC<SimpleProps> = memo((props) => {
-  const videoId = useRef<string>();
+let uniqueVideoId = 1;
+export const SimpleLookyVideoView: React.FC<
+  SimpleProps & { channel?: string; videoId?: string }
+> = memo((props) => {
+  const navigation = useNavigation();
+  const videoId = useRef<{ id: string; channel: string }>();
   if (videoId.current === undefined) {
-    videoId.current = (++unqueVideoId).toString();
+    videoId.current = {
+      channel:
+        props.channel ??
+        `SimpleLookyVideViewChannel${(++uniqueVideoId).toString()}`,
+      id: props.videoId ?? (++uniqueVideoId).toString(),
+    };
   }
-  console.log('🍓[LookyVideoView.]', props.autoplay);
+
+  useEffect(() => {
+    let skipFirstFocus = true;
+    let isFocused = true;
+    if (Platform.OS === 'android') return;
+    const focus = navigation.addListener('focus', () => {
+      isFocused = true;
+      if (skipFirstFocus) {
+        skipFirstFocus = false;
+        return;
+      }
+      if (!props.autoplay) return;
+      videoController.play(videoId.current!.channel, videoId.current!.id);
+    });
+    const blur = navigation.addListener('blur', () => {
+      isFocused = false;
+      if (!props.autoplay) return;
+      videoController.pause(videoId.current!.channel, videoId.current!.id);
+    });
+
+    const appFocus = AppState.addEventListener('change', (state) => {
+      if (state === 'active' && props.autoplay && isFocused) {
+        videoController.play(videoId.current!.channel, videoId.current!.id);
+      }
+    });
+
+    return () => {
+      blur();
+      focus();
+      appFocus.remove();
+    };
+  }, [navigation]);
+
   return (
-    <LookyVideoView {...props} channel={channel} videoId={videoId.current} />
+    <LookyVideoView
+      {...props}
+      channel={videoId.current!.channel}
+      videoId={videoId.current!.id}
+    />
   );
 });

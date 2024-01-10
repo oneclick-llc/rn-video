@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { ShowcaseApp } from '@gorhom/showcase-template';
+import { OneMoreVideo } from 'example/src/screens/OneMoreVideo';
 
 const screens = [
   {
@@ -30,6 +31,11 @@ const screens = [
         name: 'PlayByNativeId',
         slug: 'PlayByNativeId',
         getScreen: () => require('./screens/PlayByNativeId').PlayByNativeId,
+      },
+      {
+        name: 'OneMoreVideo',
+        slug: 'OneMoreVideo',
+        getScreen: () => require('./screens/OneMoreVideo').OneMoreVideo,
       },
     ],
   },
