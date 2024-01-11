@@ -31,8 +31,6 @@ export const LookyVideoView: React.FC<Props> = memo((props) => {
     nativeEvent: { show: true },
   });
 
-  console.log('🍓[LookyVideoView.]', showPoster);
-
   return (
     <View style={props.style}>
       <V
@@ -80,23 +78,21 @@ export const SimpleLookyVideoView: React.FC<
     let isFocused = true;
     if (Platform.OS === 'android') return;
     const focus = navigation.addListener('focus', () => {
+      skipFirstFocus = false;
       isFocused = true;
-      if (skipFirstFocus) {
-        skipFirstFocus = false;
-        return;
-      }
+      if (skipFirstFocus) return;
       if (!props.autoplay) return;
-      videoController.play(videoId.current!.channel, videoId.current!.id);
+      videoController.playAll(videoId.current!.channel);
     });
     const blur = navigation.addListener('blur', () => {
       isFocused = false;
       if (!props.autoplay) return;
-      videoController.pause(videoId.current!.channel, videoId.current!.id);
+      videoController.pauseAll(videoId.current!.channel);
     });
 
     const appFocus = AppState.addEventListener('change', (state) => {
       if (state === 'active' && props.autoplay && isFocused) {
-        videoController.play(videoId.current!.channel, videoId.current!.id);
+        videoController.playAll(videoId.current!.channel);
       }
     });
 
