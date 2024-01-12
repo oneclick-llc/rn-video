@@ -140,6 +140,7 @@ public class VideoViewSwift: UIView {
     public func setAutoplay(_ autoplay: Bool) {
         debugPrint("🍓 setAutoplay \(autoplay)")
         self._paused = !autoplay
+        if !_paused { self.setPaused(false) }
     }
 
     func cleanUp() {
