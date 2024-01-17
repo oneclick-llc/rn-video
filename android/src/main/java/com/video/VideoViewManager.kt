@@ -26,9 +26,6 @@ class VideoViewManager : ReactVideoViewManager() {
   override fun getExportedCustomDirectEventTypeConstants(): MutableMap<Any?, Any?> {
     val superResult = super.getExportedCustomDirectEventTypeConstants()!!
 
-    superResult["onVideoTap"] = MapBuilder.of("registrationName", "onVideoTap")
-    superResult["onVideoDoubleTap"] = MapBuilder.of("registrationName", "onVideoDoubleTap")
-
     return superResult
   }
 

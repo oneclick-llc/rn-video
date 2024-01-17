@@ -23,11 +23,7 @@ public class VideoViewSwift: UIView {
     @objc
     var onVideoBuffer: RCTDirectEventBlock?
     @objc
-    var onVideoTap: RCTDirectEventBlock?
-    @objc
     var onShowPoster: RCTDirectEventBlock?
-    @objc
-    var onVideoDoubleTap: RCTDirectEventBlock?
     @objc
     var onVideoProgress: RCTDirectEventBlock?
     @objc
@@ -75,16 +71,6 @@ public class VideoViewSwift: UIView {
         setupUI()
     }
 
-    func applyGestures() {
-        let onVideoTap = UITapGestureRecognizer(target: self, action: #selector(didVideoTap))
-        addGestureRecognizer(onVideoTap)
-
-        let onVideoDoubleTap = UITapGestureRecognizer(target: self, action: #selector(didVideoDoubleTap))
-        onVideoDoubleTap.numberOfTapsRequired = 2
-        onVideoTap.require(toFail: onVideoDoubleTap)
-        addGestureRecognizer(onVideoDoubleTap)
-    }
-
     public override func layoutSubviews() {
         super.layoutSubviews()
         _videoPlayerParent.frame = .init(origin: .zero, size: self.bounds.size)
@@ -92,16 +78,6 @@ public class VideoViewSwift: UIView {
         CATransaction.setAnimationDuration(0)
         _playerLayer.frame = .init(origin: .zero, size: self.bounds.size)
         CATransaction.commit()
-    }
-
-    @objc
-    func didVideoTap() {
-        onVideoTap?(nil)
-    }
-
-    @objc
-    func didVideoDoubleTap() {
-        onVideoDoubleTap?(nil)
     }
 
     @objc
@@ -195,7 +171,6 @@ public class VideoViewSwift: UIView {
 
         self.setMuted(_muted)
 
-        applyGestures()
         let progress = progressUpdateInterval
         let interval = CMTimeMakeWithSeconds(progress, preferredTimescale: 60000)
 
