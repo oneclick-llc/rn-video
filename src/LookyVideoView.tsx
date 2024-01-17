@@ -32,7 +32,7 @@ export const LookyVideoView: React.FC<Props> = memo((props) => {
   });
 
   return (
-    <View style={props.style}>
+    <View style={props.style} pointerEvents={props.pointerEvents}>
       <V
         {...props}
         nativeID={videoController.getId(props.channel, props.videoId)}
