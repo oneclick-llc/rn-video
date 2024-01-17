@@ -24,13 +24,6 @@ export const AppVideo: React.FC<Props> = (props) => {
           //   console.log('AppVideo.onVideoProgress', data)
           // }
           //poster={'https://picsum.photos/200/300'}
-          onVideoDoubleTap={() => {
-            console.log('🍓[AppVideo.onVideoDoubleTap]');
-          }}
-          onVideoTap={() => {
-            console.log('🍓[AppVideo.onVideoTap]');
-            videoController.togglePlay(props.channel, props.vId);
-          }}
           onVideoLoad={(d) =>
             console.log('🍓[AppVideo.onVideoLoad]', d.nativeEvent)
           }

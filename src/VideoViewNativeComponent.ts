@@ -28,8 +28,6 @@ export interface OnShowPosterParams {
 }
 
 interface Callbacks {
-  onVideoTap?: () => void;
-  onVideoDoubleTap?: () => void;
   onVideoBuffer?: (data: OnVideoBufferParams) => void;
   onVideoEnd?: () => void;
   onVideoLoad?: (data: OnVideoLoadParams) => void;
