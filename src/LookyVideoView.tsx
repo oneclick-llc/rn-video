@@ -44,7 +44,7 @@ export const LookyVideoView: React.FC<Props> = memo((props) => {
       />
       {showPoster.nativeEvent?.show && props.poster && (
         <Image
-          style={props.posterStyle ?? StyleSheet.absoluteFillObject}
+          style={[props.posterStyle, StyleSheet.absoluteFillObject]}
           source={
             typeof props.poster === 'number'
               ? props.poster
