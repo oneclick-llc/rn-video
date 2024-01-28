@@ -547,7 +547,13 @@ public class ReactVideoView extends ScalableVideoView implements
   @Override
   protected void onAttachedToWindow() {
     super.onAttachedToWindow();
-    System.out.println("🍓 onAttachedToWindow mBackgroundPaused:" + mBackgroundPaused);
+    Object tag = getTag(R.id.view_tag_native_id);
+    Object laterPlay = getTag(-98765);
+    if (laterPlay == "true") {
+      setTag(-98765, "false");
+      mPausedBeforeDetached = false;
+    }
+    System.out.println("🍓 onAttachedToWindow mBackgroundPaused: " + mBackgroundPaused + " id: " + tag + " laterPlay: " + laterPlay);
 
     if (mMainVer > 0) {
       setSrc(mSrcUriString, mSrcType, mSrcIsNetwork, mSrcIsAsset, mRequestHeaders, mMainVer, mPatchVer);

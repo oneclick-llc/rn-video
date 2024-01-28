@@ -129,6 +129,7 @@ fun AppVideosManager.pauseCurrentPlayingWithLaterRestore(channelName: String?) {
     val videoChannel = getChannel(channelName) ?: return
     val video = findFirstPlayingVideo(channelName) ?: return
     videoChannel.laterRestore = videoId(video)
+    video.setTag(-98765, "true")
     video.setPausedModifier(true)
     return
   }
