@@ -357,7 +357,7 @@ PODS:
     - React-jsi (= 0.71.14)
     - React-logger (= 0.71.14)
     - React-perflogger (= 0.71.14)
-  - rn-video (1.0.13):
+  - rn-video (1.0.22):
     - React-Core
   - RNGestureHandler (2.14.0):
     - RCT-Folly (= 2021.07.22.00)
@@ -540,7 +540,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: 64e412b9ac684c4edc938fa1187135ada9af7faf
   React-runtimeexecutor: ffe826b7b1cfbc32a35ed5b64d5886c0ff75f501
   ReactCommon: 7f3dd5e98a9ec627c6b03d26c062bf37ea9fc888
-  rn-video: 3b2236b80aad489127bcf7c5f7f751591e33f399
+  rn-video: 6c5701baf7ce1e9ae0ba7139de279607736d92f6
   RNGestureHandler: 32a01c29ecc9bb0b5bf7bc0a33547f61b4dc2741
   RNReanimated: dc83bf2068bbc91572938337c5b2030641de1415
   RNScreens: 3c5b9f4a9dcde752466854b6109b79c0e205dad3

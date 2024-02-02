@@ -104,6 +104,7 @@ public class ReactVideoView extends ScalableVideoView implements
 
   private int mVideoDuration = 0;
   private boolean isCompleted = false;
+  private double prevSentDuration = Double.MIN_VALUE;
 
   public ReactVideoView(ThemedReactContext themedReactContext) {
     super(themedReactContext);
@@ -115,20 +116,24 @@ public class ReactVideoView extends ScalableVideoView implements
     initializeMediaPlayerIfNeeded();
     setSurfaceTextureListener(this);
 
-    mProgressUpdateRunnable = new Runnable() {
-      @Override
-      public void run() {
+    mProgressUpdateRunnable = () -> {
 
-        if (mMediaPlayerValid && !isCompleted && !mPaused && !mBackgroundPaused) {
+      if (mMediaPlayerValid && !isCompleted && !mPaused && !mBackgroundPaused) {
+        double currentPosition = mMediaPlayer.getCurrentPosition() / 1000.0;
+        if (prevSentDuration != currentPosition) {
+          prevSentDuration = currentPosition;
           WritableMap event = Arguments.createMap();
-          event.putDouble(EVENT_PROP_CURRENT_TIME, mMediaPlayer.getCurrentPosition() / 1000.0);
+          event.putDouble(EVENT_PROP_CURRENT_TIME, currentPosition);
           event.putDouble(EVENT_PROP_PLAYABLE_DURATION, mVideoDuration / 1000.0);
-          event.putDouble(EVENT_PROP_SEEKABLE_DURATION, (mVideoDuration / 1000.0) - (mMediaPlayer.getCurrentPosition() / 1000.0));
+          event.putDouble(EVENT_PROP_SEEKABLE_DURATION, (mVideoDuration / 1000.0) - (currentPosition));
           mEventEmitter.receiveEvent(getId(), Events.EVENT_PROGRESS.toString(), event);
-
-          // Check for update after an interval
-          mProgressUpdateHandler.postDelayed(mProgressUpdateRunnable, Math.round(mProgressUpdateInterval));
+          if (currentPosition > 0) {
+            showPoster(false);
+          }
         }
+
+        // Check for update after an interval
+        mProgressUpdateHandler.postDelayed(mProgressUpdateRunnable, Math.round(mProgressUpdateInterval));
       }
     };
   }
@@ -318,7 +323,6 @@ public class ReactVideoView extends ScalableVideoView implements
     } else {
       if (!mMediaPlayer.isPlaying()) {
         start();
-        showPoster(false);
         // Setting the rate unpauses, so we have to wait for an unpause
         if (mRate != mActiveRate) {
           setRateModifier(mRate);

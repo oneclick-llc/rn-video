@@ -33,6 +33,16 @@ export const LookyVideoView: React.FC<Props> = memo((props) => {
 
   return (
     <View style={props.style} pointerEvents={props.pointerEvents}>
+      {showPoster.nativeEvent?.show && props.poster && Platform.OS === 'android' && (
+        <Image
+          style={[props.posterStyle, StyleSheet.absoluteFillObject]}
+          source={
+            typeof props.poster === 'number'
+              ? props.poster
+              : { uri: props.poster }
+          }
+        />
+      )}
       <V
         {...props}
         nativeID={videoController.getId(props.channel, props.videoId)}
@@ -42,7 +52,7 @@ export const LookyVideoView: React.FC<Props> = memo((props) => {
           setShowPoster({ nativeEvent: { show: params.nativeEvent.show } });
         }}
       />
-      {showPoster.nativeEvent?.show && props.poster && (
+      {showPoster.nativeEvent?.show && props.poster && Platform.OS === 'ios' && (
         <Image
           style={[props.posterStyle, StyleSheet.absoluteFillObject]}
           source={
