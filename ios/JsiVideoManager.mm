@@ -172,6 +172,13 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install) {
         return jsi::Value::undefined();
     });
     
+    auto laterRestoreId = JSI_HOST_FUNCTION("laterRestoreId", 1) {
+        auto rawChannel = args[0].asString(runtime).utf8(runtime);
+        
+        auto videoId = [AppVideosManager.shared laterRestoreId:fromJSIString(rawChannel)];
+        return jsi::String::createFromUtf8(runtime, [videoId UTF8String]);
+    });
+    
     
     jsi::Object viewHelpers = jsi::Object(runtime);
     viewHelpers.setProperty(runtime, "playVideo", std::move(playVideo));
@@ -187,6 +194,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install) {
     viewHelpers.setProperty(runtime, "seek", std::move(seek));
     viewHelpers.setProperty(runtime, "pauseAll", std::move(pauseAll));
     viewHelpers.setProperty(runtime, "playAll", std::move(playAll));
+    viewHelpers.setProperty(runtime, "laterRestoreId", std::move(laterRestoreId));
     runtime.global().setProperty(runtime, "__lookyVideo", std::move(viewHelpers));
     
     return @true;

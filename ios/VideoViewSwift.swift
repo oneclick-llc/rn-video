@@ -82,7 +82,7 @@ public class VideoViewSwift: UIView {
 
     @objc
     public func setPaused(_ paused: Bool) {
-        debugPrint("🍓 setPaused \(paused)")
+        //debugPrint("🍓 setPaused \(paused) \(nativeID ?? "")")
         self._paused = paused
         guard let _player else { return }
         if paused {
@@ -244,7 +244,6 @@ public class VideoViewSwift: UIView {
 
     @objc
     func setVideoUri(_ uri: String) {
-        debugPrint("🍓 setVideoUri \(uri)")
         if !uri.starts(with: "ph://") {
             var url: URL?
             if uri.starts(with: "file://") {

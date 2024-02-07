@@ -62,7 +62,7 @@ public class AppVideosManager: NSObject {
         let channel = getChannel(name: channelName)
         channel?.videos[id] = video
 
-        debugPrint("🍓 addVideo", channelName, id)
+        //debugPrint("🍓 addVideo", channelName, id)
 
         if channel?.laterRestore == id {
             video.setPaused(false)
@@ -76,7 +76,7 @@ public class AppVideosManager: NSObject {
         let parts = nativeID.components(separatedBy: ":")
         let channelName = parts[0]
         let id = parts[1]
-        debugPrint("🍓 removeVideo", channelName, id)
+        //debugPrint("🍓 removeVideo", channelName, id)
 
         let channel = getChannel(name: channelName)
         channel?.videos.removeValue(forKey: id)
@@ -92,9 +92,9 @@ extension AppVideosManager {
     @objc
     public func playVideo(_ channelName: String, videoId: String) {
         guard let channel = getChannel(name: channelName) else { return }
-        //if channel.currentPlaying?.key == videoId { return }
+        if channel.currentPlaying?.key == videoId { return }
         self.pauseCurrentPlaying()
-        if let video = channel.video(for: videoId) {
+        if let video = channel.video(for: videoId), video._paused {
             debugPrint("🍓 playVideo", channelName, videoId)
             video.setPaused(false)
         }
@@ -104,7 +104,7 @@ extension AppVideosManager {
     public func pauseVideo(_ channelName: String, videoId: String) {
         guard let channel = getChannel(name: channelName) else { return }
         if let video = channel.video(for: videoId), !video._paused {
-            debugPrint("🍓 playVideo", channelName, videoId)
+            debugPrint("🍓 pauseVideo", channelName, videoId)
             video.setPaused(true)
         }
     }
@@ -189,8 +189,10 @@ extension AppVideosManager {
     public func pauseCurrentPlaying() {
         for entry in channels {
             let channel = entry.value
-            let video = channel.currentPlaying?.value
-            video?.setPaused(true)
+            if let video = channel.currentPlaying?.value {
+                debugPrint("🍓 pauseCurrentPlaying", video.nativeID ?? "")
+                video.setPaused(true)
+            }
         }
     }
 
@@ -204,7 +206,7 @@ extension AppVideosManager {
             entry.value.setPaused(true)
         }
     }
-    
+
     @objc
     public func playAll(_ channelName: String) {
         guard let channel = getChannel(name: channelName) else {
@@ -214,6 +216,15 @@ extension AppVideosManager {
         for entry in channel.videos {
             entry.value.setPaused(false)
         }
+    }
+    
+    @objc
+    public func laterRestoreId(_ channelName: String) -> String {
+        guard let channel = getChannel(name: channelName) else {
+            return ""
+        }
+
+        return channel.laterRestore ?? ""
     }
 
     @objc
