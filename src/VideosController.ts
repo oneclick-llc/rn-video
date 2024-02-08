@@ -25,7 +25,6 @@ declare global {
     pauseCurrentPlaying(): void;
     pauseAll(channelName: string): void;
     playAll(channelName: string): void;
-    laterRestoreId(channelName: string): string;
   };
 }
 
@@ -139,16 +138,11 @@ export const videoController = {
       duration
     );
   },
-
-  laterRestoreId(channel: string) {
-    return global.__lookyVideo.laterRestoreId(channel);
-  },
 };
 
 export function useSubscribeOnFocusEventForChannel(
   channelName: string,
-  shouldSeekToStartOnRestore: boolean = true,
-  shouldResumePlayback?: (videoId: string) => boolean
+  shouldSeekToStartOnRestore: boolean = true
 ) {
   const navigation = useNavigation();
   useEffect(() => {
@@ -160,19 +154,10 @@ export function useSubscribeOnFocusEventForChannel(
         skipFirst = false;
         return;
       }
-      if (!shouldResumePlayback) {
-        videoController.restoreLastPlaying(
-          channelName,
-          shouldSeekToStartOnRestore
-        );
-        return;
-      }
-      if (shouldResumePlayback(videoController.laterRestoreId(channelName))) {
-        videoController.restoreLastPlaying(
-          channelName,
-          shouldSeekToStartOnRestore
-        );
-      }
+      videoController.restoreLastPlaying(
+        channelName,
+        shouldSeekToStartOnRestore
+      );
     });
 
     const blur = navigation.addListener('blur', () => {
@@ -199,7 +184,6 @@ export function useSubscribeOnFocusEventForChannel(
   }, [
     channelName,
     navigation,
-    shouldResumePlayback,
     shouldSeekToStartOnRestore,
   ]);
 }

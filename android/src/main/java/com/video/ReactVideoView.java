@@ -542,7 +542,7 @@ public class ReactVideoView extends ScalableVideoView implements
   protected void onDetachedFromWindow() {
     mMediaPlayerValid = false;
     super.onDetachedFromWindow();
-    mPausedBeforeDetached = mPaused && !autoplay;
+    mPausedBeforeDetached = mPaused || isCompleted;
     System.out.println("🍓 onDetachedFromWindow mPausedBeforeDetached: " + mPausedBeforeDetached);
     showPoster(true);
     setKeepScreenOn(false);
@@ -558,15 +558,16 @@ public class ReactVideoView extends ScalableVideoView implements
       mPausedBeforeDetached = false;
     }
     System.out.println("🍓 onAttachedToWindow mBackgroundPaused: " + mBackgroundPaused + " id: " + tag + " laterPlay: " + laterPlay);
-
+    if (mPausedBeforeDetached != null) {
+      mPaused = mPausedBeforeDetached;
+    }
+    mPausedBeforeDetached = null;
     if (mMainVer > 0) {
       setSrc(mSrcUriString, mSrcType, mSrcIsNetwork, mSrcIsAsset, mRequestHeaders, mMainVer, mPatchVer);
     } else {
       setSrc(mSrcUriString, mSrcType, mSrcIsNetwork, mSrcIsAsset, mRequestHeaders);
     }
     setKeepScreenOn(mPreventsDisplaySleepDuringVideoPlayback);
-    if (mPausedBeforeDetached != null)
-      setPausedModifier(mPausedBeforeDetached);
   }
 
   @Override

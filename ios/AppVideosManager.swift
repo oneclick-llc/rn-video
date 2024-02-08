@@ -217,15 +217,6 @@ extension AppVideosManager {
             entry.value.setPaused(false)
         }
     }
-    
-    @objc
-    public func laterRestoreId(_ channelName: String) -> String {
-        guard let channel = getChannel(name: channelName) else {
-            return ""
-        }
-
-        return channel.laterRestore ?? ""
-    }
 
     @objc
     public func isPaused(_ channelName: String, videoId: String) -> Bool {

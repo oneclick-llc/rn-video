@@ -172,14 +172,6 @@ void JsiVideoManager::installJSIBindings() {
         return jsi::Value::undefined();
     });
 
-    auto laterRestoreId = JSI_HOST_FUNCTION("laterRestoreId", 1) {
-        auto rawChannel = args[0].asString(runtime).utf8(runtime);
-        auto method = javaPart_->getClass()->getMethod<jstring(jni::local_ref<JString>)>("laterRestoreId");
-        auto id = method(javaPart_.get(), jni::make_jstring(rawChannel));
-        return jsi::String::createFromAscii(runtime, id->toStdString());
-    });
-
-
     jsi::Object viewHelpers = jsi::Object(*runtime_);
     viewHelpers.setProperty(*runtime_, "playVideo", std::move(playVideo));
     viewHelpers.setProperty(*runtime_, "pauseVideo", std::move(pauseVideo));
@@ -194,6 +186,5 @@ void JsiVideoManager::installJSIBindings() {
     viewHelpers.setProperty(*runtime_, "seek", std::move(seek));
     viewHelpers.setProperty(*runtime_, "playAll", std::move(playAll));
     viewHelpers.setProperty(*runtime_, "pauseAll", std::move(pauseAll));
-    viewHelpers.setProperty(*runtime_, "laterRestoreId", std::move(laterRestoreId));
     runtime_->global().setProperty(*runtime_, "__lookyVideo", std::move(viewHelpers));
 }

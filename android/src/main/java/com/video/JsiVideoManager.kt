@@ -117,9 +117,4 @@ class JsiVideoManager(private val context: ReactApplicationContext) {
       AppVideosManager.shared.pauseAll(channel)
     }
   }
-
-  @DoNotStrip
-  fun laterRestoreId(channel: String): String {
-    return AppVideosManager.shared.getChannel(channel)?.laterRestore ?: ""
-  }
 }
