@@ -14,6 +14,7 @@ export const BaseScreen: React.FC = () => {
           src={oneVideo}
           vId={'one'}
           poster={poster}
+          loop
         />
         <AppVideo loop channel={'channel'} src={oneVideo} vId={'two'} />
         <AppVideo channel={'channel2'} src={oneVideo} vId={'three'} />

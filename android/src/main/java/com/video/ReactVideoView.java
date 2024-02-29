@@ -304,17 +304,11 @@ public class ReactVideoView extends ScalableVideoView implements
   }
 
   public void setRepeatModifier(final boolean repeat) {
-
     mRepeat = repeat;
-
-    if (mMediaPlayerValid) {
-      setLooping(repeat);
-    }
   }
 
   public void setPausedModifier(final boolean paused) {
     mPaused = paused;
-    System.out.println("🍓 setPausedModifier paused: " + paused + " " + autoplay);
 
     if (!mMediaPlayerValid) return;
 
@@ -373,16 +367,6 @@ public class ReactVideoView extends ScalableVideoView implements
       // same volume on both channels
       setVolume(mVolume, mVolume);
     }
-  }
-
-  public void setVolumeModifier(final float volume) {
-    mVolume = volume;
-    setMutedModifier(mMuted);
-  }
-
-  public void setStereoPan(final float stereoPan) {
-    mStereoPan = stereoPan;
-    setMutedModifier(mMuted);
   }
 
   public void setProgressUpdateInterval(final float progressUpdateInterval) {
@@ -511,6 +495,8 @@ public class ReactVideoView extends ScalableVideoView implements
     mEventEmitter.receiveEvent(getId(), Events.EVENT_END.toString(), null);
     if (!mRepeat) {
       setKeepScreenOn(false);
+    } else {
+      setPausedModifier(false);
     }
   }
 
@@ -586,12 +572,9 @@ public class ReactVideoView extends ScalableVideoView implements
   public void onHostResume() {
     mBackgroundPaused = false;
     if (mMediaPlayerValid && !mPlayInBackground && !mPaused) {
-      new Handler().post(new Runnable() {
-        @Override
-        public void run() {
-          // Restore original state
-          setPausedModifier(false);
-        }
+      new Handler().post(() -> {
+        // Restore original state
+        setPausedModifier(false);
       });
     }
   }
