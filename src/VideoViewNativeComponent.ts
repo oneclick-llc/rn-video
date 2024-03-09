@@ -41,6 +41,7 @@ export interface LookyVideoProps extends Pick<ViewProps, 'style'>, Callbacks {
   muted: boolean;
   loop: boolean;
   progressUpdateInterval?: number;
+  loopDuration?: number;
   videoResizeMode?: 'stretch' | 'contain' | 'cover';
   nativeID: string;
   autoplay?: boolean;

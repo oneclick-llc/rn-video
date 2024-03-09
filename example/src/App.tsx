@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { ShowcaseApp } from '@gorhom/showcase-template';
-import { OneMoreVideo } from 'example/src/screens/OneMoreVideo';
 
 const screens = [
   {
@@ -21,6 +20,12 @@ const screens = [
         name: 'AutoPlayOne',
         slug: 'AutoPlayOne',
         getScreen: () => require('./screens/AutoPlayOne').AutoPlayOne,
+      },
+      {
+        name: 'LoopDurationPlayOne',
+        slug: 'LoopDurationPlayOne',
+        getScreen: () =>
+          require('./screens/LoopDurationPlayOne').LoopDurationPlayOne,
       },
       {
         name: 'AutoPlayAll',

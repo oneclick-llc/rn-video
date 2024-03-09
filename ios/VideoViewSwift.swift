@@ -19,6 +19,8 @@ public class VideoViewSwift: UIView {
     @objc
     var progressUpdateInterval = 1.0
     @objc
+    var loopDuration = -1.0
+    @objc
     var onVideoEnd: RCTDirectEventBlock?
     @objc
     var onVideoBuffer: RCTDirectEventBlock?
@@ -82,7 +84,6 @@ public class VideoViewSwift: UIView {
 
     @objc
     public func setPaused(_ paused: Bool) {
-        //debugPrint("🍓 setPaused \(paused) \(nativeID ?? "")")
         self._paused = paused
         guard let _player else { return }
         if paused {
@@ -114,7 +115,6 @@ public class VideoViewSwift: UIView {
 
     @objc
     public func setAutoplay(_ autoplay: Bool) {
-        debugPrint("🍓 setAutoplay \(autoplay)")
         self._paused = !autoplay
         if !_paused { self.setPaused(false) }
     }
@@ -141,15 +141,21 @@ public class VideoViewSwift: UIView {
     func sendProgressUpdate(time: CMTime) {
         guard let _player = _player else { return }
         let duration = _player.currentItem?.duration ?? .zero;
+        let seconds = CMTimeGetSeconds(_player.currentItem?.currentTime() ?? .zero);
         let timeLeft = CMTimeSubtract(duration, time);
+        let secondsLeft = CMTimeGetSeconds(timeLeft);
 
         onVideoProgress?([
             "currentTime": CMTimeGetSeconds(time),
             "totalDuration": CMTimeGetSeconds(duration),
             "timeLeft": CMTimeGetSeconds(timeLeft)
         ])
+        
+        if loop && loopDuration > 0 && seconds >= loopDuration {
+            _player.seek(to: .zero)
+        }
 
-        if CMTimeGetSeconds(timeLeft) == 0 {
+        if secondsLeft == 0 {
             _player.seek(to: .zero)
             onVideoEnd?(nil)
             if loop {
@@ -209,7 +215,6 @@ public class VideoViewSwift: UIView {
         context: UnsafeMutableRawPointer?
     ) {
         guard let player = object as? AVPlayer else { return }
-        debugPrint("=-=", player.status == .unknown, player.status == .readyToPlay, player.status == .failed)
         if keyPath == "status" {
             if player.status == .readyToPlay {
                 onVideoLoad?(nil)

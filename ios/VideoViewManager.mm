@@ -23,9 +23,10 @@ RCT_EXPORT_VIEW_PROPERTY(muted, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(loop, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(autoplay, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(progressUpdateInterval, double)
-RCT_EXPORT_VIEW_PROPERTY(onVideoBuffer, RCTDirectEventBlock);
-RCT_EXPORT_VIEW_PROPERTY(onShowPoster, RCTDirectEventBlock);
-RCT_EXPORT_VIEW_PROPERTY(onVideoError, RCTDirectEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(loopDuration, double)
+RCT_EXPORT_VIEW_PROPERTY(onVideoBuffer, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onShowPoster, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onVideoError, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onVideoEnd, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onVideoProgress, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onVideoLoad, RCTDirectEventBlock)
