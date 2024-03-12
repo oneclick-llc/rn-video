@@ -39,7 +39,7 @@ public class VideoChannel {
 
     func toggleMuted(_ muted: Bool) {
         for video in videos {
-            video.value.toggleMuted(muted)
+            video.value.updateMuted(muted)
         }
     }
 
