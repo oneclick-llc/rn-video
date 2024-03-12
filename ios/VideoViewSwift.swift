@@ -19,7 +19,9 @@ public class VideoViewSwift: UIView {
     @objc
     var progressUpdateInterval = 1.0
     @objc
-    var loopDuration = -1.0
+    var loopDuration = -1.0 {
+        didSet { _forceMuted = true }
+    }
     @objc
     var onVideoEnd: RCTDirectEventBlock?
     @objc
@@ -36,6 +38,7 @@ public class VideoViewSwift: UIView {
     var _timeObserverToken: Any?
 
     public var _muted = true
+    public var _forceMuted = false
     public var _paused = true
     private var _player: AVPlayer?
     private var _playerItem: AVPlayerItem?
@@ -106,7 +109,21 @@ public class VideoViewSwift: UIView {
     }
 
     @objc
-    public func setMuted(_ muted: Bool) {
+    private func setMuted(_ muted: Bool) {
+        self._muted = muted
+        guard let _player = _player else { return }
+        _player.volume = muted ? 0 : 1
+        _player.isMuted = muted
+    }
+    
+    @objc
+    private func forceMuted(_ muted: Bool) {
+        self._forceMuted = muted
+    }
+    
+    
+    func updateMuted(_ muted: Bool) {
+        if _forceMuted { return }
         self._muted = muted
         guard let _player = _player else { return }
         _player.volume = muted ? 0 : 1
