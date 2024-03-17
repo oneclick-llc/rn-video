@@ -19,7 +19,7 @@ public class VideoViewSwift: UIView {
     @objc
     var progressUpdateInterval = 1.0
     @objc
-    var loopDuration = -1.0 {
+    public var loopDuration = -1.0 {
         didSet { _forceMuted = true }
     }
     @objc
@@ -34,11 +34,16 @@ public class VideoViewSwift: UIView {
     var onVideoError: RCTDirectEventBlock?
     @objc
     var onVideoLoad: RCTDirectEventBlock?
-
-    var _timeObserverToken: Any?
+    
+    private var didAddObservers = false
+    private var _timeObserverToken: Any?
 
     public var _muted = true
-    public var _forceMuted = false
+    public var _forceMuted = false {
+        didSet {
+            if _forceMuted { _muted = true }
+        }
+    }
     public var _paused = true
     private var _player: AVPlayer?
     private var _playerItem: AVPlayerItem?
@@ -46,7 +51,7 @@ public class VideoViewSwift: UIView {
     private var _videoPlayerParent = UIView()
     private var _isPosterPresent = true
 
-    private func updateReizeMode() {
+    public func updateReizeMode() {
         _playerLayer.videoGravity = .resizeAspectFill
         if videoResizeMode == "cover" { _playerLayer.videoGravity = .resizeAspectFill }
         if videoResizeMode == "contain" { _playerLayer.videoGravity = .resizeAspect }
@@ -136,7 +141,7 @@ public class VideoViewSwift: UIView {
         if !_paused { self.setPaused(false) }
     }
 
-    func cleanUp() {
+    public func cleanUp() {
         if _player == nil { return }
         setPaused(true)
 
@@ -144,14 +149,18 @@ public class VideoViewSwift: UIView {
             _player?.removeTimeObserver(o)
             _timeObserverToken = nil
         }
-        _player?.removeObserver(self, forKeyPath: "status")
-        _player?.removeObserver(self, forKeyPath: "playbackBufferEmpty")
-        _player?.removeObserver(self, forKeyPath: "playbackLikelyToKeepUp")
+        if didAddObservers {
+            _player?.removeObserver(self, forKeyPath: "status")
+            _player?.removeObserver(self, forKeyPath: "playbackBufferEmpty")
+            _player?.removeObserver(self, forKeyPath: "playbackLikelyToKeepUp")
+            didAddObservers = false
+        }
 
         _player = nil;
         _playerItem = nil;
         _playerLayer.removeFromSuperlayer()
         _playerLayer.player = nil
+        _videoPlayerParent.removeFromSuperview()
         AppVideosManager.shared.removeVideo(self.nativeID)
     }
 
@@ -208,6 +217,7 @@ public class VideoViewSwift: UIView {
         _player?.addObserver(self, forKeyPath: "status", options: [.new, .initial], context: nil)
         _player?.addObserver(self, forKeyPath: "playbackBufferEmpty", options: [.new], context: nil)
         _player?.addObserver(self, forKeyPath: "playbackLikelyToKeepUp", options: [.new], context: nil)
+        didAddObservers = true
     }
 
     public override func removeFromSuperview() {
@@ -265,7 +275,7 @@ public class VideoViewSwift: UIView {
     }
 
     @objc
-    func setVideoUri(_ uri: String) {
+    public func setVideoUri(_ uri: String) {
         if !uri.starts(with: "ph://") {
             var url: URL?
             if uri.starts(with: "file://") {
