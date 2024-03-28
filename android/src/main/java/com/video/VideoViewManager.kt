@@ -32,21 +32,23 @@ class VideoViewManager : ReactVideoViewManager() {
   @ReactProp(name = "videoUri")
   fun videoUri(videoView: VideoView, videoUri: String) {
     val isNetwork = videoUri.startsWith("http")
-    var isAsset = false
-    if (videoUri.startsWith("assets-library:")) isAsset = true
-    if (videoUri.startsWith("ipod-library:")) isAsset = true
-    if (videoUri.startsWith("file:")) isAsset = true
-    if (videoUri.startsWith("content:")) isAsset = true
-    if (videoUri.startsWith("ms-appx:")) isAsset = true
-    if (videoUri.startsWith("ms-appdata:")) isAsset = true
+    val isAsset = videoUri.toIntOrNull() == null
+//    if (videoUri.startsWith("assets-library:")) isAsset = true
+//    if (videoUri.startsWith("ipod-library:")) isAsset = true
+//    if (videoUri.startsWith("file:")) isAsset = true
+//    if (videoUri.startsWith("content:")) isAsset = true
+//    if (videoUri.startsWith("ms-appx:")) isAsset = true
+//    if (videoUri.startsWith("ms-appdata:")) isAsset = true
     videoView.setSrc(videoUri, "", isNetwork, isAsset, Arguments.createMap())
   }
 
   @ReactProp(name = "resizeMode")
   fun resizeMode(videoView: VideoView, resizeMode: String) {
-    if (resizeMode == "cover") { videoView.setResizeModeModifier(ScalableType.FIT_CENTER) }
-    if (resizeMode == "contain") { videoView.setResizeModeModifier(ScalableType.FIT_START) }
-    if (resizeMode == "stretch") { videoView.setResizeModeModifier(ScalableType.FIT_XY) }
+    when (resizeMode) {
+      "cover" -> videoView.setResizeModeModifier(ScalableType.FIT_CENTER)
+      "contain" -> videoView.setResizeModeModifier(ScalableType.FIT_START)
+      "stretch" -> videoView.setResizeModeModifier(ScalableType.FIT_XY)
+    }
   }
 
   @ReactProp(name = "muted")
